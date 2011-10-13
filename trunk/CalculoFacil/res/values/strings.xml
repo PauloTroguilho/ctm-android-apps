@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, CalculoFacilActivity!</string>
+    <string name="app_name">Cálculo Fácil</string>
+    <string-array name="menuPrincipal">
+        <item>Cálculos Trabalhistas</item>
+        <!-- 
+        <item>Dívidas vencidas</item>
+        -->
+    </string-array>
+    <string-array name="menuTrabalhistas">
+        <item>Rescisão de Contrato</item>
+        <!-- 
+        <item>Férias</item>
+        <item>Salário</item>
+        <item>Décimo Terceiro</item>
+         -->
+    </string-array>
+    <string-array name="menuDividas">
+        <item>Rescisão de Contrato</item>
+        <item>Salário</item>
+        <item>Décimo Terceiro</item>
+        <item>Férias</item>
+    </string-array>
+    <string-array name="motivosRescisao">
+        <item>Pedido de demissão</item>
+        <item>Dispensa sem justa causa</item>
+        <item>Dispensa com justa causa</item>
+        <item>Término de contrato de experiência</item>
+        <item>Rescisão antecipada do contrato de experiência por iniciativa do empregador</item>
+        <item>Rescisão antecipada do contrato de experiência por iniciativa do empregado</item>
+        <item>Falecimento do empregado</item>
+    </string-array>
+    <string-array name="tiposAvisoPrevio">
+        <item>Trabalhado</item>
+        <item>Indenizado</item>
+    </string-array>
+    <string name="dt_admissao">Data de Admissão</string>
+    <string name="dt_demissao">Data de Demissão</string>
+    <string name="motivo_rescisao">Motivo da Rescisão</string>
+    <string name="bt_calcular">Calcular</string>
+    <string name="bt_voltar">Voltar</string>
+    <string name="ultimo_salario">Último Salário</string>
+    <string name="tp_aviso_previo">Aviso Prévio</string>
+    <string name="rescisao_clt_titulo">Rescisão de contrato de trabalho - CLT</string>
+</resources>
