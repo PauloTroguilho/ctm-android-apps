@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+	android:orientation="vertical" android:layout_height="fill_parent"
+	android:layout_width="fill_parent">
+
+	<LinearLayout android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+		<com.google.ads.AdView android:id="@+id/adView"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			ads:adUnitId="a14e95d4d2bb731" ads:adSize="BANNER"
+			ads:loadAdOnCreate="true" />
+	</LinearLayout>
+
+	<LinearLayout android:orientation="vertical"
+		android:layout_height="fill_parent" android:layout_width="fill_parent">
+		<LinearLayout android:layout_height="wrap_content"
+			android:layout_width="match_parent" android:id="@+id/linearLayout4" android:padding="8px">
+			<TextView android:gravity="center_vertical|center_horizontal|center"
+				android:layout_height="wrap_content" android:layout_width="fill_parent"
+				android:id="@+id/textView6" android:text="@string/rescisao_clt_titulo"
+				android:textStyle="bold" android:textSize="14dip"></TextView>
+		</LinearLayout>
+		<TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/textView1" android:text="@string/saldo_salario"></TextView>
+		<TextView android:layout_gravity="right" android:paddingRight="20px" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tvSaldoSalario" android:text="TextView" android:textSize="16dp" android:textStyle="bold"></TextView>
+		<TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/textView2" android:text="@string/decimo_terceiro"></TextView>
+		<TextView android:layout_width="wrap_content" android:layout_gravity="right" android:layout_height="wrap_content" android:paddingRight="20px" android:text="TextView" android:id="@+id/tvDecimoProp" android:textStyle="bold" android:textSize="16dp"></TextView>
+		<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/textView3" android:text="@string/ferias_proporcionais"></TextView>
+		<TextView android:layout_width="wrap_content" android:layout_gravity="right" android:layout_height="wrap_content" android:paddingRight="20px" android:text="TextView" android:id="@+id/tvFeriasProp" android:textSize="16dp" android:textStyle="bold"></TextView>
+		<TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/textView4" android:text="@string/um_terco_ferias_proporcionais"></TextView>
+		<TextView android:layout_width="wrap_content" android:layout_gravity="right" android:layout_height="wrap_content" android:paddingRight="20px" android:text="TextView" android:id="@+id/tvUmTercoFerias" android:textStyle="bold" android:textSize="16dp"></TextView>
+		<TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/textView5" android:text="@string/total_proventos" android:textStyle="bold" android:textSize="17dp" android:paddingTop="10px"></TextView>
+		<TextView android:layout_width="wrap_content" android:layout_gravity="right" android:layout_height="wrap_content" android:textStyle="bold" android:paddingRight="20px" android:text="TextView" android:textSize="20dp" android:id="@+id/tvTotalProventos"></TextView>
+		<LinearLayout android:layout_height="wrap_content"
+			android:layout_width="match_parent" android:id="@+id/linearLayout3" android:paddingTop="10px">
+			<Button android:layout_height="wrap_content"
+				android:layout_width="wrap_content" android:text="@string/bt_voltar"
+				android:id="@+id/button2" android:paddingLeft="20px"
+				android:paddingRight="20px"></Button>
+		</LinearLayout>
+	</LinearLayout>
+
+</LinearLayout>

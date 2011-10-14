@@ -44,4 +44,9 @@
     <string name="tp_aviso_previo">Aviso Prévio</string>
     <string name="rescisao_clt_titulo">Rescisão de contrato de trabalho - CLT</string>
     <string name="alert_dialog_ok">Ok</string>
+    <string name="saldo_salario">Saldo de Salário</string>
+    <string name="decimo_terceiro">13º Salário (Proporcional)</string>
+    <string name="ferias_proporcionais">Férias Proporcionais</string>
+    <string name="um_terco_ferias_proporcionais">1/3 Férias Proporcionais</string>
+    <string name="total_proventos">Total de Proventos</string>
 </resources>
