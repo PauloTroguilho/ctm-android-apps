@@ -12,7 +12,7 @@ import com.google.ads.AdView;
 
 /**
  * @author Cleber Moura <cleber.t.moura@gmail.com>
- *
+ * 
  */
 public class AdMobActivity extends Activity {
 
@@ -21,12 +21,12 @@ public class AdMobActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	}
-	
+
 	/**
 	 * 
 	 */
 	protected void setAdView() {
-		AdView adView = (AdView)this.findViewById(R.id.adView);
+		AdView adView = (AdView) this.findViewById(R.id.adView);
 		AdRequest request = new AdRequest();
 		request.addTestDevice(AdRequest.TEST_EMULATOR);
 		request.addTestDevice(Consts.MY_DEVICEID);
