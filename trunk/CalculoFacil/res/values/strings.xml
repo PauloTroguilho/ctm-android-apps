@@ -43,4 +43,5 @@
     <string name="ultimo_salario">Último Salário</string>
     <string name="tp_aviso_previo">Aviso Prévio</string>
     <string name="rescisao_clt_titulo">Rescisão de contrato de trabalho - CLT</string>
+    <string name="alert_dialog_ok">Ok</string>
 </resources>

@@ -37,8 +37,8 @@
 		<LinearLayout android:layout_height="wrap_content"
 			android:layout_width="match_parent" android:id="@+id/linearLayout3">
 			<Button android:layout_height="wrap_content" android:text="@string/bt_calcular"
-				android:id="@+id/button1" android:layout_width="wrap_content"
-				android:paddingLeft="20px" android:paddingRight="20px"></Button>
+				android:layout_width="wrap_content"
+				android:paddingLeft="20px" android:paddingRight="20px" android:id="@+id/btCalcular"></Button>
 			<Button android:layout_height="wrap_content"
 				android:layout_width="wrap_content" android:text="@string/bt_voltar"
 				android:id="@+id/button2" android:paddingLeft="20px"
