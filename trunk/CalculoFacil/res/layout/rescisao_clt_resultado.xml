@@ -35,8 +35,8 @@
 			android:layout_width="match_parent" android:id="@+id/linearLayout3" android:paddingTop="10px">
 			<Button android:layout_height="wrap_content"
 				android:layout_width="wrap_content" android:text="@string/bt_voltar"
-				android:id="@+id/button2" android:paddingLeft="20px"
-				android:paddingRight="20px"></Button>
+				android:paddingLeft="20px"
+				android:paddingRight="20px" android:id="@+id/btVoltar"></Button>
 		</LinearLayout>
 	</LinearLayout>
 
