@@ -20,6 +20,12 @@ public class ResultadoCalculoRescisaoActivity extends AdMobActivity {
 		TextView tvUmTercoFerias = (TextView)findViewById(R.id.tvUmTercoFerias);
 		TextView tvTotalProventos = (TextView)findViewById(R.id.tvTotalProventos);
 		
+		TextView tvINSSsalario = (TextView)findViewById(R.id.tvINSSsalario);
+		TextView tvINSSdecimo = (TextView)findViewById(R.id.tvINSSdecimo);
+		TextView tvTotalDescontos = (TextView)findViewById(R.id.tvTotalDescontos);
+		
+		TextView tvTotalRescisao = (TextView)findViewById(R.id.tvTotalRescisao);
+		
 		double saldoSalario = getIntent().getDoubleExtra("saldoSalario", 0);
 		double decimoProporcional = getIntent().getDoubleExtra("decimoProporcional", 0);
 		double feriasProporcional = getIntent().getDoubleExtra("feriasProporcional", 0);
@@ -27,11 +33,24 @@ public class ResultadoCalculoRescisaoActivity extends AdMobActivity {
 		
 		double totalProventos = saldoSalario + decimoProporcional + feriasProporcional + umTercoFeriasProporcional;
 		
+		double inssSalario = getIntent().getDoubleExtra("inssSalario", 0);
+		double inssDecimo = getIntent().getDoubleExtra("inssDecimo", 0);
+		
+		double totalDescontos = inssSalario + inssDecimo;
+		
+		double totalRescisao = totalProventos - totalDescontos;
+		
 		tvSaldoSalario.setText(StringUtils.formatNumber(saldoSalario));
 		tvDecimoProp.setText(StringUtils.formatNumber(decimoProporcional));
 		tvFeriasProp.setText(StringUtils.formatNumber(feriasProporcional));
 		tvUmTercoFerias.setText(StringUtils.formatNumber(umTercoFeriasProporcional));
 		tvTotalProventos.setText(StringUtils.formatNumber(totalProventos));
+		
+		tvINSSsalario.setText(StringUtils.formatNumber(inssSalario));
+		tvINSSdecimo.setText(StringUtils.formatNumber(inssDecimo));
+		tvTotalDescontos.setText(StringUtils.formatNumber(totalDescontos));
+		
+		tvTotalRescisao.setText(StringUtils.formatNumber(totalRescisao));
 		
 		Button btVoltar = (Button) findViewById(R.id.btVoltar);
 		btVoltar.setOnClickListener(new View.OnClickListener() {

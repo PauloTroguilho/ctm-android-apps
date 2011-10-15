@@ -15,29 +15,84 @@
 	<LinearLayout android:orientation="vertical"
 		android:layout_height="fill_parent" android:layout_width="fill_parent">
 		<LinearLayout android:layout_height="wrap_content"
-			android:layout_width="match_parent" android:id="@+id/linearLayout4" android:padding="8px">
+			android:layout_width="match_parent" android:id="@+id/linearLayout4"
+			android:padding="8px">
 			<TextView android:gravity="center_vertical|center_horizontal|center"
 				android:layout_height="wrap_content" android:layout_width="fill_parent"
 				android:id="@+id/textView6" android:text="@string/rescisao_clt_titulo"
 				android:textStyle="bold" android:textSize="14dip"></TextView>
 		</LinearLayout>
-		<TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/textView1" android:text="@string/saldo_salario"></TextView>
-		<TextView android:layout_gravity="right" android:paddingRight="20px" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tvSaldoSalario" android:text="TextView" android:textSize="16dp" android:textStyle="bold"></TextView>
-		<TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/textView2" android:text="@string/decimo_terceiro"></TextView>
-		<TextView android:layout_width="wrap_content" android:layout_gravity="right" android:layout_height="wrap_content" android:paddingRight="20px" android:text="TextView" android:id="@+id/tvDecimoProp" android:textStyle="bold" android:textSize="16dp"></TextView>
-		<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/textView3" android:text="@string/ferias_proporcionais"></TextView>
-		<TextView android:layout_width="wrap_content" android:layout_gravity="right" android:layout_height="wrap_content" android:paddingRight="20px" android:text="TextView" android:id="@+id/tvFeriasProp" android:textSize="16dp" android:textStyle="bold"></TextView>
-		<TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/textView4" android:text="@string/um_terco_ferias_proporcionais"></TextView>
-		<TextView android:layout_width="wrap_content" android:layout_gravity="right" android:layout_height="wrap_content" android:paddingRight="20px" android:text="TextView" android:id="@+id/tvUmTercoFerias" android:textStyle="bold" android:textSize="16dp"></TextView>
-		<TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/textView5" android:text="@string/total_proventos" android:textStyle="bold" android:textSize="17dp" android:paddingTop="10px"></TextView>
-		<TextView android:layout_width="wrap_content" android:layout_gravity="right" android:layout_height="wrap_content" android:textStyle="bold" android:paddingRight="20px" android:text="TextView" android:textSize="20dp" android:id="@+id/tvTotalProventos"></TextView>
-		<LinearLayout android:layout_height="wrap_content"
-			android:layout_width="match_parent" android:id="@+id/linearLayout3" android:paddingTop="10px">
-			<Button android:layout_height="wrap_content"
-				android:layout_width="wrap_content" android:text="@string/bt_voltar"
-				android:paddingLeft="20px"
-				android:paddingRight="20px" android:id="@+id/btVoltar"></Button>
-		</LinearLayout>
+		<ScrollView android:layout_width="match_parent"
+			android:layout_height="wrap_content" android:id="@+id/scrollView1">
+			<LinearLayout android:layout_height="wrap_content"
+				android:layout_width="match_parent" android:orientation="vertical">
+				<TextView android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:id="@+id/textView1"
+					android:text="@string/saldo_salario" android:paddingTop="10px"></TextView>
+				<TextView android:layout_gravity="right"
+					android:paddingRight="20px" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:id="@+id/tvSaldoSalario"
+					android:text="TextView" android:textSize="16dp" android:textStyle="bold"></TextView>
+				<TextView android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:id="@+id/textView2"
+					android:text="@string/decimo_terceiro"></TextView>
+				<TextView android:layout_width="wrap_content"
+					android:layout_gravity="right" android:layout_height="wrap_content"
+					android:paddingRight="20px" android:text="TextView" android:id="@+id/tvDecimoProp"
+					android:textStyle="bold" android:textSize="16dp"></TextView>
+				<TextView android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:id="@+id/textView3"
+					android:text="@string/ferias_proporcionais"></TextView>
+				<TextView android:layout_width="wrap_content"
+					android:layout_gravity="right" android:layout_height="wrap_content"
+					android:paddingRight="20px" android:text="TextView" android:id="@+id/tvFeriasProp"
+					android:textSize="16dp" android:textStyle="bold"></TextView>
+				<TextView android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:id="@+id/textView4"
+					android:text="@string/um_terco_ferias_proporcionais"></TextView>
+				<TextView android:layout_width="wrap_content"
+					android:layout_gravity="right" android:layout_height="wrap_content"
+					android:paddingRight="20px" android:text="TextView" android:id="@+id/tvUmTercoFerias"
+					android:textStyle="bold" android:textSize="16dp"></TextView>
+				<TextView android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:id="@+id/textView5"
+					android:text="@string/total_proventos" android:textStyle="bold"
+					android:textSize="17dp" android:textColor="#FAFAFA"></TextView>
+				<TextView android:layout_width="wrap_content"
+					android:layout_gravity="right" android:layout_height="wrap_content"
+					android:textStyle="bold" android:paddingRight="20px" android:text="TextView"
+					android:textSize="20dp" android:id="@+id/tvTotalProventos" android:textColor="#FAFAFA"></TextView>
+				<TextView android:text="@string/inss_salario" android:id="@+id/textView7"
+					android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingTop="10px"></TextView>
+				<TextView android:textSize="16dp" android:layout_gravity="right"
+					android:textStyle="bold" android:text="TextView"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:paddingRight="20px" android:id="@+id/tvINSSsalario"></TextView>
+				<TextView android:id="@+id/TextView03"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:text="@string/inss_decimo"></TextView>
+				<TextView android:textSize="16dp" android:layout_gravity="right"
+					android:textStyle="bold" android:text="TextView"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:paddingRight="20px" android:id="@+id/tvINSSdecimo"></TextView>
+				<TextView android:textSize="17dp" android:textStyle="bold"
+					android:id="@+id/TextView02" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="@string/total_descontos" android:textColor="#FAFAFA"></TextView>
+				<TextView android:textSize="20dp" android:layout_gravity="right"
+					android:textStyle="bold" android:text="TextView"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:paddingRight="20px" android:id="@+id/tvTotalDescontos" android:textColor="#FAFAFA"></TextView>
+				<TextView android:id="@+id/TextView01" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="@string/total_a_pagar" android:paddingTop="10px" android:textColor="#FFFFAA" android:textSize="18dp" android:textStyle="bold"></TextView>
+				<TextView android:textSize="20dp" android:layout_gravity="right"
+					android:textStyle="bold" android:text="TextView"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:paddingRight="20px" android:id="@+id/tvTotalRescisao" android:textColor="#FFFFAA"></TextView>
+				<Button android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:text="@string/bt_voltar"
+					android:paddingLeft="20px" android:paddingRight="20px" android:id="@+id/btVoltar"></Button>
+			</LinearLayout>
+		</ScrollView>
 	</LinearLayout>
 
 </LinearLayout>

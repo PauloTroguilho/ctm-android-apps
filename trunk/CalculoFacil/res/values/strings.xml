@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Hello World, CalculoFacilActivity!</string>
-    <string name="app_name">Cálculo Fácil</string>
+    <string name="app_name">Calculo Facil</string>
+    <string name="app_title">Cálculo Fácil</string>
     <string-array name="menuPrincipal">
         <item>Cálculos Trabalhistas</item>
         <!-- 
@@ -52,4 +53,9 @@
     <string name="menu_ajuda">Ajuda</string>
     <string name="menu_sair">Sair</string>
     <string name="dialog_ajuda">O aplicativo Cálculo Fácil lhe permite realizar cálculos bastante úteis em seu dia a dia. Eventualmente serão lançadas novas versões do aplicativo com novos cálculos.</string>
+    <string name="inss_salario">INSS sobre Salário</string>
+    <string name="inss_ferias">INSS sobre Férias</string>
+    <string name="total_descontos">Total de Descontos</string>
+    <string name="inss_decimo">INSS sobre 13º</string>
+    <string name="total_a_pagar">Valor da Rescisão</string>
 </resources>

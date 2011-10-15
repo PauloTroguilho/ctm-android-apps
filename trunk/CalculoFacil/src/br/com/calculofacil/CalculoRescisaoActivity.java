@@ -22,6 +22,8 @@ public class CalculoRescisaoActivity extends AdMobActivity {
 	private List<String> errors = new ArrayList<String>();
 
 	private static final int DIALOG_ERROR = 1;
+	
+	private static final float INSS = 0.08f; 
 
 	/** Called when the activity is first created. */
 	@Override
@@ -143,6 +145,9 @@ public class CalculoRescisaoActivity extends AdMobActivity {
 		Calendar cDataDemissao = Calendar.getInstance();
 		cDataDemissao.setTime(dataDemissao);		
 		
+		//14/08/2011
+		//11/10/2011
+		
 		// Calculo do Saldo de salário
 		int qtdDiasTrabalhados = 0;
 		if (dataAdmissao.getYear() == dataDemissao.getYear()
@@ -153,13 +158,16 @@ public class CalculoRescisaoActivity extends AdMobActivity {
 		} else {
 			qtdDiasTrabalhados = cDataDemissao.get(Calendar.DAY_OF_MONTH);
 		}
-		double saldoSalario = ultimoSalario.doubleValue() / 30 * qtdDiasTrabalhados;
 		
+		double saldoSalario = ultimoSalario.doubleValue() / 30 * qtdDiasTrabalhados;
+
 		//Décimo Terceiro Proporcional
 		//Salário/12*Meses
 		int qtdMesesDecimo = 0;
 		if (dataAdmissao.getYear() == dataDemissao.getYear()) {
-			qtdMesesDecimo = (dataDemissao.getMonth() - dataAdmissao.getMonth()) + 1;
+			qtdMesesDecimo = dataDemissao.getMonth() - dataAdmissao.getMonth();
+			if (qtdMesesDecimo == 0)
+				qtdMesesDecimo++;
 		} else {
 			qtdMesesDecimo = dataDemissao.getMonth();
 		}
@@ -169,7 +177,9 @@ public class CalculoRescisaoActivity extends AdMobActivity {
 		//Salário/12*Meses
 		int qtdMesesFerias = 0;
 		if (dataAdmissao.getYear() == dataDemissao.getYear()) {
-			qtdMesesFerias = (dataDemissao.getMonth() - dataAdmissao.getMonth()) +1;
+			qtdMesesFerias = dataDemissao.getMonth() - dataAdmissao.getMonth();
+			if (qtdMesesFerias == 0)
+				qtdMesesFerias++;
 		} else {
 			qtdMesesFerias = (12 - dataAdmissao.getMonth()) + dataDemissao.getMonth();
 		}
@@ -184,6 +194,9 @@ public class CalculoRescisaoActivity extends AdMobActivity {
 		intent.putExtra("decimoProporcional", decimoProporcional);
 		intent.putExtra("feriasProporcional", feriasProporcional);
 		intent.putExtra("umTercoFeriasProporcional", umTercoFeriasProporcional);
+		
+		intent.putExtra("inssSalario", saldoSalario * INSS);
+		intent.putExtra("inssDecimo", decimoProporcional * INSS);
 		
 		startActivity(intent);
 		
