@@ -48,7 +48,7 @@ public class CalculoFacilActivity extends AdMobActivity {
 		switch (id) {
 			case DIALOG_AJUDA:
 				return new AlertDialog.Builder(CalculoFacilActivity.this)
-						.setIcon(R.drawable.icon_error).setTitle(getString(R.string.menu_ajuda))
+						.setIcon(R.drawable.icon_help).setTitle(getString(R.string.menu_ajuda))
 						.setMessage(getString(R.string.dialog_ajuda)).setPositiveButton(
 								R.string.alert_dialog_ok,
 								new DialogInterface.OnClickListener() {
