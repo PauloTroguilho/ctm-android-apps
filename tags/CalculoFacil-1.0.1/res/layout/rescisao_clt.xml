@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+	android:orientation="vertical" android:layout_height="fill_parent"
+	android:layout_width="fill_parent">
+
+	<LinearLayout android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+		<com.google.ads.AdView android:id="@+id/adView"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			ads:adUnitId="a14e95d4d2bb731" ads:adSize="BANNER"
+			ads:loadAdOnCreate="true" />
+	</LinearLayout>
+
+	<LinearLayout android:orientation="vertical"
+		android:layout_height="fill_parent" android:layout_width="fill_parent">
+		<LinearLayout android:layout_height="wrap_content"
+			android:layout_width="match_parent" android:id="@+id/linearLayout4"
+			android:padding="8px">
+			<TextView android:gravity="center_vertical|center_horizontal|center"
+				android:layout_height="wrap_content" android:layout_width="fill_parent"
+				android:id="@+id/textView6" android:text="@string/rescisao_clt_titulo"
+				android:textStyle="bold" android:textSize="14dip"></TextView>
+		</LinearLayout>
+		<TextView android:text="@string/dt_admissao"
+			android:layout_height="wrap_content" android:layout_width="wrap_content"
+			android:id="@+id/textView1"></TextView>
+		<EditText android:layout_width="match_parent"
+			android:layout_height="wrap_content" android:inputType="date"
+			android:id="@+id/edtDtAdmissao">
+			<requestFocus></requestFocus>
+		</EditText>
+		<TextView android:text="@string/dt_demissao"
+			android:layout_height="wrap_content" android:layout_width="wrap_content"
+			android:id="@+id/textView2"></TextView>
+		<EditText android:layout_width="match_parent"
+			android:layout_height="wrap_content" android:inputType="date"
+			android:id="@+id/edtDtDemissao"></EditText>
+		<!-- 
+		<TextView android:layout_width="wrap_content" android:text="@string/motivo_rescisao"
+			android:layout_height="wrap_content" android:id="@+id/textView3"></TextView>
+		<Spinner android:layout_width="fill_parent" android:entries="@array/motivosRescisao"
+			android:layout_height="wrap_content" android:id="@+id/spMotivoRescisao"></Spinner>
+		 -->
+		<TextView android:text="@string/ultimo_salario"
+			android:layout_height="wrap_content" android:layout_width="wrap_content"
+			android:id="@+id/textView4"></TextView>
+		<EditText android:layout_width="match_parent"
+			android:layout_height="wrap_content" android:inputType="numberDecimal"
+			android:id="@+id/edtUltimoSalario"></EditText>
+		<!-- 
+		<TextView android:text="@string/tp_aviso_previo"
+			android:layout_height="wrap_content" android:layout_width="wrap_content"
+			android:id="@+id/textView5"></TextView>
+		<Spinner android:entries="@array/tiposAvisoPrevio"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:id="@+id/spTipoAvisoPrevio"></Spinner>
+		 -->
+		<LinearLayout android:layout_height="wrap_content"
+			android:layout_width="match_parent" android:id="@+id/linearLayout3">
+			<Button android:layout_height="wrap_content" android:text="@string/bt_calcular"
+				android:layout_width="wrap_content" android:paddingLeft="20px"
+				android:paddingRight="20px" android:id="@+id/btCalcular"></Button>
+			<Button android:layout_height="wrap_content"
+				android:layout_width="wrap_content" android:text="@string/bt_voltar"
+				android:id="@+id/btVoltar" android:paddingLeft="20px"
+				android:paddingRight="20px"></Button>
+		</LinearLayout>
+	</LinearLayout>
+
+</LinearLayout>
