@@ -1,47 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
- 
+
 <config charset="Cp1252">
-	<var-def name="url"><template>http://www.portaisgoverno.pe.gov.br/web/sds/procurados?page=${pagina}</template></var-def>
-    <!-- iterates over all collected products and extract desired data -->
-    <file action="write" path="procurados.xml" charset="UTF-8">
+	<var-def name="url">
+		<template>http://www.portaisgoverno.pe.gov.br/web/sds/procurados?page=${pagina}
+		</template>
+	</var-def>
+	<!-- iterates over all collected products and extract desired data -->
+	<file action="write" path="procurados.xml" charset="UTF-8">
         <![CDATA[ <procurados> ]]>
-        <while condition="true" index="pagina" maxloops="2">
-		    <loop item="procurado" index="i">
-	            <list>
-	            	<xpath expression="//div[@class='procurados']">
-		                <html-to-xml>
-		                    <http url="${url}"/>
-		                </html-to-xml>
-	            	</xpath>
-	            </list>
-	            <body>
-	                <xquery>
-	                    <xq-param name="procurado" type="node()"><var name="procurado"/></xq-param>
-	                    <xq-expression><![CDATA[
+		<while condition="true" index="pagina" maxloops="2">
+			<loop item="procurado" index="i">
+				<list>
+					<xpath expression="//div[@class='procurados']">
+						<html-to-xml>
+							<http url="${url}" />
+						</html-to-xml>
+					</xpath>
+				</list>
+				<body>
+					<xquery>
+						<xq-param name="procurado" type="node()">
+							<var name="procurado" />
+						</xq-param>
+						<xq-expression><![CDATA[
 	                            declare variable $procurado as node() external;
-								
 	                            let $nome := data($procurado//div[@class="nome"]/h3/a)
 	                            let $apelido := data($procurado//div[@class="nome"]/h4/a)
 	                            let $fotoUrl := data($procurado//div[@class="imagem"]/a/img/@src)
+	                            let $fotoId := substring-after(substring-before(substring-after($fotoUrl,"?"),"&amp;"),"=")
 	                                return
 	                                    <procurado>
 	                                        <nome>{$nome}</nome>
 	                                        <apelido>{$apelido}</apelido>
-	                                        <fotoUrl>{$fotoUrl}</fotoUrl>
+	                                        <fotoId>{$fotoId}</fotoId>
 	                                    </procurado>
 	                    ]]></xq-expression>
-	                </xquery>
-	                <file action="write" path="fotos/${i}.jpg" type="binary">
-	                	<var-def name="fotoUrlProcurado">
-						    <xpath expression="//div[@class='imagem']/a/img/@src">
-						        <var name="procurado"/>
-						    </xpath>
-						</var-def>
-					    <http url="${sys.fullUrl(url, fotoUrlProcurado)}"/>
-					</file>
-	            </body>
-	        </loop>
+					</xquery>
+				</body>
+			</loop>
 		</while>
         <![CDATA[ </procurados> ]]>
-    </file>
+	</file>
+	<while condition="true" index="pagina" maxloops="2">
+		<loop item="procurado" index="i">
+			<list>
+				<xpath expression="//div[@class='procurados']">
+					<html-to-xml>
+						<http url="${url}" />
+					</html-to-xml>
+				</xpath>
+			</list>
+			<body>
+				<var-def name="fotoUrl">
+					<xpath expression="//div[@class='imagem']/a/img/@src">
+						<var name="procurado" />
+					</xpath>
+				</var-def>
+				<var-def name="fotoId">
+					<xquery>
+			            <xq-param name="procurado" type="node()">
+							<var name="procurado" />
+						</xq-param>
+			            <xq-expression><![CDATA[
+			                  declare variable $procurado as node() external;
+			                  let $fotoUrl := data($procurado//div[@class="imagem"]/a/img/@src)
+	                          let $fotoId := substring-after(substring-before(substring-after($fotoUrl,"?"),"&amp;"),"=")
+			                  return
+			                  		$fotoId
+			                        ]]>
+						</xq-expression>
+			        </xquery>
+				</var-def>
+				<file action="write" path="fotos/${fotoId}.jpeg" type="binary">
+					<http url="${sys.fullUrl(url, fotoUrl)}" />
+				</file>
+			</body>
+		</loop>
+	</while>
 </config>
