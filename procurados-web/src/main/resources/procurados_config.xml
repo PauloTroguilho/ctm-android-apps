@@ -15,15 +15,11 @@
 	            	</xpath>
 	            </list>
 	            <body>
-	            	<var-def name="fotoUrlProcurado">
-					    <xpath expression="//div[@class='imagem']/a/img/@src">
-					        <var name="procurado"/>
-					    </xpath>
-					</var-def>
 	                <xquery>
 	                    <xq-param name="procurado" type="node()"><var name="procurado"/></xq-param>
 	                    <xq-expression><![CDATA[
 	                            declare variable $procurado as node() external;
+								
 	                            let $nome := data($procurado//div[@class="nome"]/h3/a)
 	                            let $apelido := data($procurado//div[@class="nome"]/h4/a)
 	                            let $fotoUrl := data($procurado//div[@class="imagem"]/a/img/@src)
@@ -35,7 +31,12 @@
 	                                    </procurado>
 	                    ]]></xq-expression>
 	                </xquery>
-	                <file action="write" path="fotos/procurado_${i}.jpg" type="binary">
+	                <file action="write" path="fotos/${i}.jpg" type="binary">
+	                	<var-def name="fotoUrlProcurado">
+						    <xpath expression="//div[@class='imagem']/a/img/@src">
+						        <var name="procurado"/>
+						    </xpath>
+						</var-def>
 					    <http url="${sys.fullUrl(url, fotoUrlProcurado)}"/>
 					</file>
 	            </body>
