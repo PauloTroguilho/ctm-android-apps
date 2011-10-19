@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<config charset="Cp1252">
+	<var-def name="url"><template>http://www.portaisgoverno.pe.gov.br/web/sds/procurados?page=${pagina}</template></var-def>
+    <!-- iterates over all collected products and extract desired data -->
+    <file action="write" path="procurados.xml" charset="UTF-8">
+        <![CDATA[ <procurados> ]]>
+        <while condition="true" index="pagina" maxloops="2">
+		    <loop item="procurado" index="i">
+	            <list>
+	            	<xpath expression="//div[@class='procurados']">
+		                <html-to-xml>
+		                    <http url="${url}"/>
+		                </html-to-xml>
+	            	</xpath>
+	            </list>
+	            <body>
+	            	<var-def name="fotoUrlProcurado">
+					    <xpath expression="//div[@class='imagem']/a/img/@src">
+					        <var name="procurado"/>
+					    </xpath>
+					</var-def>
+	                <xquery>
+	                    <xq-param name="procurado" type="node()"><var name="procurado"/></xq-param>
+	                    <xq-expression><![CDATA[
+	                            declare variable $procurado as node() external;
+	                            let $nome := data($procurado//div[@class="nome"]/h3/a)
+	                            let $apelido := data($procurado//div[@class="nome"]/h4/a)
+	                            let $fotoUrl := data($procurado//div[@class="imagem"]/a/img/@src)
+	                                return
+	                                    <procurado>
+	                                        <nome>{$nome}</nome>
+	                                        <apelido>{$apelido}</apelido>
+	                                        <fotoUrl>{$fotoUrl}</fotoUrl>
+	                                    </procurado>
+	                    ]]></xq-expression>
+	                </xquery>
+	                <file action="write" path="fotos/procurado_${i}.jpg" type="binary">
+					    <http url="${sys.fullUrl(url, fotoUrlProcurado)}"/>
+					</file>
+	            </body>
+	        </loop>
+		</while>
+        <![CDATA[ </procurados> ]]>
+    </file>
+</config>
