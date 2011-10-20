@@ -3,6 +3,7 @@
  */
 package br.com.clebertm.procurados;
 
+import java.io.File;
 import java.io.InputStream;
 
 import org.webharvest.definition.ScraperConfiguration;
@@ -29,6 +30,10 @@ public class SDSCrawler {
 		config = new ScraperConfiguration(new InputSource(fileConfig));
 		String workdir = System.getenv("PROCURADOS_WORKDIR");
 		workdir = "D:\\sds_workdir";
+		File f = new File(workdir);
+		if (!f.exists()) {
+			f.mkdirs();
+		}
 		scraper = new Scraper(config, workdir);
 		scraper.setDebug(true); 
 		scraper.execute();
