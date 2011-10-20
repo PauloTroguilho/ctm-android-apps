@@ -21,6 +21,11 @@
 				</list>
 				<body>
 					<empty>
+						<var-def name="fotoId">
+							<xpath expression="substring-after(substring-before(substring-after(//div[@class='imagem']/a/img/@src,'?'),'${sys.escapeXml('&amp;')}'),'=')">
+								<var name="procurado" />
+							</xpath>
+						</var-def>
 						<var-def name="detalheUrl">
 							<xpath expression="//div[@class='imagem']/a/@href">
 								<var name="procurado" />
@@ -33,32 +38,73 @@
 								</html-to-xml>
 							</xpath>
 						</var-def>
+						<var-def name="dados">
+							<xpath expression="//div[@class='dados']/*">
+								<var name="detalheProcurado" />
+							</xpath>
+						</var-def>
 					</empty>
-					<xquery>
-						<xq-param name="procurado" type="node()">
-							<var name="procurado" />
-						</xq-param>
-						<xq-param name="detalheProcurado" type="node()">
-							<var name="detalheProcurado" />
-						</xq-param>
-						<xq-expression><![CDATA[
-	                            declare variable $procurado as node() external;
-	                            declare variable $detalheProcurado as node() external;
-	                            
-	                            let $nome := data($procurado//div[@class="nome"]/h3/a)
-	                            let $apelido := data($procurado//div[@class="nome"]/h4/a)
-	                            let $fotoUrl := data($procurado//div[@class="imagem"]/a/img/@src)
-	                            let $fotoId := substring-after(substring-before(substring-after($fotoUrl,"?"),"&amp;"),"=")
-	                            let $hist := data($detalheProcurado//div[@class="historico"]/h3)
-	                                return
-	                                    <procurado>
-	                                        <nome>{$nome}</nome>
-	                                        <apelido>{$apelido}</apelido>
-	                                        <fotoId>{$fotoId}</fotoId>
-	                                        <historico>{$hist}</historico>
-	                                    </procurado>
-	                    ]]></xq-expression>
-					</xquery>
+					<template>
+	                    <![CDATA[ 
+	                        <procurado>
+	                        	<nome>${sys.xpath("data(//div[@class='nome']/h3/a)", procurado.toString())}</nome>
+                                <apelido>${sys.xpath("data(//div[@class='nome']/h4/a)", procurado.toString())}</apelido>
+                                <fotoId>${fotoId}</fotoId>
+                                <historico>${sys.xpath("data(//div[@class='historico']/h3)", detalheProcurado.toString())}</historico>
+                        ]]>
+                        <loop item="dadoProcurado" index="x">
+							<list>
+								<var name="dados" />
+							</list>
+							<body>
+								<empty>
+									<var-def name="campo" overwrite="true">
+										<try>
+									        <body>
+									            <xpath expression="normalize-space(//h4/strong/text())">
+											        <var name="dadoProcurado"/>
+											    </xpath>
+									        </body>
+									        <catch>
+									        </catch>
+									    </try>
+									</var-def>
+									<var-def name="valorCampo" overwrite="true">
+										<try>
+									        <body>
+									            <xpath expression="normalize-space(//h5/text())">
+											        <var name="dadoProcurado"/>
+											    </xpath>
+									        </body>
+									        <catch>
+									        </catch>
+									    </try>
+									</var-def>
+								</empty>
+								<case>
+									<if condition='${campo.toString().contains("Vulgo")}'>
+			                            <![CDATA[ 
+				                        	<vulgo>${valorCampo.toString()}</vulgo>
+				                        ]]>
+			                        </if>
+			                        <if condition='${campo.toString().contains("Nº do Processo Judicial")}'>
+			                            <![CDATA[ 
+				                        	<numeroProcesso>${valorCampo.toString()}</numeroProcesso>
+				                        ]]>
+			                        </if>
+			                        <if condition='${campo.toString().trim().contains("Juíz Competente")}'>
+			                            <![CDATA[ 
+				                        	<juizCompetente>${valorCampo.toString()}</juizCompetente>
+				                        ]]>
+			                        </if>
+			                    </case>
+							</body>     
+						</loop>
+                        <![CDATA[         
+	                        </procurado>
+	                    ]]>
+	                </template>
+
 				</body>
 			</loop>
 		</while>
