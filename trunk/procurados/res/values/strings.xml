@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, ProcuradosActivity!</string>
+    <string name="app_name">Procurados</string>
+    <string name="proc_nom">Nome:</string>
+    <string name="proc_apelido">Apelido:</string>
+    <string name="proc_dtnasc">Data de Nascimento:</string>
+    <string name="bt_info">Mais Informações...</string>
+    <string name="bt_denunciar">Denúnciar!</string>
+    <string name="test_nome">VALDENOR NOGUEIRA TORRES</string>
+    <string name="test_apelido">&quot;MANINHO&quot;</string>
+    <string name="test_dtnasc">26/6/1981</string>
+    <string name="proc_numprocesso">Nº do Processo:</string>
+    <string name="test_numproc">0146193-21.2009.8.17.0001 / 0007825-95.2010.8.17.0001</string>
+    <string name="proc_comarca">Comarca:</string>
+    <string name="test_comarca">RECIFE</string>
+    <string name="proc_dtexpedmandado">Mandado expedido em:</string>
+    <string name="test_dtexpedmandado">26/4/2011</string>
+    <string name="proc_juiz">Juíz Competente</string>
+    <string name="test_juiz">DRA FERNANDA MOURA - Processo 0044108-83.2011.8.17.0001</string>
+    <string name="proc_historico">Histórico:</string>
+    <string name="test_hist">Daniel Paulo Fernandes Abreu, vulgo \"Daniel\", é acusado da prática de vários homicídios na região metropolitana do Recife. Encontra-se com mandado de prisão em aberto.</string>
+</resources>

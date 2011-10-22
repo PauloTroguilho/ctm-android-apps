@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent" android:layout_width="fill_parent"
+	android:orientation="vertical" android:background="@drawable/backgroundtiled">
+
+	<ScrollView android:layout_height="fill_parent"
+		android:layout_width="fill_parent">
+
+		<LinearLayout android:layout_width="fill_parent"
+			android:padding="10px" android:layout_height="fill_parent"
+			android:orientation="vertical">
+
+			<LinearLayout android:orientation="horizontal"
+				android:background="#F8F400" android:layout_gravity="top|center_horizontal"
+				android:layout_width="fill_parent"
+				android:paddingBottom="5px" android:paddingTop="5px" android:layout_height="wrap_content">
+				<ImageView android:src="@drawable/proc_955064" android:id="@+id/imageView1"
+					android:scaleType="fitCenter" android:layout_gravity="top|left" android:layout_height="120dp" android:layout_width="98dp"></ImageView>
+				<LinearLayout android:orientation="vertical"
+					android:id="@+id/layoutDados" android:layout_width="fill_parent" android:paddingRight="5px" android:layout_height="fill_parent">
+					<TextView android:id="@+id/textView1"
+						android:layout_width="wrap_content" android:layout_height="wrap_content"
+						android:text="@string/proc_nom" android:textColor="#000000" android:textSize="18dp"></TextView>
+					<TextView android:id="@+id/TextView01"
+						android:layout_width="fill_parent" android:textStyle="bold"
+						android:layout_height="wrap_content" android:text="@string/test_nome"
+						android:textColor="#000000" android:textSize="18dp"></TextView>
+					<TextView android:id="@+id/TextView02"
+						android:layout_width="wrap_content" android:layout_height="wrap_content"
+						android:textColor="#000000" android:text="@string/proc_apelido" android:textSize="18dp"></TextView>
+					<TextView android:id="@+id/tvNome" android:layout_height="wrap_content"
+						android:textColor="#000000" android:textStyle="bold"
+						android:layout_width="fill_parent" android:text="@string/test_apelido" android:textSize="18dp"></TextView>
+				</LinearLayout>
+
+			</LinearLayout>
+			<LinearLayout android:orientation="vertical" android:background="#F8F400" 
+				android:layout_width="fill_parent" android:layout_height="fill_parent">
+				<LinearLayout android:layout_height="fill_parent" android:id="@+id/LinearLayout01" android:layout_width="match_parent" android:orientation="vertical" android:paddingLeft="15px" android:paddingRight="15px" android:paddingBottom="5px">
+					<TextView android:id="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/proc_dtnasc" android:textSize="18dp" android:textColor="#000000"></TextView>
+					<TextView android:id="@+id/TextView04" android:layout_width="fill_parent" android:textStyle="bold" android:layout_height="wrap_content" android:text="@string/test_dtnasc" android:textSize="18dp" android:textColor="#000000"></TextView>
+					<TextView android:id="@+id/TextView05" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="18dp" android:textColor="#000000" android:text="@string/proc_numprocesso"></TextView>
+					<TextView android:id="@+id/TextView06" android:layout_width="fill_parent" android:textStyle="bold" android:layout_height="wrap_content" android:textSize="18dp" android:textColor="#000000" android:text="@string/test_numproc"></TextView>
+					<TextView android:textColor="#000000" android:id="@+id/TextView11" android:textSize="18dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/proc_juiz"></TextView>
+					<TextView android:textStyle="bold" android:textColor="#000000" android:id="@+id/TextView12" android:textSize="18dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/test_juiz"></TextView>
+					<TextView android:id="@+id/TextView07" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="18dp" android:textColor="#000000" android:text="@string/proc_comarca"></TextView>
+					<TextView android:id="@+id/TextView08" android:layout_width="fill_parent" android:textStyle="bold" android:layout_height="wrap_content" android:textSize="18dp" android:textColor="#000000" android:text="@string/test_comarca"></TextView>
+					<TextView android:textColor="#000000" android:id="@+id/TextView13" android:textSize="18dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/proc_dtexpedmandado"></TextView>
+					<TextView android:id="@+id/TextView10" android:layout_width="fill_parent" android:textStyle="bold" android:layout_height="wrap_content" android:textSize="18dp" android:textColor="#000000" android:text="@string/test_dtexpedmandado"></TextView>
+				</LinearLayout>
+			</LinearLayout>
+			<LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout1" android:orientation="vertical" android:layout_height="10px"></LinearLayout>
+			<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/linearLayoutHist" android:orientation="vertical" android:background="#FFAA00" android:paddingBottom="5px" android:paddingLeft="15px" android:paddingRight="15px" android:paddingTop="5px">
+				<TextView android:textColor="#000000" android:id="@+id/TextView09" android:textSize="18dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/proc_historico"></TextView>
+				<TextView android:textStyle="bold" android:textColor="#000000" android:id="@+id/TextView14" android:textSize="18dp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/test_hist" android:layout_gravity="fill_horizontal" android:gravity="fill_horizontal|clip_horizontal"></TextView>
+			</LinearLayout>
+		</LinearLayout>
+	</ScrollView>
+
+</LinearLayout>
