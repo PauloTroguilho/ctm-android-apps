@@ -8,7 +8,7 @@
 		<template>${baseUrl}/web/sds/procurados</template>
 	</var-def>
 	<!-- iterates over all collected products and extract desired data -->
-	<file action="write" path="procurados.xml" charset="UTF-8">
+	<file action="write" path='procurados_${sys.datetime("dd-MM-yyyy")}.xml' charset="UTF-8">
         <![CDATA[ <procurados> ]]>
 		<while condition="true" index="pagina" maxloops="2">
 			<loop item="procurado" index="i">
@@ -52,65 +52,99 @@
                                 <fotoId>${fotoId}</fotoId>
                                 <historico>${sys.xpath("data(//div[@class='historico']/h3)", detalheProcurado.toString())}</historico>
                         ]]>
-                        <loop item="dadoProcurado" index="x">
-							<list>
-								<var name="dados" />
-							</list>
-							<body>
-								<empty>
-									<var-def name="campo" overwrite="true">
-										<try>
-									        <body>
-									            <xpath expression="normalize-space(//h4/strong/text())">
-											        <var name="dadoProcurado"/>
-											    </xpath>
-									        </body>
-									        <catch>
-									        </catch>
-									    </try>
-									</var-def>
-									<var-def name="valorCampo" overwrite="true">
-										<try>
-									        <body>
-									            <xpath expression="normalize-space(//h5/text())">
-											        <var name="dadoProcurado"/>
-											    </xpath>
-									        </body>
-									        <catch>
-									        </catch>
-									    </try>
-									</var-def>
-								</empty>
-								<case>
-									<if condition='${campo.toString().contains("Vulgo")}'>
+                    </template>
+                    <loop item="dadoProcurado" index="x">
+						<list>
+							<var name="dados" />
+						</list>
+						<body>
+							<empty>
+								<var-def name="campo" overwrite="true">
+									<try>
+								        <body>
+								            <xpath expression="normalize-space(//h4/strong/text())">
+										        <var name="dadoProcurado"/>
+										    </xpath>
+								        </body>
+								        <catch>
+								        </catch>
+								    </try>
+								</var-def>
+								<var-def name="valorCampo" overwrite="true">
+									<try>
+								        <body>
+								            <xpath expression="normalize-space(//h5/text())">
+										        <var name="dadoProcurado"/>
+										    </xpath>
+								        </body>
+								        <catch>
+								        </catch>
+								    </try>
+								</var-def>
+							</empty>
+							<case>
+								<if condition='${campo.toString().contains("Vulgo")}'>
+		                        	<template>
 			                            <![CDATA[ 
-				                        	<vulgo>${valorCampo.toString()}</vulgo>
-				                        ]]>
-			                        </if>
-			                        <if condition='${campo.toString().contains("Nº do Processo Judicial")}'>
+					                        <vulgo>${valorCampo}</vulgo>
+					                    ]]>
+				                    </template>
+		                        </if>
+		                        <if condition='${campo.toString().contains("Nº do Processo Judicial")}'>
+		                        	<template>
 			                            <![CDATA[ 
-				                        	<numeroProcesso>${valorCampo.toString()}</numeroProcesso>
-				                        ]]>
-			                        </if>
-			                        <if condition='${campo.toString().trim().contains("Juíz Competente")}'>
+					                        <numeroProcesso>${valorCampo}</numeroProcesso>
+					                    ]]>
+				                    </template>
+		                        </if>
+		                        <if condition='${campo.toString().trim().contains("Juíz Competente")}'>
+		                        	<template>
 			                            <![CDATA[ 
-				                        	<juizCompetente>${valorCampo.toString()}</juizCompetente>
-				                        ]]>
-			                        </if>
-			                    </case>
-							</body>     
-						</loop>
+					                        <juizCompetente>${valorCampo}</juizCompetente>
+					                    ]]>
+				                    </template>
+		                        </if>
+		                        <if condition='${campo.toString().trim().contains("Comarca")}'>
+		                        	<template>
+			                            <![CDATA[ 
+					                        <comarca>${valorCampo}</comarca>
+					                    ]]>
+				                    </template>
+		                        </if>
+		                        <if condition='${campo.toString().trim().contains("Data Expedição do Mandado")}'>
+		                        	<template>
+			                            <![CDATA[ 
+					                        <dataExpedicaoMandado>${valorCampo}</dataExpedicaoMandado>
+					                    ]]>
+				                    </template>
+		                        </if>
+		                        <if condition='${campo.toString().trim().contains("Data de Nascimento")}'>
+		                        	<template>
+			                            <![CDATA[ 
+					                        <dataNascimento>${valorCampo}</dataNascimento>
+					                    ]]>
+				                    </template>
+		                        </if>
+		                        <if condition='${campo.toString().trim().contains("Nº RG")}'>
+		                        	<template>
+			                            <![CDATA[ 
+					                        <rg>${valorCampo}</rg>
+					                    ]]>
+				                    </template>
+		                        </if>
+		                    </case>
+						</body>     
+					</loop>
+					<template>
                         <![CDATA[         
 	                        </procurado>
 	                    ]]>
 	                </template>
-
 				</body>
 			</loop>
 		</while>
         <![CDATA[ </procurados> ]]>
 	</file>
-	<!--
 	<while condition="true" index="pagina" maxloops="2">
 		<loop item="procurado" index="i">
 			<list>
@@ -127,19 +161,9 @@
 					</xpath>
 				</var-def>
 				<var-def name="fotoId">
-					<xquery>
-			            <xq-param name="procurado" type="node()">
-							<var name="procurado" />
-						</xq-param>
-			            <xq-expression><![CDATA[
-			                  declare variable $procurado as node() external;
-			                  let $fotoUrl := data($procurado//div[@class="imagem"]/a/img/@src)
-	                          let $fotoId := substring-after(substring-before(substring-after($fotoUrl,"?"),"&amp;"),"=")
-			                  return
-			                  		$fotoId
-			                        ]]>
-						</xq-expression>
-			        </xquery>
+					<xpath expression="substring-after(substring-before(substring-after(//div[@class='imagem']/a/img/@src,'?'),'${sys.escapeXml('&amp;')}'),'=')">
+						<var name="procurado" />
+					</xpath>
 				</var-def>
 				<file action="write" path="fotos/proc_${fotoId}.jpeg" type="binary">
 					<http url="${sys.fullUrl(listaProcuradosUrl, fotoUrl)}" />
@@ -147,5 +171,4 @@
 			</body>
 		</loop>
 	</while>
-	-->
 </config>
