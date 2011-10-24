@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="AspectGrid">
+        <attr name="numColumns" format="integer"/>
+        <attr name="horizontalSpacing" format="dimension"/>
+        <attr name="verticalSpacing" format="dimension"/>
+        <attr name="childAspectRatio" format="float"/>
+    </declare-styleable>
+</resources>

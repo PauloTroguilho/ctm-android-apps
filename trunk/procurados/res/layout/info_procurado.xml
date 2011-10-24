@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent" android:layout_width="fill_parent"
+	android:orientation="vertical" android:background="@drawable/backgroundtiled">
+
+	<ScrollView android:layout_height="fill_parent"
+		android:layout_width="fill_parent">
+
+		<LinearLayout android:layout_width="fill_parent" android:padding="10px"
+			android:layout_height="fill_parent" android:orientation="vertical">
+			
+			<LinearLayout android:orientation="vertical"
+				android:background="#F8F400" android:layout_gravity="top|center_horizontal"
+				android:layout_height="wrap_content" android:layout_width="fill_parent" android:paddingTop="10px">
+				<ImageView android:src="@drawable/proc_955064" android:id="@+id/imageView1"
+					android:layout_gravity="top|center_horizontal" android:scaleType="fitCenter" android:layout_width="265dp" android:layout_height="310dp"></ImageView>
+				<LinearLayout android:layout_height="fill_parent"
+					android:layout_width="match_parent" android:orientation="vertical"
+					android:id="@+id/layoutDados" android:paddingTop="5px"
+					android:paddingBottom="5px" android:paddingLeft="2px" android:paddingRight="2px">
+					<TextView android:textAppearance="?android:attr/textAppearanceLarge"
+						android:layout_height="wrap_content" android:layout_width="wrap_content"
+						android:textColor="#000000" android:id="@+id/tvNome"
+						android:layout_gravity="center_horizontal" android:text="@string/test_nome"
+						android:gravity="center_horizontal|center"></TextView>
+					<TextView android:textAppearance="?android:attr/textAppearanceLarge"
+						android:layout_height="wrap_content" android:layout_width="wrap_content"
+						android:textColor="#000000" android:id="@+id/tvApelido"
+						android:textStyle="bold" android:layout_gravity="center_horizontal"
+						android:text="@string/test_apelido" android:gravity="center_horizontal|center"></TextView>
+				</LinearLayout>
+
+			</LinearLayout>
+			<LinearLayout android:orientation="vertical"
+				android:layout_width="fill_parent" android:layout_height="fill_parent">
+				<LinearLayout android:layout_gravity="center_horizontal"
+					android:layout_width="fill_parent" android:layout_height="fill_parent"
+					android:background="#FFFF88" android:padding="10px"
+					android:gravity="center_horizontal|center">
+					<Button android:layout_height="wrap_content"
+						android:layout_width="wrap_content" android:text="@string/bt_info" android:id="@+id/btDetalhes"></Button>
+					<Button android:layout_height="wrap_content"
+						android:layout_width="wrap_content" android:text="@string/bt_denunciar"
+						android:textStyle="bold" android:id="@+id/btDenunciar"></Button>
+				</LinearLayout>
+			</LinearLayout>
+		</LinearLayout>
+	</ScrollView>
+
+</LinearLayout>
