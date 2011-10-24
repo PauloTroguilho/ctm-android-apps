@@ -3,6 +3,7 @@
  */
 package br.com.clebertm.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -13,7 +14,7 @@ import java.util.TreeSet;
  */
 public class Procurados {
 	
-	private Set<Procurado> procurados;
+	private List<Procurado> procurados;
 
 	/**
 	 * 
@@ -22,14 +23,14 @@ public class Procurados {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Set<Procurado> getProcurados() {
+	public List<Procurado> getProcurados() {
 		if (this.procurados == null) {
-			this.procurados = new TreeSet<Procurado>();
+			this.procurados = new ArrayList<Procurado>();
 		}
 		return procurados;
 	}
 
-	public void setProcurados(Set<Procurado> procurados) {
+	public void setProcurados(List<Procurado> procurados) {
 		this.procurados = procurados;
 	}
 
