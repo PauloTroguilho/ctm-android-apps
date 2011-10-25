@@ -98,11 +98,15 @@
 				                    </template>
 		                        </if>
 		                        <if condition='${campo.toString().trim().contains("Juíz Competente")}'>
-		                        	<template>
-			                            <![CDATA[ 
-					                        <juizCompetente>${valorCampo}</juizCompetente>
-					                    ]]>
-				                    </template>
+		                        	<case>
+		                        		<if condition='${!valorCampo.toString().trim().contains("Juiz-Responsavel.getData")}'>
+		                        			<template>
+					                            <![CDATA[ 
+							                        <juizCompetente>${valorCampo}</juizCompetente>
+							                    ]]>
+						                    </template>
+		                        		</if>
+		                        	</case>
 		                        </if>
 		                        <if condition='${campo.toString().trim().contains("Comarca")}'>
 		                        	<template>
