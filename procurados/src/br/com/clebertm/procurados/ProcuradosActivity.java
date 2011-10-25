@@ -26,6 +26,8 @@ import android.widget.TextView;
 import br.com.clebertm.domain.Procurado;
 import br.com.clebertm.domain.Procurados;
 import br.com.clebertm.parser.ProcuradosXmlHandler;
+import br.com.clebertm.procurados.util.Consts;
+import br.com.clebertm.procurados.view.ListAdapter;
 
 public class ProcuradosActivity extends AdMobActivity {
 	/** Called when the activity is first created. */
@@ -48,7 +50,9 @@ public class ProcuradosActivity extends AdMobActivity {
 			procurados = loadXmlProcurados();
 			Procurado[] procArray = new Procurado[procurados.getProcurados().size()];
 			procArray = procurados.getProcurados().toArray(procArray);
-			gridProcurados.setAdapter(new ImageAdapter(this, procurados.getProcurados()));
+			//gridProcurados.setAdapter(new ImageAdapter(this, procurados.getProcurados()));
+			
+			gridProcurados.setAdapter(new ListAdapter(this, R.id.gvProcurados, procurados.getProcurados()));
 			gridProcurados.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				/* (non-Javadoc)
 				 * @see android.widget.AdapterView.OnItemClickListener#onItemClick(android.widget.AdapterView, android.view.View, int, long)
@@ -92,7 +96,7 @@ public class ProcuradosActivity extends AdMobActivity {
 		XMLReader xr = sp.getXMLReader();
 
 		/** Send URL to parse XML Tags */
-		URL sourceUrl = getClassLoader().getResource("procurados.xml");
+		URL sourceUrl = new URL(Consts.SERVER_URL_TO_XML);
 
 		/** Create handler to handle XML Tags ( extends DefaultHandler ) */
 		ProcuradosXmlHandler procuradosHandler = new ProcuradosXmlHandler();
@@ -107,7 +111,7 @@ public class ProcuradosActivity extends AdMobActivity {
 	 * @author Cleber Moura <cleber.t.moura@gmail.com>
 	 * 
 	 */
-	public class ImageAdapter extends BaseAdapter {
+	/*public class ImageAdapter extends BaseAdapter {
 
 		private LayoutInflater mInflater;
 		private List<Procurado> procuradosList;
@@ -122,9 +126,9 @@ public class ProcuradosActivity extends AdMobActivity {
 			return this.procuradosList.size();
 		}
 
-		/* (non-Javadoc)
+		 (non-Javadoc)
 		 * @see android.widget.Adapter#getView(int, android.view.View, android.view.ViewGroup)
-		 */
+		 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			convertView = mInflater.inflate(R.layout.grid_item, null);
@@ -149,5 +153,5 @@ public class ProcuradosActivity extends AdMobActivity {
 		public long getItemId(int arg0) {
 			return arg0;
 		}
-	}
+	}*/
 }

@@ -5,6 +5,8 @@ package br.com.clebertm.domain;
 
 import java.io.Serializable;
 
+import br.com.clebertm.procurados.util.Consts;
+
 /**
  * @author Cleber Moura <cleber.t.moura@gmail.com>
  *
@@ -156,6 +158,10 @@ public class Procurado implements Comparable<Procurado>, Serializable {
 			apelidoTratado = getNome().split(" ")[0];
 		}
 		return apelidoTratado;
+	}
+	
+	public String getFotoUrl() {
+		return Consts.SERVER_URL_TO_FOTOSDIR + "proc_" + getFotoId() + ".jpeg";
 	}
 
 }
