@@ -12,8 +12,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +27,7 @@ import br.com.clebertm.domain.Procurado;
 import br.com.clebertm.domain.Procurados;
 import br.com.clebertm.parser.ProcuradosXmlHandler;
 
-public class ProcuradosActivity extends Activity {
+public class ProcuradosActivity extends AdMobActivity {
 	/** Called when the activity is first created. */
 
 	private GridView gridProcurados;
@@ -56,7 +56,13 @@ public class ProcuradosActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int arg2, long arg3) {
-					System.out.println("");
+					Procurado procurado = procurados.getProcurados().get(arg2);
+					
+					Intent intent = new Intent();
+					intent.setClass(ProcuradosActivity.this, InfoProcuradoActivity.class);
+					intent.putExtra("procurado", procurado);
+					
+					startActivity(intent);
 				}
 			});
 		} catch (SAXException e) {
@@ -69,6 +75,8 @@ public class ProcuradosActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		setAdView();
 	}
 
 	/**
@@ -123,18 +131,8 @@ public class ProcuradosActivity extends Activity {
 			Procurado procurado = procuradosList.get(position);
 
 			TextView tv = (TextView) convertView.findViewById(R.id.grid_item_text);
-			String apelido = "";
-			if (procurado.getApelido() != null
-					&& procurado.getApelido().trim().length() > 0) {
-				apelido = procurado.getApelido();
-			} else {
-				apelido = procurado.getVulgo();
-			}
-			if (apelido != null && apelido.trim().length() > 0) {
-				tv.setText(apelido);
-			} else {
-				tv.setText(procurado.getNome().split(" ")[0]);
-			}
+			tv.setText(procurado.getApelidoTratado());
+			
 			int resId = getResources().getIdentifier("proc_" + procurado.getFotoId(), "drawable", "br.com.clebertm.procurados");
 			ImageView iv = (ImageView) convertView.findViewById(R.id.grid_item_image);
 			iv.setImageResource(resId);

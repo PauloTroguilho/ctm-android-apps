@@ -3,12 +3,19 @@
  */
 package br.com.clebertm.domain;
 
+import java.io.Serializable;
+
 /**
  * @author Cleber Moura <cleber.t.moura@gmail.com>
  *
  */
-public class Procurado implements Comparable<Procurado> {
+public class Procurado implements Comparable<Procurado>, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7955275787397468411L;
+	
 	private Integer id;
 	private String fotoId;
 	private String nome;
@@ -133,6 +140,22 @@ public class Procurado implements Comparable<Procurado> {
 		Integer id1 = this.id != null ? this.id : -1;
 		Integer id2 = arg0.getId() != null ? arg0.getId() : -1;
 		return id1.compareTo(id2);
+	}
+	
+	/**
+	 * @return
+	 */
+	public String getApelidoTratado() {
+		String apelidoTratado = "";
+		if (getApelido() != null && getApelido().trim().length() > 0) {
+			apelidoTratado = getApelido();
+		} else {
+			apelidoTratado = getVulgo();
+		}
+		if (apelidoTratado == null || apelidoTratado.trim().length() == 0) {
+			apelidoTratado = getNome().split(" ")[0];
+		}
+		return apelidoTratado;
 	}
 
 }

@@ -1,16 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_height="fill_parent" android:layout_width="fill_parent"
-	android:orientation="vertical" android:background="@drawable/backgroundtiled">
+	xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+	android:orientation="vertical" android:layout_height="fill_parent"
+	android:layout_width="fill_parent" android:background="@drawable/backgroundtiled">
+	
+	<LinearLayout android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+		<com.google.ads.AdView android:id="@+id/adView"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			ads:adUnitId="a14ea637d9ad423" ads:adSize="BANNER"
+			ads:loadAdOnCreate="true">
+		</com.google.ads.AdView>
+	</LinearLayout>
 
-	<LinearLayout android:id="@+id/linearLayout1"
-		android:layout_width="match_parent" android:layout_height="fill_parent"
-		android:orientation="vertical" android:padding="5dp">
+	<LinearLayout android:layout_width="fill_parent"
+		android:orientation="vertical" android:layout_alignParentTop="true"
+		android:id="@+id/relativeLayoutTop" android:padding="5dp" android:layout_height="fill_parent">
 
 		<GridView android:id="@+id/gvProcurados"
-			android:layout_width="fill_parent" android:columnWidth="60dp"
-			android:numColumns="3" android:gravity="top|center_horizontal"
-			android:layout_height="fill_parent" android:horizontalSpacing="5dp" android:verticalSpacing="10dp"></GridView>
+			android:layout_width="fill_parent" android:numColumns="3"
+			android:clickable="true" android:gravity="center_horizontal|center_vertical"
+			android:layout_height="fill_parent" android:horizontalSpacing="2dp"
+			android:verticalSpacing="2dp"></GridView>
 
 	</LinearLayout>
 
