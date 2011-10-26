@@ -30,7 +30,7 @@ public class ListAdapter extends ArrayAdapter<Procurado> {
 		this.context = context;
 		inflator = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
+		BitmapManager.INSTANCE.setContext(context);
 		BitmapManager.INSTANCE.setPlaceholder(BitmapFactory.decodeResource(
 				context.getResources(), R.drawable.loader));
 	}
@@ -55,9 +55,9 @@ public class ListAdapter extends ArrayAdapter<Procurado> {
 		Procurado p = procurados.get(position);
 		holder.apelidoTextView.setText(p.getApelidoTratado());
 
-		holder.fotoView.setTag(p.getFotoUrl());
+		holder.fotoView.setTag(p.getFotoId());
 		
-		BitmapManager.INSTANCE.loadBitmap(p.getFotoUrl(), holder.fotoView, 100,
+		BitmapManager.INSTANCE.loadBitmap(p.getFotoId(), holder.fotoView, 100,
 				120);
 
 		return convertView;

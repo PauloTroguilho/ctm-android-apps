@@ -22,4 +22,12 @@
     <string name="test_hist">Daniel Paulo Fernandes Abreu, vulgo \"Daniel\", é acusado da prática de vários homicídios na região metropolitana do Recife. Encontra-se com mandado de prisão em aberto.</string>
     <string name="text_splash">FAÇA SUA PARTE, DENUNCIE!</string>
     <string name="text_atencao_splash">Atenção: Todos os dados contidos nesta aplicação são públicos e provenientes do site da SDS/PE.</string>
+    <string name="dialog_atualizacao_titulo">Atualização</string>
+    <string name="dialog_atualizacao_message">Deseja realizar uma atualização da lista de procurados?</string>
+    <string name="dialog_sim">Sim</string>
+    <string name="dialog_nao">Não</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_erro_titulo">Erro!</string>
+    <string name="dialog_erro_msg_criar_xml_dir_local">Não foi possível criar o arquivo XML no diretório local.</string>
+    <string name="dialog_erro_msg_carregar_arq_xml">Não foi possível carregar dados do arquivo XML.</string>
 </resources>

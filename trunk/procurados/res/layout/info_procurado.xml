@@ -12,7 +12,7 @@
 			<LinearLayout android:orientation="vertical"
 				android:background="#F8F400" android:layout_gravity="top|center_horizontal"
 				android:layout_height="wrap_content" android:layout_width="fill_parent" android:paddingTop="10px">
-				<ImageView android:src="@drawable/proc_955064" android:layout_gravity="top|center_horizontal" android:scaleType="fitCenter" android:layout_width="265dp" android:layout_height="310dp" android:id="@+id/ivFoto"></ImageView>
+				<ImageView android:layout_gravity="top|center_horizontal" android:scaleType="fitCenter" android:layout_width="265dp" android:layout_height="310dp" android:id="@+id/ivFoto"></ImageView>
 				<LinearLayout android:layout_height="fill_parent"
 					android:layout_width="match_parent" android:orientation="vertical"
 					android:id="@+id/layoutDados" android:paddingTop="5px"
