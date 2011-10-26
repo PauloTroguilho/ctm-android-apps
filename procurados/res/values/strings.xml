@@ -20,4 +20,6 @@
     <string name="test_juiz">DRA FERNANDA MOURA - Processo 0044108-83.2011.8.17.0001</string>
     <string name="proc_historico">Histórico:</string>
     <string name="test_hist">Daniel Paulo Fernandes Abreu, vulgo \"Daniel\", é acusado da prática de vários homicídios na região metropolitana do Recife. Encontra-se com mandado de prisão em aberto.</string>
+    <string name="text_splash">FAÇA SUA PARTE, DENUNCIE!</string>
+    <string name="text_atencao_splash">Atenção: Todos os dados contidos nesta aplicação são públicos e provenientes do site da SDS/PE.</string>
 </resources>
