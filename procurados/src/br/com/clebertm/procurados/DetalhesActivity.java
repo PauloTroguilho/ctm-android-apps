@@ -1,10 +1,18 @@
 package br.com.clebertm.procurados;
 
-import br.com.clebertm.domain.Procurado;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
+import br.com.clebertm.domain.Procurado;
+import br.com.clebertm.procurados.util.Consts;
+import br.com.clebertm.procurados.util.IOUtils;
 
 public class DetalhesActivity extends Activity {
 	/** Called when the activity is first created. */
@@ -26,9 +34,19 @@ public class DetalhesActivity extends Activity {
 		
 		ImageView ivFoto = (ImageView)findViewById(R.id.ivFoto);
 		
-		
-		int resId = getResources().getIdentifier("proc_" + p.getFotoId(), "drawable", "br.com.clebertm.procurados");
-		ivFoto.setImageResource(resId);
+		File fotosDir = getDir(Consts.CACHE_FOTOS_DIR, MODE_PRIVATE);
+		File fotoFile = new File(fotosDir, p.getFotoId() + Consts.FOTO_EXTENSAO);
+		FileInputStream in = null;
+		try {
+			in = new FileInputStream(fotoFile);
+		} catch (FileNotFoundException e) {
+		}
+		if (in != null) {
+			Bitmap bitmap = BitmapFactory.decodeStream(in);
+			bitmap = Bitmap.createScaledBitmap(bitmap, 100, 135, true);
+			IOUtils.closeQuietly(in);
+			ivFoto.setImageBitmap(bitmap);
+		}
 
 		tvNome.setText(p.getNome());
 		tvApelido.setText(p.getApelidoTratado());

@@ -1,13 +1,21 @@
 package br.com.clebertm.procurados;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import br.com.clebertm.domain.Procurado;
+import br.com.clebertm.procurados.util.Consts;
+import br.com.clebertm.procurados.util.IOUtils;
 
 public class InfoProcuradoActivity extends Activity {
 	
@@ -28,8 +36,18 @@ public class InfoProcuradoActivity extends Activity {
 		tvNome.setText(procurado.getNome());
 		tvApelido.setText(procurado.getApelidoTratado());
 		
-		int resId = getResources().getIdentifier("proc_" + procurado.getFotoId(), "drawable", "br.com.clebertm.procurados");
-		ivFoto.setImageResource(resId);
+		File fotosDir = getDir(Consts.CACHE_FOTOS_DIR, MODE_PRIVATE);
+		File fotoFile = new File(fotosDir, procurado.getFotoId() + Consts.FOTO_EXTENSAO);
+		FileInputStream in = null;
+		try {
+			in = new FileInputStream(fotoFile);
+		} catch (FileNotFoundException e) {
+		}
+		if (in != null) {
+			Bitmap bitmap = BitmapFactory.decodeStream(in);
+			IOUtils.closeQuietly(in);
+			ivFoto.setImageBitmap(bitmap);
+		}
 		
 		Button btDetalhes = (Button)findViewById(R.id.btDetalhes);
 		btDetalhes.setOnClickListener(new View.OnClickListener() {

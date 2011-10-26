@@ -14,7 +14,7 @@
 				android:background="#F8F400" android:layout_gravity="top|center_horizontal"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content">
-				<ImageView android:src="@drawable/proc_955064" android:scaleType="fitCenter" android:layout_gravity="top|left" android:layout_height="fill_parent" android:id="@+id/ivFoto" android:padding="5dp" android:layout_width="100dp"></ImageView>
+				<ImageView android:layout_gravity="top|left" android:id="@+id/ivFoto" android:padding="5dp" android:layout_width="100dp" android:layout_height="135dp"></ImageView>
 				<LinearLayout android:orientation="vertical"
 					android:id="@+id/layoutDados" android:layout_width="fill_parent" android:layout_height="wrap_content" android:padding="2dp">
 					<TextView android:id="@+id/textView1"
