@@ -1,6 +1,7 @@
 package br.com.clebertm.procurados;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -21,7 +22,6 @@ import org.xml.sax.XMLReader;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,6 +33,7 @@ import br.com.clebertm.domain.Procurado;
 import br.com.clebertm.domain.Procurados;
 import br.com.clebertm.parser.ProcuradosXmlHandler;
 import br.com.clebertm.procurados.util.Consts;
+import br.com.clebertm.procurados.util.FileCacheUtils;
 import br.com.clebertm.procurados.util.IOUtils;
 import br.com.clebertm.procurados.view.ListAdapter;
 
@@ -162,25 +163,34 @@ public class ProcuradosActivity extends AdMobActivity {
 		}
 		
 		if (in != null) {
-			FileOutputStream out = null;
-			try {
-				out = openFileOutput(Consts.PROCURADOS_XML_FILENAME, Context.MODE_WORLD_READABLE);
-			} catch (FileNotFoundException e) {
-				Log.e(getClass().getSimpleName(), "Falha ao abrir o stream de escrita para o xml local");
-			}
-			if (out != null) {
+			File xmlCache = new File(FileCacheUtils.getCacheDir(this), Consts.PROCURADOS_XML_FILENAME);
+			if (!xmlCache.exists()) {
 				try {
-					IOUtils.copyStream(in, out);
-					carregarXmlProcuradosFromCache();
+					xmlCache.createNewFile();
 				} catch (IOException e) {
-					Log.e(getClass().getSimpleName(), "Falha ao copiar streams");
-					
+				}
+			}
+			if (xmlCache.exists()) {
+				FileOutputStream out = null;
+				try {
+					out = new FileOutputStream(xmlCache);
+				} catch (FileNotFoundException e) {
+					Log.e(getClass().getSimpleName(), "Falha ao abrir o stream de escrita para o xml local");
+				}
+				if (out != null) {
+					try {
+						IOUtils.copyStream(in, out);
+						carregarXmlProcuradosFromCache();
+					} catch (IOException e) {
+						Log.e(getClass().getSimpleName(), "Falha ao copiar streams");
+						showDialog(DIALOG_ERRO_CRIACAO_XML);
+					} catch (Exception e) {
+						Log.e(getClass().getSimpleName(), "Falha ao carregar o Xml de procurados");
+						showDialog(DIALOG_ERRO_CARREGAMENTO_XML);
+					} 
+				} else {
 					showDialog(DIALOG_ERRO_CRIACAO_XML);
-				} catch (Exception e) {
-					Log.e(getClass().getSimpleName(), "Falha ao carregar o Xml de procurados");
-					
-					showDialog(DIALOG_ERRO_CARREGAMENTO_XML);
-				} 
+				}
 			} else {
 				showDialog(DIALOG_ERRO_CRIACAO_XML);
 			}
@@ -201,20 +211,10 @@ public class ProcuradosActivity extends AdMobActivity {
 	 * @throws IOException
 	 */
 	private void carregarListaProcurados() {
-		boolean xmlExistsOnCache = false;
-		InputStream in = null;
-		try {
-			in = this.openFileInput(Consts.PROCURADOS_XML_FILENAME);
-			xmlExistsOnCache = true;
-		} catch (FileNotFoundException e1) {
-			Log.e(getClass().getSimpleName(), "XML nao encontrado na cache");
-		} finally {
-			IOUtils.closeQuietly(in);
-		}
-		if (xmlExistsOnCache) {
-			File xmlCacheFile = this.getFileStreamPath(Consts.PROCURADOS_XML_FILENAME);
+		File xmlCache = new File(FileCacheUtils.getCacheDir(this), Consts.PROCURADOS_XML_FILENAME);
+		if (xmlCache.exists()) {
 			Date acualDate = new Date();
-			if ((acualDate.getTime() - xmlCacheFile.lastModified()) 
+			if ((acualDate.getTime() - xmlCache.lastModified()) 
 					> ((60000) * 60) * 24) {
 				showDialog(DIALOG_ATUALIZACAO);
 			} else {
@@ -236,15 +236,17 @@ public class ProcuradosActivity extends AdMobActivity {
 	 * @throws IOException
 	 */
 	private boolean carregarXmlProcuradosFromCache() throws SAXException, ParserConfigurationException, IOException {
+		File xmlCache = new File(FileCacheUtils.getCacheDir(this), Consts.PROCURADOS_XML_FILENAME);
 		InputStream in = null;
 		try {
-			in = openFileInput(Consts.PROCURADOS_XML_FILENAME);
+			in = new FileInputStream(xmlCache);
 		} catch (FileNotFoundException e) {
 			Log.e(getClass().getSimpleName(), "Falha ao abrir Xml local de procurados");
 		}
 		boolean result = false;
 		if (in != null) {
 			result = carregarXmlProcurados(in);
+			IOUtils.closeQuietly(in);
 		}
 		return result;
 	}
