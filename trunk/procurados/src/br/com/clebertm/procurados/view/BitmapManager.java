@@ -23,6 +23,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.ImageView;
 import br.com.clebertm.procurados.util.Consts;
+import br.com.clebertm.procurados.util.FileCacheUtils;
 import br.com.clebertm.procurados.util.IOUtils;
 
 public enum BitmapManager {
@@ -114,9 +115,18 @@ public enum BitmapManager {
 	/**
 	 * @return
 	 */
-	private File getCacheFotosDir() {
-		return context.getDir(Consts.CACHE_FOTOS_DIR, Context.MODE_PRIVATE);
-	}
+	/*private File getCacheFotosDir() {
+		File externalStorage = Environment.getExternalStorageDirectory();
+		File cacheDir = new File(externalStorage, "/Android/data/"+context.getApplicationContext().getPackageName()+"/cache");
+		if (!cacheDir.exists()) {
+			cacheDir.mkdirs();
+		}
+		File fotosDir = new File(cacheDir, Consts.CACHE_FOTOS_DIR);
+		if (!fotosDir.exists()) {
+			fotosDir.mkdirs();
+		}
+		return fotosDir;
+	}*/
 	
 	/**
 	 * @param fotoId
@@ -125,8 +135,8 @@ public enum BitmapManager {
 	 * @throws IOException
 	 */
 	private File downloadFoto(String fotoId, boolean force) throws MalformedURLException, IOException {
-		File fotosDir = getCacheFotosDir();
-		File fotoDownload = new File(fotosDir, fotoId + ".jpeg");
+		File fotosDir = FileCacheUtils.getFotosCacheDir(context);
+		File fotoDownload = new File(fotosDir, fotoId + Consts.FOTO_EXTENSAO);
 		boolean exists = fotoDownload.exists(); 
 		if (!exists || force) {
 			if (!exists) {
