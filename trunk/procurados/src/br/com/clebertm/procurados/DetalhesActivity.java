@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import br.com.clebertm.domain.Procurado;
 import br.com.clebertm.procurados.util.Consts;
+import br.com.clebertm.procurados.util.FileCacheUtils;
 import br.com.clebertm.procurados.util.IOUtils;
 
 public class DetalhesActivity extends Activity {
@@ -34,7 +35,7 @@ public class DetalhesActivity extends Activity {
 		
 		ImageView ivFoto = (ImageView)findViewById(R.id.ivFoto);
 		
-		File fotosDir = getDir(Consts.CACHE_FOTOS_DIR, MODE_PRIVATE);
+		File fotosDir = FileCacheUtils.getFotosCacheDir(this);
 		File fotoFile = new File(fotosDir, p.getFotoId() + Consts.FOTO_EXTENSAO);
 		FileInputStream in = null;
 		try {

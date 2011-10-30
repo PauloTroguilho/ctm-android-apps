@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import br.com.clebertm.domain.Procurado;
 import br.com.clebertm.procurados.util.Consts;
+import br.com.clebertm.procurados.util.FileCacheUtils;
 import br.com.clebertm.procurados.util.IOUtils;
 
 public class InfoProcuradoActivity extends Activity {
@@ -36,7 +37,7 @@ public class InfoProcuradoActivity extends Activity {
 		tvNome.setText(procurado.getNome());
 		tvApelido.setText(procurado.getApelidoTratado());
 		
-		File fotosDir = getDir(Consts.CACHE_FOTOS_DIR, MODE_PRIVATE);
+		File fotosDir = FileCacheUtils.getFotosCacheDir(this);
 		File fotoFile = new File(fotosDir, procurado.getFotoId() + Consts.FOTO_EXTENSAO);
 		FileInputStream in = null;
 		try {
