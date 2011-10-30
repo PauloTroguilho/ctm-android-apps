@@ -3,6 +3,7 @@ package br.com.clebertm.procurados.view;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 import br.com.clebertm.domain.Procurado;
 import br.com.clebertm.procurados.R;
+import br.com.clebertm.procurados.view.BitmapManager.LoadBitmapCompleteListener;
 
 public class ListAdapter extends ArrayAdapter<Procurado> {
 
@@ -40,10 +43,11 @@ public class ListAdapter extends ArrayAdapter<Procurado> {
 		ViewHolder holder;
 
 		if (convertView == null) {
-			convertView = inflator.inflate(R.layout.grid_item, null);
+			convertView = inflator.inflate(R.layout.grid_load_item, null);
 
-			TextView apelidoTextView = (TextView) convertView.findViewById(R.id.grid_item_text);
-			ImageView fotoView = (ImageView) convertView.findViewById(R.id.grid_item_image);
+			TextView apelidoTextView = (TextView) convertView.findViewById(R.id.tvApelido);
+			ImageView fotoView = (ImageView) convertView.findViewById(R.id.ivFoto);
+			
 			holder = new ViewHolder();
 			holder.apelidoTextView = apelidoTextView;
 			holder.fotoView = fotoView;
@@ -57,9 +61,19 @@ public class ListAdapter extends ArrayAdapter<Procurado> {
 
 		holder.fotoView.setTag(p.getFotoId());
 		
-		BitmapManager.INSTANCE.loadBitmap(p.getFotoId(), holder.fotoView, 100,
-				120);
-
+		final ViewSwitcher vSwitcher = (ViewSwitcher) convertView.findViewById(R.id.gridItemViewSwitcher);
+		vSwitcher.setDisplayedChild(0);
+		
+		LoadBitmapCompleteListener listener = new LoadBitmapCompleteListener() {
+			
+			@Override
+			public void loadCompledted(Bitmap bitmap) {
+				vSwitcher.setDisplayedChild(1);
+			}
+		};
+		
+		BitmapManager.INSTANCE.loadBitmap(p.getFotoId(), holder.fotoView, listener, 100, 120);
+		
 		return convertView;
 	}
 }

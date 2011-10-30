@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -43,6 +42,7 @@ public class ProcuradosActivity extends AdMobActivity {
 	private static final int DIALOG_ATUALIZACAO = 1;
 	private static final int DIALOG_ERRO_CRIACAO_XML = 2;
 	private static final int DIALOG_ERRO_CARREGAMENTO_XML = 3;
+	private static final int DIALOG_ERRO_ATUALIZACAO_XML = 4;
 
 	private GridView gridProcurados;
 
@@ -61,12 +61,13 @@ public class ProcuradosActivity extends AdMobActivity {
 		
 		carregarListaProcurados();
 		
-		List<Procurado> procuradosList = procurados.getProcurados();
-		if (procuradosList == null) {
-			procuradosList = new ArrayList<Procurado>();
+		
+		List<Procurado> procuradosList = new ArrayList<Procurado>();
+		if (procurados != null) {
+			procuradosList = procurados.getProcurados();
 		}
 		
-		gridProcurados.setAdapter(new ListAdapter(this, R.id.gvProcurados,procuradosList));
+		gridProcurados.setAdapter(new ListAdapter(this, R.id.gvProcurados, procuradosList));
 		gridProcurados
 				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 					/*
@@ -106,7 +107,7 @@ public class ProcuradosActivity extends AdMobActivity {
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int whichButton) {
-										atualizaXmlProcurados();
+										atualizarXmlProcurados();
 									}
 								}).setNegativeButton(R.string.dialog_nao,
 								new DialogInterface.OnClickListener() {
@@ -142,6 +143,18 @@ public class ProcuradosActivity extends AdMobActivity {
 											int whichButton) {
 									}
 								}).create();
+			case DIALOG_ERRO_ATUALIZACAO_XML:
+				return new AlertDialog.Builder(ProcuradosActivity.this).setIcon(
+						R.drawable.icon_error).setTitle(
+						getString(R.string.dialog_erro_titulo)).setMessage(
+						getString(R.string.dialog_erro_msg_conectando_ao_servidor))
+						.setPositiveButton(R.string.dialog_ok,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int whichButton) {
+										finish();
+									}
+								}).create();
 		}
 		return null;
 	}
@@ -149,7 +162,9 @@ public class ProcuradosActivity extends AdMobActivity {
 	/**
 	 * 
 	 */
-	private void atualizaXmlProcurados() {
+	private boolean atualizarXmlProcurados() {
+		boolean atualizou = false;
+		
 		URL sourceUrl = null;
 		InputStream in = null;
 		/** Send URL to parse XML Tags */
@@ -180,29 +195,14 @@ public class ProcuradosActivity extends AdMobActivity {
 				if (out != null) {
 					try {
 						IOUtils.copyStream(in, out);
-						carregarXmlProcuradosFromCache();
+						atualizou = true;
 					} catch (IOException e) {
 						Log.e(getClass().getSimpleName(), "Falha ao copiar streams");
-						showDialog(DIALOG_ERRO_CRIACAO_XML);
-					} catch (Exception e) {
-						Log.e(getClass().getSimpleName(), "Falha ao carregar o Xml de procurados");
-						showDialog(DIALOG_ERRO_CARREGAMENTO_XML);
-					} 
-				} else {
-					showDialog(DIALOG_ERRO_CRIACAO_XML);
-				}
-			} else {
-				showDialog(DIALOG_ERRO_CRIACAO_XML);
-			}
-		} else {
-			showDialog(DIALOG_ERRO_CRIACAO_XML);
-			try {
-				carregarXmlProcuradosFromCache();
-			} catch (Exception e) {
-				Log.e(getClass().getSimpleName(), "Falha ao carregar o Xml de procurados");
-				showDialog(DIALOG_ERRO_CARREGAMENTO_XML);
-			}
+					}
+				} 
+			} 
 		}
+		return atualizou;
 	}
 
 	/**
@@ -213,20 +213,25 @@ public class ProcuradosActivity extends AdMobActivity {
 	private void carregarListaProcurados() {
 		File xmlCache = new File(FileCacheUtils.getCacheDir(this), Consts.PROCURADOS_XML_FILENAME);
 		if (xmlCache.exists()) {
-			Date acualDate = new Date();
-			if ((acualDate.getTime() - xmlCache.lastModified()) 
-					> ((60000) * 60) * 24) {
-				showDialog(DIALOG_ATUALIZACAO);
-			} else {
-				try {
-					carregarXmlProcuradosFromCache();
-				} catch (Exception e) {
-					Log.e(getClass().getSimpleName(), "Falha ao carregar o Xml local de procurados");
-					atualizaXmlProcurados();
-				} 
+			boolean carregou = carregarXmlProcuradosFromCache();
+			if (!carregou) {
+				boolean atualizou = atualizarXmlProcurados();
+				if (!atualizou) {
+					showDialog(DIALOG_ERRO_ATUALIZACAO_XML);
+				}
 			}
+			
 		} else {
-			atualizaXmlProcurados();
+			
+			boolean atualizou = atualizarXmlProcurados();
+			if (atualizou) {
+				boolean carregou = carregarXmlProcuradosFromCache();
+				if (!carregou) {
+					showDialog(DIALOG_ERRO_CARREGAMENTO_XML);
+				}
+			} else {
+				showDialog(DIALOG_ERRO_ATUALIZACAO_XML);
+			}
 		}
 	}
 	
@@ -235,7 +240,7 @@ public class ProcuradosActivity extends AdMobActivity {
 	 * @throws ParserConfigurationException
 	 * @throws IOException
 	 */
-	private boolean carregarXmlProcuradosFromCache() throws SAXException, ParserConfigurationException, IOException {
+	private boolean carregarXmlProcuradosFromCache() {
 		File xmlCache = new File(FileCacheUtils.getCacheDir(this), Consts.PROCURADOS_XML_FILENAME);
 		InputStream in = null;
 		try {
@@ -258,21 +263,32 @@ public class ProcuradosActivity extends AdMobActivity {
 	 * @throws ParserConfigurationException
 	 * @throws IOException
 	 */
-	private boolean carregarXmlProcurados(InputStream inputStream) throws SAXException,
-			ParserConfigurationException, IOException {
+	private boolean carregarXmlProcurados(InputStream inputStream)  {
+		boolean carregou = false;
 		/** Handling XML */
 		SAXParserFactory spf = SAXParserFactory.newInstance();
-		SAXParser sp = spf.newSAXParser();
-		XMLReader xr = sp.getXMLReader();
-
-		/** Create handler to handle XML Tags ( extends DefaultHandler ) */
-		ProcuradosXmlHandler procuradosHandler = new ProcuradosXmlHandler();
-		xr.setContentHandler(procuradosHandler);
-		xr.parse(new InputSource(inputStream));
-
-		this.procurados = procuradosHandler.getProcurados();
+		SAXParser sp = null;
+		XMLReader xr = null;
+		try {
+			sp = spf.newSAXParser();
+			xr = sp.getXMLReader();
+			
+			/** Create handler to handle XML Tags ( extends DefaultHandler ) */
+			ProcuradosXmlHandler procuradosHandler = new ProcuradosXmlHandler();
+			xr.setContentHandler(procuradosHandler);
+			xr.parse(new InputSource(inputStream));
+			
+			procurados = procuradosHandler.getProcurados();
+			carregou = true;
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
-		return true;
+		return carregou;
 
 	}
 

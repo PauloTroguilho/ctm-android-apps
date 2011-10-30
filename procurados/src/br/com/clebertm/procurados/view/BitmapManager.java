@@ -66,7 +66,7 @@ public enum BitmapManager {
 		return Consts.SERVER_URL_TO_FOTOSDIR + "proc_" + fotoId + ".jpeg";
 	}
 
-	public void queueJob(final String fotoId, final ImageView imageView,
+	public void queueJob(final String fotoId, final ImageView imageView, final LoadBitmapCompleteListener listener,
 			final int width, final int height) {
 		/* Create handler in UI thread. */
 		final Handler handler = new Handler() {
@@ -76,8 +76,10 @@ public enum BitmapManager {
 				if (tag != null && tag.equals(fotoId)) {
 					if (msg.obj != null) {
 						imageView.setImageBitmap((Bitmap) msg.obj);
+						listener.loadCompledted((Bitmap) msg.obj);
 					} else {
 						imageView.setImageBitmap(placeholder);
+						listener.loadCompledted(placeholder);
 						Log.d(null, "fail " + fotoId);
 					}
 				}
@@ -96,19 +98,28 @@ public enum BitmapManager {
 			}
 		});
 	}
+	
+	public static interface LoadBitmapCompleteListener {
+		
+		/**
+		 * @param bitmap
+		 */
+		void loadCompledted(Bitmap bitmap);
+		
+	}
 
-	public void loadBitmap(final String fotoId, final ImageView imageView,
+	public void loadBitmap(final String fotoId, final ImageView imageView, LoadBitmapCompleteListener listener,
 			final int width, final int height) {
 		imageViews.put(imageView, fotoId);
 		Bitmap bitmap = getBitmapFromCache(fotoId);
-
+		
 		// check in UI thread, so no concurrency issues
 		if (bitmap != null) {
 			Log.d(null, "Item loaded from cache: " + fotoId);
 			imageView.setImageBitmap(bitmap);
+			listener.loadCompledted(bitmap);
 		} else {
-			imageView.setImageBitmap(placeholder);
-			queueJob(fotoId, imageView, width, height);
+			queueJob(fotoId, imageView, listener, width, height);
 		}
 	}
 	
