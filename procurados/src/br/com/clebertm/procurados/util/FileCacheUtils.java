@@ -47,6 +47,10 @@ public class FileCacheUtils {
 	 * @return
 	 */
 	public static File getFotosCacheDir(Context context) {
-		return new File(getCacheDir(context), Consts.CACHE_FOTOS_DIR);
+		File fotoCacheDir = new File(getCacheDir(context), Consts.CACHE_FOTOS_DIR);
+		if (!fotoCacheDir.exists()) {
+			fotoCacheDir.mkdirs();
+		}
+		return fotoCacheDir;
 	}
 }
