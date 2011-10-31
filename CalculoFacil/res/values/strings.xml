@@ -5,7 +5,7 @@
     <string name="app_title">Cálculo Fácil</string>
     <string-array name="menuPrincipal">
         <item>Cálculos Trabalhistas</item>
-        <item>Dívidas vencidas</item>
+        <item>Dívidas Vencidas</item>
     </string-array>
     <string-array name="menuTrabalhistas">
         <item>Rescisão de Contrato - CLT</item>
