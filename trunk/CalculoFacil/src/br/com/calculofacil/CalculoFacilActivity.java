@@ -35,6 +35,9 @@ public class CalculoFacilActivity extends AdMobActivity {
 					case 0:
 						intent.setClass(CalculoFacilActivity.this, TrabalhistasActivity.class);
 					break;
+					case 1:
+						intent.setClass(CalculoFacilActivity.this, CalculoBoletoActivity.class);
+					break;
 				}
 				startActivity(intent);
 			}

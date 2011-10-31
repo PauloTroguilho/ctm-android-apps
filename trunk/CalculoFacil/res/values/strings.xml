@@ -5,9 +5,7 @@
     <string name="app_title">Cálculo Fácil</string>
     <string-array name="menuPrincipal">
         <item>Cálculos Trabalhistas</item>
-        <!-- 
         <item>Dívidas vencidas</item>
-        -->
     </string-array>
     <string-array name="menuTrabalhistas">
         <item>Rescisão de Contrato - CLT</item>
@@ -16,12 +14,6 @@
         <item>Salário</item>
         <item>Décimo Terceiro</item>
          -->
-    </string-array>
-    <string-array name="menuDividas">
-        <item>Rescisão de Contrato</item>
-        <item>Salário</item>
-        <item>Décimo Terceiro</item>
-        <item>Férias</item>
     </string-array>
     <string-array name="motivosRescisao">
         <item>Pedido de demissão</item>
@@ -78,4 +70,5 @@
         <item>ao dia</item>
         <item>ao mês</item>
     </string-array>
+        <string name="valor_boleto_atualizado">Valor Total Atualizado</string>
 </resources>

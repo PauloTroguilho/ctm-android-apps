@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+	android:orientation="vertical" android:layout_height="fill_parent"
+	android:layout_width="fill_parent">
+
+	<LinearLayout android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+		<com.google.ads.AdView android:id="@+id/adView"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			ads:adUnitId="a14e95d4d2bb731" ads:adSize="BANNER"
+			ads:loadAdOnCreate="true" />
+	</LinearLayout>
+
+	<LinearLayout android:orientation="vertical"
+		android:layout_height="fill_parent" android:layout_width="fill_parent">
+		<LinearLayout android:layout_height="wrap_content"
+			android:layout_width="match_parent" android:id="@+id/linearLayout4"
+			android:padding="8px">
+			<TextView android:gravity="center_vertical|center_horizontal|center"
+				android:layout_height="wrap_content" android:layout_width="fill_parent"
+				android:id="@+id/textView6" android:textStyle="bold"
+				android:textSize="14dip" android:text="@string/calculo_boleto_titulo"></TextView>
+		</LinearLayout>
+		<ScrollView android:layout_width="match_parent"
+			android:layout_height="wrap_content" android:id="@+id/scrollView1">
+			<LinearLayout android:layout_height="wrap_content"
+				android:layout_width="match_parent" android:orientation="vertical">
+				<TextView android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:id="@+id/textView1"
+					android:paddingTop="10px" android:text="@string/valor_boleto"></TextView>
+				<TextView android:layout_gravity="right"
+					android:paddingRight="20px" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="TextView"
+					android:textSize="16dp" android:textStyle="bold" android:id="@+id/tvValorBoleto"></TextView>
+				<TextView android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:id="@+id/textView2"
+					android:text="@string/valor_multa"></TextView>
+				<TextView android:layout_width="wrap_content"
+					android:layout_gravity="right" android:layout_height="wrap_content"
+					android:paddingRight="20px" android:text="TextView"
+					android:textStyle="bold" android:textSize="16dp" android:id="@+id/tvMulta"></TextView>
+				<TextView android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:id="@+id/textView3"
+					android:text="@string/valor_juros"></TextView>
+				<TextView android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:paddingRight="20px"
+					android:layout_gravity="right" android:textStyle="bold"
+					android:textSize="16dp" android:text="TextView" android:id="@+id/tvJuros"></TextView>
+				<TextView android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:id="@+id/textView5"
+					android:textStyle="bold"
+					android:textSize="17dp" android:textColor="#FAFAFA" android:text="@string/valor_boleto_atualizado"></TextView>
+				<TextView android:layout_width="wrap_content"
+					android:layout_gravity="right" android:layout_height="wrap_content"
+					android:textStyle="bold" android:paddingRight="20px" android:text="TextView"
+					android:textSize="20dp" android:textColor="#FAFAFA" android:id="@+id/tvTotalBoleto"></TextView>
+				<Button android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:text="@string/bt_voltar"
+					android:paddingLeft="20px" android:paddingRight="20px" android:id="@+id/btVoltar"></Button>
+			</LinearLayout>
+		</ScrollView>
+	</LinearLayout>
+
+</LinearLayout>

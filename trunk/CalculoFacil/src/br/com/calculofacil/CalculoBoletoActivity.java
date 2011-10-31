@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.Spinner;
 import br.com.calculofacil.util.StringUtils;
 
@@ -25,8 +24,6 @@ public class CalculoBoletoActivity extends AdMobActivity {
 
 	private static final int DIALOG_ERROR = 1;
 	
-	private static final float INSS = 0.08f; 
-
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -126,6 +123,46 @@ public class CalculoBoletoActivity extends AdMobActivity {
 		}
 		return null;
 	}
+	
+	/**
+	 * @param g1
+	 * @param g2
+	 * @return
+	 */
+	private int getMeses(Calendar g1, Calendar g2) {  
+        int meses = 0;  
+        boolean dataIniMaior = false;  
+        Calendar gc1, gc2;  
+          
+        if (g2.after(g1)){  
+            gc2 = (Calendar) g2.clone();  
+            gc1 = (Calendar) g1.clone();  
+        }  
+        else{  
+            dataIniMaior = true;  
+            gc2 = (Calendar) g1.clone();  
+            gc1 = (Calendar) g2.clone();  
+        }  
+          
+        gc1.clear(Calendar.MILLISECOND);  
+        gc1.clear(Calendar.SECOND);  
+        gc1.clear(Calendar.MINUTE);  
+        gc1.clear(Calendar.HOUR_OF_DAY);  
+        gc1.clear(Calendar.DATE);  
+  
+        gc2.clear(Calendar.MILLISECOND);  
+        gc2.clear(Calendar.SECOND);  
+        gc2.clear(Calendar.MINUTE);  
+        gc2.clear(Calendar.HOUR_OF_DAY);  
+        gc2.clear(Calendar.DATE);  
+          
+        while(gc1.before(gc2)){  
+            gc1.add(Calendar.MONTH, 1);  
+            meses = dataIniMaior? --meses: ++meses;  
+        }  
+          
+        return (meses==0 || meses < 0)? meses: meses - 1;  
+    }
 
 	/**
 	 * 
@@ -160,36 +197,38 @@ public class CalculoBoletoActivity extends AdMobActivity {
 		}
 		
 		Spinner spTiposJuros = (Spinner) findViewById(R.id.spTiposJuros);
-		boolean isJurosCompostos = (spTipoMulta.getSelectedItemPosition() == 0);
+		boolean isJurosCompostos = (spTiposJuros.getSelectedItemPosition() == 0);
 		
 		Spinner spIncJuros = (Spinner) findViewById(R.id.spIncidenciaJuros);
-		boolean isIncAoDia = (spTipoMulta.getSelectedItemPosition() == 0);
+		boolean isIncAoDia = (spIncJuros.getSelectedItemPosition() == 0);
+
+		long intervalo = 0;
+
+		if (isIncAoDia) {
+			long dt = (dataPagto.getTime() - dataVenc.getTime()) + 3600000;        
+            intervalo = (dt / (60000 * 60 * 24));
+		} else {
+			Calendar c1 = Calendar.getInstance();
+			c1.setTime(dataVenc);
+			Calendar c2 = Calendar.getInstance();
+			c2.setTime(dataPagto);
+			
+			intervalo = getMeses(c1, c2);
+		}
 		
 		if (isJurosCompostos) {
-			
-			long intervalo = 0;
-			
-			if (isIncAoDia) {
-		
-				long dt = (dataPagto.getTime() - dataVenc.getTime()) + 3600000;        
-                intervalo = (dt / 86400000L);
-				
-			} else {
-				
-			}
-			
+		    double montante = valorBoleto * Math.pow((1 + valorJuros), intervalo);  
+		    valorTotalJuros = montante - valorBoleto;			
+		} else {
+		    valorTotalJuros = valorBoleto * valorJuros * intervalo;
 		}
 		
 		
 		Intent intent = new Intent();
-		intent.setClass(this, ResultadoCalculoRescisaoActivity.class);
-		//intent.putExtra("saldoSalario", saldoSalario);
-		//intent.putExtra("decimoProporcional", decimoProporcional);
-	//	intent.putExtra("feriasProporcional", feriasProporcional);
-		//intent.putExtra("umTercoFeriasProporcional", umTercoFeriasProporcional);
-		
-		//intent.putExtra("inssSalario", saldoSalario * INSS);
-		//intent.putExtra("inssDecimo", decimoProporcional * INSS);
+		intent.setClass(this, ResultadoCalculoBoletoActivity.class);
+		intent.putExtra("valorBoleto", valorBoleto);
+		intent.putExtra("valorTotalMulta", valorTotalMulta);
+		intent.putExtra("valorTotalJuros", valorTotalJuros);
 		
 		startActivity(intent);
 		
