@@ -217,7 +217,7 @@ public class CalculoBoletoActivity extends AdMobActivity {
 		}
 		
 		if (isJurosCompostos) {
-		    double montante = valorBoleto * Math.pow((1 + valorJuros), intervalo);  
+		    double montante = valorBoleto * Math.pow((1 + (valorJuros / 100)), intervalo);  
 		    valorTotalJuros = montante - valorBoleto;			
 		} else {
 		    valorTotalJuros = valorBoleto * ((valorJuros /100) * intervalo);

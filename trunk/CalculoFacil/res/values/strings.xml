@@ -65,7 +65,7 @@
         <item>Compostos</item>
         <item>Simples</item>
     </string-array>
-    <string name="valor_juros">Valor dos Juros (%)</string>
+    <string name="valor_juros">Valor do Juros (%)</string>
     <string-array name="tiposIncidenciaJuros">
         <item>ao dia</item>
         <item>ao mês</item>
