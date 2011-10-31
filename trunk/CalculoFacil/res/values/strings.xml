@@ -58,4 +58,24 @@
     <string name="total_descontos">Total de Descontos</string>
     <string name="inss_decimo">INSS sobre 13º</string>
     <string name="total_a_pagar">Valor da Rescisão</string>
+    <string name="calculo_boleto_titulo">Atualização de Boletos</string>
+    <string name="dt_vencimento">Data de Vencimento:</string>
+    <string name="dt_pagamento">Data de Pagamento:</string>
+    <string name="valor_boleto">Valor do Boleto (R$)</string>
+    <string name="valor_multa">Valor da Multa:</string>
+    <string-array name="tiposMulta">
+        <item>Percentual (%)</item>
+        <item>Valor Fixo (R$)</item>
+    </string-array>
+    <string name="aplicacao_multa">Aplicação de Multa</string>
+    <string name="aplicacao_juros">Aplicação de Juros</string>
+    <string-array name="tiposJuros">
+        <item>Compostos</item>
+        <item>Simples</item>
+    </string-array>
+    <string name="valor_juros">Valor dos Juros (%)</string>
+    <string-array name="tiposIncidenciaJuros">
+        <item>ao dia</item>
+        <item>ao mês</item>
+    </string-array>
 </resources>
