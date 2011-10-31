@@ -144,6 +144,7 @@ public class CalculoRescisaoActivity extends AdMobActivity {
 		Calendar cDataDemissao = Calendar.getInstance();
 		cDataDemissao.setTime(dataDemissao);		
 		
+		
 		//14/08/2011
 		//11/10/2011
 		
@@ -159,16 +160,19 @@ public class CalculoRescisaoActivity extends AdMobActivity {
 		}
 		
 		double saldoSalario = ultimoSalario / 30 * qtdDiasTrabalhados;
+		
+		int mesDataAdmissao = cDataAdmissao.get(Calendar.MONTH) + 1;
+		int mesDataDemissao = cDataDemissao.get(Calendar.MONTH) + 1;
 
 		//Décimo Terceiro Proporcional
 		//Salário/12*Meses
 		int qtdMesesDecimo = 0;
 		if (dataAdmissao.getYear() == dataDemissao.getYear()) {
-			qtdMesesDecimo = dataDemissao.getMonth() - dataAdmissao.getMonth();
+			qtdMesesDecimo = mesDataDemissao - mesDataAdmissao;
 			if (qtdMesesDecimo == 0)
 				qtdMesesDecimo++;
 		} else {
-			qtdMesesDecimo = dataDemissao.getMonth();
+			qtdMesesDecimo = mesDataDemissao;
 		}
 		double decimoProporcional = ultimoSalario / 12 * qtdMesesDecimo;
 		
@@ -176,11 +180,11 @@ public class CalculoRescisaoActivity extends AdMobActivity {
 		//Salário/12*Meses
 		int qtdMesesFerias = 0;
 		if (dataAdmissao.getYear() == dataDemissao.getYear()) {
-			qtdMesesFerias = dataDemissao.getMonth() - dataAdmissao.getMonth();
+			qtdMesesFerias = mesDataDemissao - mesDataAdmissao;
 			if (qtdMesesFerias == 0)
 				qtdMesesFerias++;
 		} else {
-			qtdMesesFerias = (12 - dataAdmissao.getMonth()) + dataDemissao.getMonth();
+			qtdMesesFerias = ((12 - mesDataAdmissao) + 1) + mesDataDemissao;
 		}
 		double feriasProporcional = ultimoSalario / 12 * qtdMesesFerias;
 		//1/3 de Férias Proporcionais
