@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Hello World, ProcuradosActivity!</string>
-    <string name="app_name">Procurados</string>
+    <string name="app_name">Procurados PE</string>
     <string name="proc_nom">Nome:</string>
     <string name="proc_apelido">Apelido:</string>
     <string name="proc_dtnasc">Data de Nascimento:</string>
