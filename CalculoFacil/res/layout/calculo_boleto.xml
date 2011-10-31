@@ -67,33 +67,22 @@
 			<TextView android:layout_height="wrap_content" android:id="@+id/TextView01"
 				android:layout_width="wrap_content" android:text="@string/aplicacao_multa"
 				android:textStyle="bold"></TextView>
-			<Spinner android:layout_height="wrap_content"
-				android:layout_width="match_parent" android:entries="@array/tiposMulta"
-				android:id="@+id/spTipoMulta"></Spinner>
-			<TextView android:layout_height="wrap_content" android:id="@+id/TextView02"
-				android:textStyle="bold" android:layout_width="wrap_content"
-				android:text="@string/valor_multa"></TextView>
-			<EditText android:layout_height="wrap_content"
-				android:inputType="numberDecimal" android:layout_width="match_parent"
-				android:id="@+id/edtValorMulta"></EditText>
+			<TextView android:id="@+id/TextView02" android:text="@string/valor_multa" android:layout_height="wrap_content" android:layout_width="wrap_content"></TextView>
+			<LinearLayout android:id="@+id/linearLayout2" android:layout_height="wrap_content" android:layout_width="match_parent">
+				<EditText android:layout_weight="1" android:id="@+id/edtValorMulta" android:inputType="numberDecimal" android:layout_height="wrap_content" android:layout_width="match_parent"></EditText>
+				<Spinner android:layout_weight="1" android:id="@+id/spTipoMulta" android:entries="@array/tiposMulta" android:layout_height="wrap_content" android:layout_width="match_parent"></Spinner>
+			</LinearLayout>
 			<TextView android:layout_height="wrap_content" android:id="@+id/TextView04"
 				android:textStyle="bold" android:layout_width="wrap_content"
 				android:text="@string/aplicacao_juros"></TextView>
+			<TextView android:id="@+id/TextView03" android:text="@string/valor_juros" android:layout_height="wrap_content" android:layout_width="wrap_content"></TextView>
+			<LinearLayout android:id="@+id/linearLayout1" android:layout_height="wrap_content" android:layout_width="match_parent">
+				<EditText android:id="@+id/edtValorJuros" android:layout_weight="1" android:inputType="numberDecimal" android:layout_height="wrap_content" android:layout_width="match_parent"></EditText>
+				<Spinner android:id="@+id/spIncidenciaJuros" android:entries="@array/tiposIncidenciaJuros" android:layout_height="wrap_content" android:layout_width="match_parent" android:layout_weight="1"></Spinner>
+			</LinearLayout>
 			<Spinner android:layout_height="wrap_content"
 				android:layout_width="match_parent" android:entries="@array/tiposJuros"
 				android:id="@+id/spTiposJuros"></Spinner>
-			<TextView android:textStyle="bold" android:text="@string/valor_juros"
-				android:layout_height="wrap_content" android:id="@+id/TextView03"
-				android:layout_width="wrap_content"></TextView>
-			<LinearLayout android:layout_height="wrap_content"
-				android:id="@+id/linearLayout1" android:layout_width="match_parent">
-				<EditText android:layout_weight="1" android:inputType="numberDecimal"
-					android:layout_height="wrap_content" android:id="@+id/edtValorJuros"
-					android:layout_width="match_parent"></EditText>
-				<Spinner android:layout_height="wrap_content"
-					android:layout_width="wrap_content" android:layout_weight="1"
-					android:id="@+id/spIncidenciaJuros" android:entries="@array/tiposIncidenciaJuros"></Spinner>
-			</LinearLayout>
 			<LinearLayout android:layout_height="wrap_content"
 				android:layout_width="match_parent" android:id="@+id/linearLayout3">
 				<Button android:layout_height="wrap_content" android:text="@string/bt_calcular"
