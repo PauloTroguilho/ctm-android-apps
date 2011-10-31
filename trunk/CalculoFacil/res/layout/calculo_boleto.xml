@@ -12,64 +12,101 @@
 			ads:loadAdOnCreate="true" />
 	</LinearLayout>
 
-	<LinearLayout android:orientation="vertical"
-		android:layout_height="fill_parent" android:layout_width="fill_parent">
-		<LinearLayout android:layout_height="wrap_content"
-			android:layout_width="match_parent" android:id="@+id/linearLayout4"
-			android:padding="8px">
-			<TextView android:gravity="center_vertical|center_horizontal|center"
-				android:layout_height="wrap_content" android:layout_width="fill_parent"
-				android:id="@+id/textView6" android:textStyle="bold" android:textSize="14dip" android:text="@string/calculo_boleto_titulo"></TextView>
+	<ScrollView android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+		<LinearLayout android:orientation="vertical"
+			android:layout_height="fill_parent" android:layout_width="fill_parent">
+			<LinearLayout android:layout_height="wrap_content"
+				android:layout_width="match_parent" android:id="@+id/linearLayout4"
+				android:padding="8px">
+				<TextView android:gravity="center_vertical|center_horizontal|center"
+					android:layout_height="wrap_content" android:layout_width="fill_parent"
+					android:id="@+id/textView6" android:textStyle="bold"
+					android:textSize="14dip" android:text="@string/calculo_boleto_titulo"></TextView>
+			</LinearLayout>
+			<TextView android:layout_height="wrap_content"
+				android:layout_width="wrap_content" android:id="@+id/textView1"
+				android:text="@string/dt_vencimento"></TextView>
+			<EditText android:layout_width="match_parent"
+				android:layout_height="wrap_content" android:inputType="date"
+				android:id="@+id/edtDtVenc">
+				<requestFocus></requestFocus>
+			</EditText>
+			<TextView android:layout_height="wrap_content"
+				android:layout_width="wrap_content" android:id="@+id/textView2"
+				android:text="@string/dt_pagamento"></TextView>
+			<EditText android:layout_width="match_parent"
+				android:layout_height="wrap_content" android:inputType="date"
+				android:id="@+id/edtDtPagto"></EditText>
+			<!--
+				<TextView android:layout_width="wrap_content"
+				android:text="@string/motivo_rescisao"
+				android:layout_height="wrap_content"
+				android:id="@+id/textView3"></TextView> <Spinner
+				android:layout_width="fill_parent"
+				android:entries="@array/motivosRescisao"
+				android:layout_height="wrap_content"
+				android:id="@+id/spMotivoRescisao"></Spinner>
+			-->
+			<TextView android:layout_height="wrap_content"
+				android:layout_width="wrap_content" android:id="@+id/textView4"
+				android:text="@string/valor_boleto"></TextView>
+			<EditText android:layout_width="match_parent"
+				android:layout_height="wrap_content" android:inputType="numberDecimal"
+				android:id="@+id/edtValorBoleto"></EditText>
+			<!--
+				<TextView android:text="@string/tp_aviso_previo"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:id="@+id/textView5"></TextView> <Spinner
+				android:entries="@array/tiposAvisoPrevio"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:id="@+id/spTipoAvisoPrevio"></Spinner>
+			-->
+			<TextView android:layout_height="wrap_content" android:id="@+id/TextView01"
+				android:layout_width="wrap_content" android:text="@string/aplicacao_multa"
+				android:textStyle="bold"></TextView>
+			<Spinner android:layout_height="wrap_content"
+				android:layout_width="match_parent" android:entries="@array/tiposMulta"
+				android:id="@+id/spTipoMulta"></Spinner>
+			<TextView android:layout_height="wrap_content" android:id="@+id/TextView02"
+				android:textStyle="bold" android:layout_width="wrap_content"
+				android:text="@string/valor_multa"></TextView>
+			<EditText android:layout_height="wrap_content"
+				android:inputType="numberDecimal" android:layout_width="match_parent"
+				android:id="@+id/edtValorMulta"></EditText>
+			<TextView android:layout_height="wrap_content" android:id="@+id/TextView04"
+				android:textStyle="bold" android:layout_width="wrap_content"
+				android:text="@string/aplicacao_juros"></TextView>
+			<Spinner android:layout_height="wrap_content"
+				android:layout_width="match_parent" android:entries="@array/tiposJuros"
+				android:id="@+id/spTiposJuros"></Spinner>
+			<TextView android:textStyle="bold" android:text="@string/valor_juros"
+				android:layout_height="wrap_content" android:id="@+id/TextView03"
+				android:layout_width="wrap_content"></TextView>
+			<LinearLayout android:layout_height="wrap_content"
+				android:id="@+id/linearLayout1" android:layout_width="match_parent">
+				<EditText android:layout_weight="1" android:inputType="numberDecimal"
+					android:layout_height="wrap_content" android:id="@+id/edtValorJuros"
+					android:layout_width="match_parent"></EditText>
+				<Spinner android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:layout_weight="1"
+					android:id="@+id/spIncidenciaJuros" android:entries="@array/tiposIncidenciaJuros"></Spinner>
+			</LinearLayout>
+			<LinearLayout android:layout_height="wrap_content"
+				android:layout_width="match_parent" android:id="@+id/linearLayout3">
+				<Button android:layout_height="wrap_content" android:text="@string/bt_calcular"
+					android:layout_width="wrap_content" android:paddingLeft="20px"
+					android:paddingRight="20px" android:id="@+id/btCalcular"></Button>
+				<Button android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:text="@string/bt_voltar"
+					android:id="@+id/btVoltar" android:paddingLeft="20px"
+					android:paddingRight="20px"></Button>
+			</LinearLayout>
 		</LinearLayout>
-		<TextView android:layout_height="wrap_content" android:layout_width="wrap_content"
-			android:id="@+id/textView1" android:text="@string/dt_vencimento"></TextView>
-		<EditText android:layout_width="match_parent"
-			android:layout_height="wrap_content" android:inputType="date" android:id="@+id/edtDtVenc">
-			<requestFocus></requestFocus>
-		</EditText>
-		<TextView android:layout_height="wrap_content" android:layout_width="wrap_content"
-			android:id="@+id/textView2" android:text="@string/dt_pagamento"></TextView>
-		<EditText android:layout_width="match_parent"
-			android:layout_height="wrap_content" android:inputType="date" android:id="@+id/edtDtPagto"></EditText>
-		<!-- 
-		<TextView android:layout_width="wrap_content" android:text="@string/motivo_rescisao"
-			android:layout_height="wrap_content" android:id="@+id/textView3"></TextView>
-		<Spinner android:layout_width="fill_parent" android:entries="@array/motivosRescisao"
-			android:layout_height="wrap_content" android:id="@+id/spMotivoRescisao"></Spinner>
-		 -->
-		<TextView android:layout_height="wrap_content" android:layout_width="wrap_content"
-			android:id="@+id/textView4" android:text="@string/valor_boleto"></TextView>
-		<EditText android:layout_width="match_parent"
-			android:layout_height="wrap_content" android:inputType="numberDecimal" android:id="@+id/edtValorBoleto"></EditText>
-		<!-- 
-		<TextView android:text="@string/tp_aviso_previo"
-			android:layout_height="wrap_content" android:layout_width="wrap_content"
-			android:id="@+id/textView5"></TextView>
-		<Spinner android:entries="@array/tiposAvisoPrevio"
-			android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:id="@+id/spTipoAvisoPrevio"></Spinner>
-		 -->
-		<TextView android:layout_height="wrap_content" android:id="@+id/TextView01" android:layout_width="wrap_content" android:text="@string/aplicacao_multa" android:textStyle="bold"></TextView>
-		<Spinner android:layout_height="wrap_content" android:layout_width="match_parent" android:entries="@array/tiposMulta" android:id="@+id/spTipoMulta"></Spinner>
-		<TextView android:layout_height="wrap_content" android:id="@+id/TextView02" android:textStyle="bold" android:layout_width="wrap_content" android:text="@string/valor_multa"></TextView>
-		<EditText android:layout_height="wrap_content" android:inputType="numberDecimal" android:layout_width="match_parent" android:id="@+id/edtValorMulta"></EditText>
-		<TextView android:layout_height="wrap_content" android:id="@+id/TextView04" android:textStyle="bold" android:layout_width="wrap_content" android:text="@string/aplicacao_juros"></TextView>
-		<Spinner android:layout_height="wrap_content" android:layout_width="match_parent" android:entries="@array/tiposJuros" android:id="@+id/spTiposJuros"></Spinner>
-		<TextView android:textStyle="bold" android:text="@string/valor_juros" android:layout_height="wrap_content" android:id="@+id/TextView03" android:layout_width="wrap_content"></TextView>
-		<LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout1" android:layout_width="match_parent">
-			<EditText android:layout_weight="1" android:inputType="numberDecimal" android:layout_height="wrap_content" android:id="@+id/edtValorJuros" android:layout_width="match_parent"></EditText>
-			<Spinner android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1" android:id="@+id/spIncidenciaJuros" android:entries="@array/tiposIncidenciaJuros"></Spinner>
-		</LinearLayout>
-		<LinearLayout android:layout_height="wrap_content"
-			android:layout_width="match_parent" android:id="@+id/linearLayout3">
-			<Button android:layout_height="wrap_content" android:text="@string/bt_calcular"
-				android:layout_width="wrap_content" android:paddingLeft="20px"
-				android:paddingRight="20px" android:id="@+id/btCalcular"></Button>
-			<Button android:layout_height="wrap_content"
-				android:layout_width="wrap_content" android:text="@string/bt_voltar"
-				android:id="@+id/btVoltar" android:paddingLeft="20px"
-				android:paddingRight="20px"></Button>
-		</LinearLayout>
-	</LinearLayout>
+	</ScrollView>
+
+
 
 </LinearLayout>
