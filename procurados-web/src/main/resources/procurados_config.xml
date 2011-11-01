@@ -8,7 +8,7 @@
 		<template>${baseUrl}/web/sds/procurados</template>
 	</var-def>
 	<!-- iterates over all collected products and extract desired data -->
-	<file action="write" path='procurados_${sys.datetime("dd-MM-yyyy")}.xml' charset="UTF-8">
+	<file action="write" path='procurados.xml' charset="UTF-8">
         <![CDATA[ <procurados> ]]>
 		<while condition="true" index="pagina" maxloops="2">
 			<loop item="procurado" index="i">
