@@ -9,7 +9,7 @@
 	</var-def>
 	<!-- iterates over all collected products and extract desired data -->
 	<file action="write" path='procurados.xml' charset="UTF-8">
-        <![CDATA[ <procurados> ]]>
+        <![CDATA[ <?xml version="1.0" encoding="UTF-8" standalone="yes"?><procurados xmlns="http://procurados.clebertm.com.br/v01"> ]]>
 		<while condition="true" index="pagina" maxloops="2">
 			<loop item="procurado" index="i">
 				<list>
