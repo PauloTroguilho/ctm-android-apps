@@ -21,7 +21,7 @@
     <string name="proc_historico">Histórico:</string>
     <string name="test_hist">Daniel Paulo Fernandes Abreu, vulgo \"Daniel\", é acusado da prática de vários homicídios na região metropolitana do Recife. Encontra-se com mandado de prisão em aberto.</string>
     <string name="text_splash">FAÇA SUA PARTE, DENUNCIE!</string>
-    <string name="text_atencao_splash">Atenção: Todos os dados contidos nesta aplicação são públicos e provenientes do site da SDS/PE.</string>
+    <string name="text_atencao_splash">Atenção: Todas as informações disponibilizadas nesta aplicação são públicas e provenientes do site da Secretaria de Defesa Social de Pernambuco.</string>
     <string name="dialog_atualizacao_titulo">Atualização</string>
     <string name="dialog_atualizacao_message">Deseja realizar uma atualização da lista de procurados?</string>
     <string name="dialog_sim">Sim</string>
@@ -32,4 +32,10 @@
     <string name="dialog_erro_msg_carregar_arq_xml">Não foi possível carregar dados do arquivo XML.</string>
     <string name="dialog_erro_msg_conectando_ao_servidor">Não foi possível conectar ao servidor.</string>
     <string name="dialog_erro_msg_carregando_lista">Não foi possível carregar a lista de procurados. Necessário conexão com a internet!</string>
+    <string name="menu_sobre">Sobre</string>
+    <string name="menu_atualizar">Atualizar</string>
+    <string name="menu_sair">Sair</string>
+    <string name="dialog_sobre_msg">Este aplicativo foi desenvolvido com o intuito de auxiliar a população pernambucana na identificação dos criminosos, além de manter os cidadãos atualizados sobre a lista dos 100 criminosos mais procurados do estado. \nTodas as informações disponibilizadas nesta aplicação são públicas e provenientes do site da Secretaria de Defesa Social de Pernambuco.</string>
+    <string name="dialog_sobre_titulo">Sobre...</string>
+    <string name="text_carregando">Carregando...</string>
 </resources>

@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,6 +26,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -43,6 +47,9 @@ public class ProcuradosActivity extends AdMobActivity {
 	private static final int DIALOG_ERRO_CRIACAO_XML = 2;
 	private static final int DIALOG_ERRO_CARREGAMENTO_XML = 3;
 	private static final int DIALOG_ERRO_ATUALIZACAO_XML = 4;
+	private static final int DIALOG_SOBRE = 5;
+	
+	private static final long DAY_INTERVAL = 1000 * 60 * 60 * 24;
 
 	private GridView gridProcurados;
 
@@ -57,17 +64,16 @@ public class ProcuradosActivity extends AdMobActivity {
 		 * Here we setContentView() to main.xml, get the GridView and then fill
 		 * it with the ImageAdapter class that extend from BaseAdapter
 		 */
-		gridProcurados = (GridView) findViewById(R.id.gvProcurados);
+		gridProcurados = (GridView) findViewById(R.id.gridProcurados);
 		
 		carregarListaProcurados();
-		
 		
 		List<Procurado> procuradosList = new ArrayList<Procurado>();
 		if (procurados != null) {
 			procuradosList = procurados.getProcurados();
 		}
 		
-		gridProcurados.setAdapter(new ListAdapter(this, R.id.gvProcurados, procuradosList));
+		gridProcurados.setAdapter(new ListAdapter(this, R.id.gridProcurados, procuradosList));
 		gridProcurados
 				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 					/*
@@ -92,7 +98,30 @@ public class ProcuradosActivity extends AdMobActivity {
 					}
 				});
 
+		gridProcurados.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (fileCacheXmlProcuradosExists()) {
+					File xmlCache = getFileCacheXmlProcurados();
+					Date data = new Date();
+					if (data.getTime() - xmlCache.lastModified() > DAY_INTERVAL) {
+						showDialog(DIALOG_ATUALIZACAO);
+					}
+				}
+			}
+		}, 1000 * 60);
+		
 		setAdView();
+	}
+	
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu, menu);
+		return true;
 	}
 
 	@Override
@@ -107,7 +136,16 @@ public class ProcuradosActivity extends AdMobActivity {
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int whichButton) {
-										atualizarXmlProcurados();
+										boolean atualizou = false;
+										try {
+											atualizou = atualizarXmlProcurados();
+										} catch (Exception e) { }
+										if (atualizou) {
+											gridProcurados.setAdapter(new ListAdapter(ProcuradosActivity.this, 
+													R.id.gridProcurados, procurados.getProcurados()));
+										} else {
+											showDialog(DIALOG_ERRO_ATUALIZACAO_XML);
+										}
 									}
 								}).setNegativeButton(R.string.dialog_nao,
 								new DialogInterface.OnClickListener() {
@@ -121,6 +159,7 @@ public class ProcuradosActivity extends AdMobActivity {
 										}
 									}
 								}).create();
+				
 			case DIALOG_ERRO_CRIACAO_XML:
 				return new AlertDialog.Builder(ProcuradosActivity.this).setIcon(
 						R.drawable.icon_error).setTitle(
@@ -132,6 +171,7 @@ public class ProcuradosActivity extends AdMobActivity {
 											int whichButton) {
 									}
 								}).create();
+				
 			case DIALOG_ERRO_CARREGAMENTO_XML:
 				return new AlertDialog.Builder(ProcuradosActivity.this).setIcon(
 						R.drawable.icon_error).setTitle(
@@ -143,6 +183,7 @@ public class ProcuradosActivity extends AdMobActivity {
 											int whichButton) {
 									}
 								}).create();
+				
 			case DIALOG_ERRO_ATUALIZACAO_XML:
 				return new AlertDialog.Builder(ProcuradosActivity.this).setIcon(
 						R.drawable.icon_error).setTitle(
@@ -155,8 +196,47 @@ public class ProcuradosActivity extends AdMobActivity {
 										finish();
 									}
 								}).create();
+				
+			case DIALOG_SOBRE:
+				return new AlertDialog.Builder(ProcuradosActivity.this)
+						.setIcon(R.drawable.icon_help).setTitle(getString(R.string.dialog_sobre_titulo))
+						.setMessage(getString(R.string.dialog_sobre_msg))
+						.setPositiveButton(R.string.dialog_ok,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int whichButton) {
+										/* User clicked OK so do some stuff */
+									}
+								}).create();
 		}
 		return null;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+			case R.id.menu_item_atualizar:
+				boolean atualizou = false;
+				try {
+					atualizou = atualizarXmlProcurados();
+				} catch (Exception e) { }
+				if (atualizou) {
+					gridProcurados.setAdapter(new ListAdapter(ProcuradosActivity.this, 
+							R.id.gridProcurados, procurados.getProcurados()));
+				} else {
+					showDialog(DIALOG_ERRO_ATUALIZACAO_XML);
+				}
+				return true;
+			case R.id.menu_item_sobre:
+				showDialog(DIALOG_SOBRE);
+				return true;
+			case R.id.menu_item_sair:
+				finish();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
 	}
 	
 	/**
@@ -204,6 +284,20 @@ public class ProcuradosActivity extends AdMobActivity {
 		}
 		return atualizou;
 	}
+	
+	/**
+	 * @return
+	 */
+	private File getFileCacheXmlProcurados() {
+		return new File(FileCacheUtils.getCacheDir(this), Consts.PROCURADOS_XML_FILENAME);
+	}
+	
+	/**
+	 * @return
+	 */
+	private boolean fileCacheXmlProcuradosExists() {
+		return getFileCacheXmlProcurados().exists();
+	}
 
 	/**
 	 * @throws SAXException
@@ -211,8 +305,7 @@ public class ProcuradosActivity extends AdMobActivity {
 	 * @throws IOException
 	 */
 	private void carregarListaProcurados() {
-		File xmlCache = new File(FileCacheUtils.getCacheDir(this), Consts.PROCURADOS_XML_FILENAME);
-		if (xmlCache.exists()) {
+		if (fileCacheXmlProcuradosExists()) {
 			boolean carregou = carregarXmlProcuradosFromCache();
 			if (!carregou) {
 				boolean atualizou = atualizarXmlProcurados();
@@ -220,9 +313,7 @@ public class ProcuradosActivity extends AdMobActivity {
 					showDialog(DIALOG_ERRO_ATUALIZACAO_XML);
 				}
 			}
-			
 		} else {
-			
 			boolean atualizou = atualizarXmlProcurados();
 			if (atualizou) {
 				boolean carregou = carregarXmlProcuradosFromCache();
