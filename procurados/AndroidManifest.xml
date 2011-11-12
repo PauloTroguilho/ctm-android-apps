@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="br.com.clebertm.procurados"
-      android:versionCode="1"
-      android:installLocation="preferExternal" android:versionName="1.0.0">
+      android:installLocation="preferExternal" android:versionCode="2" android:versionName="1.1.0">
     <uses-sdk android:minSdkVersion="3" />
     <supports-screens android:smallScreens="true" android:normalScreens="true" android:resizeable="true" android:anyDensity="true" android:largeScreens="true"></supports-screens>
     <uses-permission android:name="android.permission.CLEAR_APP_CACHE"></uses-permission>
