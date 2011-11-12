@@ -239,6 +239,40 @@ public class ProcuradosActivity extends AdMobActivity {
 		}
 	}
 	
+	private void removerFotosSemReferencia() {
+		File cacheDir = FileCacheUtils.getFotosCacheDir(this);
+		if (cacheDir.exists() && procurados != null && !procurados.getProcurados().isEmpty()) {
+			File[] fotoFiles = cacheDir.listFiles();
+			List<File> filesToDelete = new ArrayList<File>();
+			
+			for (File file : fotoFiles) {
+				String fotoId = file.getName();
+				if (fotoId.endsWith("jpeg")) {
+					fotoId = fotoId.substring(0, fotoId.indexOf("."));
+				}
+				boolean found = false;
+				for (Procurado p : procurados.getProcurados()) {
+					if (p.getFotoId().equalsIgnoreCase(fotoId)) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					filesToDelete.add(file);
+				}
+			}
+			
+			for (File file : filesToDelete) {
+				try {
+					file.delete();
+					Log.d(getClass().getSimpleName(), "Foto sem referencia removida: " + file.getName());
+				} catch (Exception e) {
+					Log.e(getClass().getSimpleName(), "Foto sem referencia nao pode ser removida: " + file.getName());
+				}
+			}
+		}
+	}
+	
 	/**
 	 * 
 	 */
@@ -281,6 +315,9 @@ public class ProcuradosActivity extends AdMobActivity {
 					}
 				} 
 			} 
+		}
+		if (atualizou) {
+			removerFotosSemReferencia();
 		}
 		return atualizou;
 	}
