@@ -1,9 +1,11 @@
 package br.com.clebertm.procurados.util;
 
 import java.io.File;
+import java.io.IOException;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 public class FileCacheUtils {
 
@@ -39,6 +41,7 @@ public class FileCacheUtils {
 		} else {
 			cacheDir = context.getCacheDir();
 		}
+		createNoMediaFile(cacheDir);
 		return cacheDir;
 	}
 	
@@ -51,6 +54,22 @@ public class FileCacheUtils {
 		if (!fotoCacheDir.exists()) {
 			fotoCacheDir.mkdirs();
 		}
+		createNoMediaFile(fotoCacheDir);
 		return fotoCacheDir;
+	}
+	
+	/**
+	 * @param onDir
+	 */
+	private static void createNoMediaFile(File onDir) {
+		if (onDir.exists()) {
+			File fileNoMedia = new File(onDir, ".nomedia");
+			try {
+				boolean created = fileNoMedia.createNewFile();
+				Log.d(FileCacheUtils.class.getSimpleName(), "Arquivo .nomedia criado = " + created);
+			} catch (IOException e) {
+				Log.e(FileCacheUtils.class.getSimpleName(), "Falha ao criar arquivo .nomedia", e);
+			}
+		}
 	}
 }
