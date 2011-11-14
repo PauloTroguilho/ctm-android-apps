@@ -38,4 +38,12 @@
     <string name="dialog_sobre_msg">Este aplicativo foi desenvolvido com o intuito de auxiliar a população pernambucana na identificação dos criminosos, além de manter os cidadãos atualizados sobre a lista dos 100 criminosos mais procurados do estado. \nTodas as informações disponibilizadas nesta aplicação são públicas e provenientes do site da Secretaria de Defesa Social de Pernambuco.</string>
     <string name="dialog_sobre_titulo">Sobre...</string>
     <string name="text_carregando">Carregando...</string>
+    <string name="dialog_carregando_titulo">Carregando...</string>
+    <string name="dialog_carregando_texto">Estamos carregando as informações. Favor aguardar alguns segundos!</string>
+    <string name="bt_compartilhar">Compartilhar</string>
+    <string name="text_tipo_compartilhamento">Selecione a forma de compartilhamento</string>
+    <string name="text_compartilhamento_assunto">Procurados PE, denuncie!</string>
+    <string name="text_compartilhamento_1">Este é um dos 100 mais procurados de PE. Ajude a polícia, denuncie!</string>
+    <string name="text_compartilhamento_2">Informações em:</string>
+    
 </resources>

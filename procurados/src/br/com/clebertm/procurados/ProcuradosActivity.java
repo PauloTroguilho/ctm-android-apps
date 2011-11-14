@@ -22,6 +22,7 @@ import org.xml.sax.XMLReader;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ import android.widget.GridView;
 import br.com.clebertm.domain.Procurado;
 import br.com.clebertm.domain.Procurados;
 import br.com.clebertm.parser.ProcuradosXmlHandler;
+import br.com.clebertm.parser.ProcuradosXmlPullParser;
 import br.com.clebertm.procurados.util.Consts;
 import br.com.clebertm.procurados.util.FileCacheUtils;
 import br.com.clebertm.procurados.util.IOUtils;
@@ -54,62 +56,88 @@ public class ProcuradosActivity extends AdMobActivity {
 	private GridView gridProcurados;
 
 	private Procurados procurados;
+	
+	private ProgressDialog progressDialog;
+	
+	private void createProgressDialog() {
+		progressDialog = ProgressDialog.show(ProcuradosActivity.this, 
+			getString(R.string.dialog_carregando_titulo),
+			getString(R.string.dialog_carregando_texto), true);
+	}
+	
+	private void dismissProgressDialog() {
+		if (progressDialog != null) {
+			progressDialog.dismiss();
+			progressDialog = null;
+		}
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-
+		
 		/*
 		 * Here we setContentView() to main.xml, get the GridView and then fill
 		 * it with the ImageAdapter class that extend from BaseAdapter
 		 */
 		gridProcurados = (GridView) findViewById(R.id.gridProcurados);
 		
-		carregarListaProcurados();
+		createProgressDialog();
 		
-		List<Procurado> procuradosList = new ArrayList<Procurado>();
-		if (procurados != null) {
-			procuradosList = procurados.getProcurados();
-		}
-		
-		gridProcurados.setAdapter(new ListAdapter(this, R.id.gridProcurados, procuradosList));
-		gridProcurados
-				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-					/*
-					 * (non-Javadoc)
-					 * 
-					 * @seeandroid.widget.AdapterView.OnItemClickListener#
-					 * onItemClick(android.widget.AdapterView,
-					 * android.view.View, int, long)
-					 */
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						Procurado procurado = procurados.getProcurados()
-								.get(arg2);
-
-						Intent intent = new Intent();
-						intent.setClass(ProcuradosActivity.this,
-								InfoProcuradoActivity.class);
-						intent.putExtra("procurado", procurado);
-
-						startActivity(intent);
-					}
-				});
-
-		gridProcurados.postDelayed(new Runnable() {
+		runOnUiThread(new Runnable() {
+			
 			@Override
 			public void run() {
-				if (fileCacheXmlProcuradosExists()) {
-					File xmlCache = getFileCacheXmlProcurados();
-					Date data = new Date();
-					if (data.getTime() - xmlCache.lastModified() > DAY_INTERVAL) {
-						showDialog(DIALOG_ATUALIZACAO);
-					}
+				carregarListaProcurados();
+				
+				List<Procurado> procuradosList = new ArrayList<Procurado>();
+				if (procurados != null) {
+					procuradosList = procurados.getProcurados();
 				}
+				
+				gridProcurados.setAdapter(new ListAdapter(ProcuradosActivity.this, R.id.gridProcurados, procuradosList));
+				gridProcurados
+						.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+							/*
+							 * (non-Javadoc)
+							 * 
+							 * @seeandroid.widget.AdapterView.OnItemClickListener#
+							 * onItemClick(android.widget.AdapterView,
+							 * android.view.View, int, long)
+							 */
+							@Override
+							public void onItemClick(AdapterView<?> arg0, View arg1,
+									int arg2, long arg3) {
+								Procurado procurado = procurados.getProcurados()
+										.get(arg2);
+
+								Intent intent = new Intent();
+								intent.setClass(ProcuradosActivity.this,
+										InfoProcuradoActivity.class);
+								intent.putExtra("procurado", procurado);
+
+								startActivity(intent);
+							}
+						});
+
+				gridProcurados.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						if (fileCacheXmlProcuradosExists()) {
+							File xmlCache = getFileCacheXmlProcurados();
+							Date data = new Date();
+							if (data.getTime() - xmlCache.lastModified() > DAY_INTERVAL) {
+								showDialog(DIALOG_ATUALIZACAO);
+							}
+						}
+					}
+				}, 1000 * 60);
+				
+				dismissProgressDialog();
 			}
-		}, 1000 * 60);
+			
+		});
 		
 		setAdView();
 	}
@@ -136,27 +164,14 @@ public class ProcuradosActivity extends AdMobActivity {
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int whichButton) {
-										boolean atualizou = false;
-										try {
-											atualizou = atualizarXmlProcurados();
-										} catch (Exception e) { }
-										if (atualizou) {
-											gridProcurados.setAdapter(new ListAdapter(ProcuradosActivity.this, 
-													R.id.gridProcurados, procurados.getProcurados()));
-										} else {
-											showDialog(DIALOG_ERRO_ATUALIZACAO_XML);
-										}
+										createProgressDialog();
+										runOnUiThread(updateXmlRunnable);
 									}
 								}).setNegativeButton(R.string.dialog_nao,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int whichButton) {
-										try {
-											carregarXmlProcuradosFromCache();
-										} catch (Exception e) {
-											Log.e(getClass().getSimpleName(), "Falha ao carregar o Xml de procurados");
-											showDialog(DIALOG_ERRO_CARREGAMENTO_XML);
-										}
+										
 									}
 								}).create();
 				
@@ -212,21 +227,37 @@ public class ProcuradosActivity extends AdMobActivity {
 		return null;
 	}
 	
+	private Runnable updateXmlRunnable = new Runnable() {
+		/* (non-Javadoc)
+		 * @see java.lang.Runnable#run()
+		 */
+		@Override
+		public void run() {
+			boolean atualizou = false;
+			try {
+				atualizou = atualizarXmlProcurados();
+			} catch (Exception e) { 
+				Log.e(ProcuradosActivity.class.getSimpleName(), "Falha ao atualizar Xml. " + e.getMessage());
+			}
+			dismissProgressDialog();
+			
+			if (atualizou) {
+				gridProcurados.setAdapter(new ListAdapter(ProcuradosActivity.this, 
+						R.id.gridProcurados, procurados.getProcurados()));
+			} else {
+				showDialog(DIALOG_ERRO_ATUALIZACAO_XML);
+			}
+		}
+	};
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
 			case R.id.menu_item_atualizar:
-				boolean atualizou = false;
-				try {
-					atualizou = atualizarXmlProcurados();
-				} catch (Exception e) { }
-				if (atualizou) {
-					gridProcurados.setAdapter(new ListAdapter(ProcuradosActivity.this, 
-							R.id.gridProcurados, procurados.getProcurados()));
-				} else {
-					showDialog(DIALOG_ERRO_ATUALIZACAO_XML);
-				}
+				createProgressDialog();
+				runOnUiThread(updateXmlRunnable);
+				
 				return true;
 			case R.id.menu_item_sobre:
 				showDialog(DIALOG_SOBRE);
@@ -393,7 +424,16 @@ public class ProcuradosActivity extends AdMobActivity {
 	 */
 	private boolean carregarXmlProcurados(InputStream inputStream)  {
 		boolean carregou = false;
-		/** Handling XML */
+		
+		try {
+			ProcuradosXmlPullParser pullParser = new ProcuradosXmlPullParser(inputStream);
+			procurados = pullParser.parse();
+			carregou = true;
+		} catch (Exception e) {
+			Log.e(getClass().getSimpleName(), "Erro no parser do XML", e);
+		}
+		
+		/*
 		SAXParserFactory spf = SAXParserFactory.newInstance();
 		SAXParser sp = null;
 		XMLReader xr = null;
@@ -401,7 +441,6 @@ public class ProcuradosActivity extends AdMobActivity {
 			sp = spf.newSAXParser();
 			xr = sp.getXMLReader();
 			
-			/** Create handler to handle XML Tags ( extends DefaultHandler ) */
 			ProcuradosXmlHandler procuradosHandler = new ProcuradosXmlHandler();
 			xr.setContentHandler(procuradosHandler);
 			xr.parse(new InputSource(inputStream));
@@ -415,7 +454,7 @@ public class ProcuradosActivity extends AdMobActivity {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+		*/
 		return carregou;
 
 	}

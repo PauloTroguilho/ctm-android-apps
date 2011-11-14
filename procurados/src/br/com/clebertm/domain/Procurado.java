@@ -23,6 +23,7 @@ public class Procurado implements Comparable<Procurado>, Serializable {
 	private String nome;
 	private String apelido;
 	private String historico;
+	private String detalheUrl;
 	private String vulgo;
 	private String numeroProcesso;
 	private String juizCompetente;
@@ -36,6 +37,14 @@ public class Procurado implements Comparable<Procurado>, Serializable {
 	 */
 	public Procurado() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public String getDetalheUrl() {
+		return detalheUrl;
+	}
+
+	public void setDetalheUrl(String detalheUrl) {
+		this.detalheUrl = detalheUrl;
 	}
 
 	public Integer getId() {

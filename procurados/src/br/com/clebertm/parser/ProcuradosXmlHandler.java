@@ -11,7 +11,7 @@ import br.com.clebertm.domain.Procurados;
 public class ProcuradosXmlHandler extends DefaultHandler {
 
 	private Boolean currentElement = false;
-	private String currentValue = null;
+	private StringBuffer currentValueBuf;
 	
 	private Procurado currentProcurado;
 	private Procurados procurados;
@@ -30,13 +30,16 @@ public class ProcuradosXmlHandler extends DefaultHandler {
 			Attributes attributes) throws SAXException {
 
 		currentElement = true;
+		currentValueBuf = new StringBuffer();
 
-		if (localName.equals("procurados")) {
+		if (localName.equalsIgnoreCase("procurados")) {
 			/** Start */
 			procurados = new Procurados();
-		} else if (localName.equals("procurado")) {
+		} else if (localName.equalsIgnoreCase("procurado")) {
 			currentProcurado = new Procurado();
 			currentProcurado.setId(++cont);
+		} else if (localName.equalsIgnoreCase("detalheUrl")) {
+			Log.i("XmlHandler", "tag detalheUrl");
 		}
 
 	}
@@ -49,6 +52,7 @@ public class ProcuradosXmlHandler extends DefaultHandler {
 			throws SAXException {
 
 		currentElement = false;
+		String currentValue = currentValueBuf.toString();
 
 		/** set value */
 		if (localName.equalsIgnoreCase("nome")) {
@@ -62,6 +66,9 @@ public class ProcuradosXmlHandler extends DefaultHandler {
 			
 		} else if (localName.equalsIgnoreCase("historico")) {
 			currentProcurado.setHistorico(currentValue);
+			
+		} else if (localName.equalsIgnoreCase("detalheUrl")) {
+			currentProcurado.setDetalheUrl(currentValue);
 			
 		} else if (localName.equalsIgnoreCase("numeroProcesso")) {
 			currentProcurado.setNumeroProcesso(currentValue);
@@ -90,7 +97,7 @@ public class ProcuradosXmlHandler extends DefaultHandler {
 			currentProcurado = null;
 		}  
 
-		currentValue = null;
+		currentValueBuf = null;
 	}
 
 	/**
@@ -102,7 +109,7 @@ public class ProcuradosXmlHandler extends DefaultHandler {
 			throws SAXException {
 
 		if (currentElement) {
-			currentValue = new String(ch, start, length);
+			currentValueBuf.append(ch, start, length);
 			currentElement = false;
 		}
 
