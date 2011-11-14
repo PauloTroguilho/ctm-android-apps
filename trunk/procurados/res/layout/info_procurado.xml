@@ -21,8 +21,8 @@
 			
 			<LinearLayout android:orientation="vertical"
 				android:background="#F8F400" android:layout_gravity="top|center_horizontal"
-				android:layout_height="wrap_content" android:layout_width="fill_parent" android:paddingTop="10px">
-				<ImageView android:layout_gravity="top|center_horizontal" android:scaleType="fitCenter" android:id="@+id/ivFoto" android:layout_width="243dp" android:layout_height="284dp"></ImageView>
+				android:layout_height="wrap_content" android:layout_width="fill_parent" android:paddingTop="10px" android:gravity="top|center_horizontal">
+				<ImageView android:scaleType="fitCenter" android:id="@+id/ivFoto" android:layout_height="240dp" android:layout_width="match_parent"></ImageView>
 				<LinearLayout android:layout_height="fill_parent"
 					android:layout_width="match_parent" android:orientation="vertical"
 					android:id="@+id/layoutDados" android:paddingTop="5px"
@@ -40,12 +40,11 @@
 			</LinearLayout>
 			<LinearLayout android:orientation="vertical"
 				android:layout_width="fill_parent" android:layout_height="fill_parent">
-				<LinearLayout android:layout_gravity="center_horizontal"
-					android:layout_width="fill_parent" android:layout_height="fill_parent"
-					android:background="#FFFF88" android:padding="10px"
-					android:gravity="center_horizontal|center">
+				<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+					android:background="#FFFF88" android:gravity="center_horizontal|center" android:padding="2dp">
 					<Button android:layout_height="wrap_content"
 						android:layout_width="wrap_content" android:text="@string/bt_info" android:id="@+id/btDetalhes"></Button>
+					<Button android:text="@string/bt_compartilhar" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/btCompartilhar"></Button>
 				</LinearLayout>
 			</LinearLayout>
 		</LinearLayout>

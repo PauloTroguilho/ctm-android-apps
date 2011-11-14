@@ -19,26 +19,27 @@ import br.com.clebertm.procurados.util.FileCacheUtils;
 import br.com.clebertm.procurados.util.IOUtils;
 
 public class InfoProcuradoActivity extends Activity {
-	
+
 	private Procurado procurado;
-	
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.info_procurado);
-		
-		procurado = (Procurado)getIntent().getSerializableExtra("procurado");
-		
-		TextView tvNome = (TextView)findViewById(R.id.tvNome);
-		TextView tvApelido = (TextView)findViewById(R.id.tvApelido);
-		ImageView ivFoto = (ImageView)findViewById(R.id.ivFoto);
-		
+
+		procurado = (Procurado) getIntent().getSerializableExtra("procurado");
+
+		TextView tvNome = (TextView) findViewById(R.id.tvNome);
+		TextView tvApelido = (TextView) findViewById(R.id.tvApelido);
+		ImageView ivFoto = (ImageView) findViewById(R.id.ivFoto);
+
 		tvNome.setText(procurado.getNome());
 		tvApelido.setText(procurado.getApelidoTratado());
-		
+
 		File fotosDir = FileCacheUtils.getFotosCacheDir(this);
-		File fotoFile = new File(fotosDir, procurado.getFotoId() + Consts.FOTO_EXTENSAO);
+		File fotoFile = new File(fotosDir, procurado.getFotoId()
+				+ Consts.FOTO_EXTENSAO);
 		FileInputStream in = null;
 		try {
 			in = new FileInputStream(fotoFile);
@@ -49,18 +50,37 @@ public class InfoProcuradoActivity extends Activity {
 			IOUtils.closeQuietly(in);
 			ivFoto.setImageBitmap(bitmap);
 		}
-		
-		Button btDetalhes = (Button)findViewById(R.id.btDetalhes);
+
+		Button btDetalhes = (Button) findViewById(R.id.btDetalhes);
 		btDetalhes.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
-				intent.setClass(InfoProcuradoActivity.this, DetalhesActivity.class);
+				intent.setClass(InfoProcuradoActivity.this,
+						DetalhesActivity.class);
 				intent.putExtra("procurado", procurado);
-				
+
 				startActivity(intent);
+			}
+		});
+
+		Button btCompartilhar = (Button) findViewById(R.id.btCompartilhar);
+		btCompartilhar.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				final Intent intent = new Intent(Intent.ACTION_SEND);
+
+				intent.setType("text/plain");
+				intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.text_compartilhamento_assunto));
+				intent.putExtra(Intent.EXTRA_TEXT, 
+						getString(R.string.text_compartilhamento_1) + " " +
+						getString(R.string.text_compartilhamento_2) + " " + 
+						procurado.getDetalheUrl());
+				startActivity(Intent.createChooser(intent, getString(R.string.text_tipo_compartilhamento)));
 			}
 		});
 	}
