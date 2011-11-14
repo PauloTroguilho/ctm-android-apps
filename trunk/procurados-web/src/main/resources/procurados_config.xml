@@ -51,6 +51,7 @@
                                 <apelido>${sys.xpath("data(//div[@class='nome']/h4/a)", procurado.toString())}</apelido>
                                 <fotoId>${fotoId}</fotoId>
                                 <historico>${sys.xpath("data(//div[@class='historico']/h3)", detalheProcurado.toString())}</historico>
+                                <detalheUrl>${sys.escapeXml(baseUrl.toString() + detalheUrl.toString())}</detalheUrl>
                         ]]>
                     </template>
                     <loop item="dadoProcurado" index="x">
@@ -149,6 +150,7 @@
 		</while>
         <![CDATA[ </procurados> ]]>
 	</file>
+	
 	<while condition="true" index="pagina" maxloops="2">
 		<loop item="procurado" index="i">
 			<list>
@@ -175,4 +177,5 @@
 			</body>
 		</loop>
 	</while>
+	
 </config>

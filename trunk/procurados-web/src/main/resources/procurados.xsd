@@ -9,6 +9,7 @@
 			<xsd:element name="apelido" type="xsd:string" minOccurs="0" maxOccurs="1" />
 			<xsd:element name="fotoId" type="xsd:string" minOccurs="0" maxOccurs="1" />			
 			<xsd:element name="historico" type="xsd:string" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="detalheUrl" type="xsd:string" minOccurs="0" maxOccurs="1" />
 			<xsd:element name="numeroProcesso" type="xsd:string" minOccurs="0" maxOccurs="1" />
 			<xsd:element name="juizCompetente" type="xsd:string" minOccurs="0" maxOccurs="1" />
 			<xsd:element name="comarca" type="xsd:string" minOccurs="0" maxOccurs="1" />
