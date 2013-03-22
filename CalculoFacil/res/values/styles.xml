@@ -1,5 +1,0 @@
-<resources>
-    <style name="Theme.NoTitleBar.Fullscreen" parent="android:Theme">
-        <item name="android:windowNoTitle">true</item>
-    </style>   
-</resources> 
