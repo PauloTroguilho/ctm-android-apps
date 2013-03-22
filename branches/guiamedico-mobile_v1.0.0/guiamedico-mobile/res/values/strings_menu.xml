@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="menu_pesquisar">Pesquisar</string>
+    <string name="menu_medicos">Médicos</string>
+    <string name="menu_hospitais">Hospitais e Clínicas</string>
+    <string name="menu_laboratorios">Laboratórios</string>
+    <string name="menu_noticias">Notícias</string>
+    <string name="menu_cliente">Meus Dados</string>
+
+</resources>
