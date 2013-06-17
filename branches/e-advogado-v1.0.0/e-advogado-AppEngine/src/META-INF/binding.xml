@@ -1,0 +1,11 @@
+<bindings xmlns="http://java.sun.com/xml/ns/jaxb" version="2.0" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:ic="http://www.cnj.jus.br/intercomunicacao-2.1">
+  <globalBindings>
+    <serializable uid="1" />
+    <javaType name="java.util.Calendar" xmlType="ic:tipoDataHora"
+      parseMethod="javax.xml.bind.DatatypeConverter.parseDateTime"
+      printMethod="javax.xml.bind.DatatypeConverter.printDateTime"
+    />
+  </globalBindings>
+</bindings>
