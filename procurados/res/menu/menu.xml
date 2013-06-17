@@ -1,8 +1,0 @@
-
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:menuCategory="system" android:title="@string/menu_atualizar" android:icon="@drawable/icon_update" android:id="@+id/menu_item_atualizar"></item><item android:menuCategory="system"
-		android:icon="@drawable/icon_help" android:id="@+id/menu_item_sobre" android:title="@string/menu_sobre"></item>
-	<item android:menuCategory="system"
-		android:title="@string/menu_sair" android:icon="@drawable/icon_sair" android:id="@+id/menu_item_sair"></item>
-	
-</menu>

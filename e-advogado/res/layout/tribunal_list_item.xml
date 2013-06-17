@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5dp" >
+
+    <TextView
+        android:id="@+id/textViewTribunalSigla"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal|center"
+        android:text="TRT-6"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textIsSelectable="false"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textViewTribunalNome"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal|center"
+        android:text="Tribunal Regional do Trabalho de Pernambuco"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textIsSelectable="false"
+        android:textStyle="bold" />
+
+</LinearLayout>

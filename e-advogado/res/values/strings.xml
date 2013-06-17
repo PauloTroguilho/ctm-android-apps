@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="service_base_url">https://192.168.1.5:8443/advogadope-web/services</string>
+    <string name="app_name">E-Advogado</string>
+    <string name="prefs_category_conta">Conta do Usuário</string>
+    <string name="prefs_category_conta_email">E-mail</string>
+    <string name="prefs_category_conta_email_msg">Informe o e-mail de acesso ao serviço.</string>
+    <string name="prefs_category_conta_senha">Senha</string>
+    <string name="prefs_category_conta_senha_msg">Informe sua senha de acesso ao serviço.</string>
+    <string name="hello_world">Olá Mundo Android!</string>
+    
+    <string name="menu_meus_processos">Meus Processos</string>
+    <string name="menu_consultar_processos">Consultar Processos</string>
+    <string name="menu_configuracoes">Configurações</string>
+    
+
+    <string-array name="menu_itens">
+        <item>@string/menu_meus_processos</item>
+        <item>@string/menu_consultar_processos</item>
+        <item>@string/menu_configuracoes</item>
+    </string-array>
+	
+	<string name="criar_conta">Cadastro</string>
+    
+</resources>

@@ -1,0 +1,32 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <string name="activity_processo_title">Processo</string>
+    
+    <string name="processo_numero">Número</string>
+    <string name="processo_numero_npu">Número (NPU)</string>
+    <string name="processo_npu">NPU</string>
+    <string name="processo_tipoJuizo">Tipo de Juizo</string>
+    <string name="processo_tipoJuizo_1g">1º Grau</string>
+    <string name="processo_tipoJuizo_2g">2º Grau</string>
+    <string-array name="processo_tipos_juizos">
+        <item>@string/processo_tipoJuizo_1g</item>
+        <item>@string/processo_tipoJuizo_2g</item>
+    </string-array>
+    <string name="processo_tribunal">Tribunal</string>
+    <string name="processo_parte">Parte</string>
+    <string name="processo_tipoParte">Tipo Parte</string>
+    <string name="processp_classeProcessual">Classe Processual</string>
+    <string name="processp_orgaoJulgador">Órgao Julgador</string>
+    <string name="processo_valorCausa">Valor da Causa</string>
+    
+    <string name="processo_tab_dados">Dados</string>
+    <string name="processo_tab_polos">Polos</string>
+    <string name="processo_tab_movimento">Movimento</string>
+    <string name="processo_polo_ativo">Polo Ativo</string>
+    <string name="processo_polo_passivo">Polo Passivo</string>
+    <string name="processo_parte_nome">Nome da Parte</string>
+    <string name="processo_parte_advogado">Advogado</string>
+    <string name="processo_mov_datahora">Data/Hora</string>
+    <string name="processo_mov_complemento">Complemento</string>
+    
+</resources>
