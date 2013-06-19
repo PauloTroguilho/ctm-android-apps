@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"s1omim4x8ymp9_6H8kBMkfEDqpo/xg0MmgUOQe1-rcwuaBQTeY-XGIg\"",
+ "etag": "\"s1omim4x8ymp9_6H8kBMkfEDqpo/xM0CyrvT3vz07P6efS7rNX_CMaM\"",
  "discoveryVersion": "v1",
  "id": "processoendpoint:v1",
  "name": "processoendpoint",
@@ -63,48 +63,6 @@
   }
  },
  "schemas": {
-  "Calendar": {
-   "id": "Calendar",
-   "type": "object",
-   "properties": {
-    "fieldsComputed": {
-     "type": "integer",
-     "format": "int32"
-    },
-    "fieldsNormalized": {
-     "type": "integer",
-     "format": "int32"
-    },
-    "firstDayOfWeek": {
-     "type": "integer",
-     "format": "int32"
-    },
-    "lenient": {
-     "type": "boolean"
-    },
-    "minimalDaysInFirstWeek": {
-     "type": "integer",
-     "format": "int32"
-    },
-    "time": {
-     "type": "string",
-     "format": "date-time"
-    },
-    "timeInMillis": {
-     "type": "string",
-     "format": "int64"
-    },
-    "timeZone": {
-     "$ref": "TimeZone"
-    },
-    "weekCountData": {
-     "$ref": "Locale"
-    },
-    "zoneShared": {
-     "type": "boolean"
-    }
-   }
-  },
   "CollectionResponse_Processo": {
    "id": "CollectionResponse_Processo",
    "type": "object",
@@ -145,39 +103,6 @@
     },
     "parent": {
      "$ref": "Key"
-    }
-   }
-  },
-  "Locale": {
-   "id": "Locale",
-   "type": "object",
-   "properties": {
-    "country": {
-     "type": "string"
-    },
-    "displayCountry": {
-     "type": "string"
-    },
-    "displayLanguage": {
-     "type": "string"
-    },
-    "displayName": {
-     "type": "string"
-    },
-    "displayVariant": {
-     "type": "string"
-    },
-    "iso3Country": {
-     "type": "string"
-    },
-    "iso3Language": {
-     "type": "string"
-    },
-    "language": {
-     "type": "string"
-    },
-    "variant": {
-     "type": "string"
     }
    }
   },
@@ -342,9 +267,6 @@
     "processoJudicial": {
      "$ref": "TipoProcessoJudicial"
     },
-    "processoJudicialString": {
-     "type": "string"
-    },
     "tipoJuizo": {
      "$ref": "TipoJuizo"
     },
@@ -362,26 +284,6 @@
      "items": {
       "$ref": "Processo"
      }
-    }
-   }
-  },
-  "TimeZone": {
-   "id": "TimeZone",
-   "type": "object",
-   "properties": {
-    "displayName": {
-     "type": "string"
-    },
-    "dstsavings": {
-     "type": "integer",
-     "format": "int32"
-    },
-    "id": {
-     "type": "string"
-    },
-    "rawOffset": {
-     "type": "integer",
-     "format": "int32"
     }
    }
   },
@@ -534,7 +436,7 @@
      "format": "byte"
     },
     "dataHora": {
-     "$ref": "Calendar"
+     "type": "string"
     },
     "documentoVinculado": {
      "type": "array",
@@ -660,7 +562,7 @@
      }
     },
     "dataHora": {
-     "$ref": "Calendar"
+     "type": "string"
     },
     "idDocumentoVinculado": {
      "type": "array",

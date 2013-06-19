@@ -5,7 +5,6 @@ import javax.persistence.Id;
 
 /**
  * An entity for Android device information.
- * 
  * Its associated endpoint, DeviceInfoEndpoint.java, was directly generated from
  * this class - the Google Plugin for Eclipse allows you to generate endpoints
  * directly from entities!

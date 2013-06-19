@@ -17,7 +17,7 @@ import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
-import br.jus.cnj.pje.TipoProcessoJudicial;
+import br.jus.cnj.pje.v1.TipoProcessoJudicial;
 
 import com.ctm.eadvogado.util.PJeServiceUtil;
 import com.google.api.server.spi.config.Api;
@@ -30,7 +30,6 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
 import com.google.appengine.datanucleus.query.JPACursorHelper;
-import com.google.gson.Gson;
 
 @Api(name = "processoendpoint", namespace = @ApiNamespace(ownerDomain = "ctm.com", ownerName = "ctm.com", packagePath = "eadvogado"))
 public class ProcessoEndpoint {
@@ -327,17 +326,12 @@ public class ProcessoEndpoint {
 					processo.setNpu(npu);
 					processo.setTipoJuizo(TipoJuizo.valueOf(tipoJuizo));
 					processo.setTribunal(tribunal.getId());
-					Gson gson = new Gson();
-			    	String json = gson.toJson(processoJudicial);
-					processo.setProcessoJudicialString(json);
+					processo.setProcessoJudicial(processoJudicial);
 					mgr.persist(processo);
-				} else if (processo.getProcessoJudicial() == null || processo.getProcessoJudicialString().isEmpty()) {
-					Gson gson = new Gson();
-			    	String json = gson.toJson(processoJudicial);
-					processo.setProcessoJudicialString(json);
+				} else if (processo.getProcessoJudicial() == null) {
+					processo.setProcessoJudicial(processoJudicial);
 					mgr.persist(processo);
 				}
-				processo.setProcessoJudicial(processoJudicial);
 			}
 			
 		} catch(NoResultException e) {

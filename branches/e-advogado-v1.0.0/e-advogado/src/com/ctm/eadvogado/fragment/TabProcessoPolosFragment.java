@@ -30,7 +30,7 @@ public class TabProcessoPolosFragment extends SherlockFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		processoDTO = ProcessoTabsPagerFragment.PROCESSO;
+		processoDTO = ProcessoTabsPagerFragment.processoResult;
 	}
 
 	/**

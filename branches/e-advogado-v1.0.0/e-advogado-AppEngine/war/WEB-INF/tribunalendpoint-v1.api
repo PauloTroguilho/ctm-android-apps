@@ -62,21 +62,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "tribunalendpoint.insertTribunal" : {
-      "path" : "tribunal",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.TribunalEndpoint.insertTribunal",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "tribunalendpoint.removeTribunal" : {
       "path" : "tribunal/{id}",
       "httpMethod" : "DELETE",
@@ -92,6 +77,21 @@
           }
         },
         "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "tribunalendpoint.insertTribunal" : {
+      "path" : "tribunal",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.TribunalEndpoint.insertTribunal",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
@@ -209,15 +209,15 @@
           "$ref" : "Tribunal"
         }
       },
-      "com.ctm.eadvogado.TribunalEndpoint.insertTribunal" : {
-        "request" : {
-          "$ref" : "Tribunal"
-        },
+      "com.ctm.eadvogado.TribunalEndpoint.removeTribunal" : {
         "response" : {
           "$ref" : "Tribunal"
         }
       },
-      "com.ctm.eadvogado.TribunalEndpoint.removeTribunal" : {
+      "com.ctm.eadvogado.TribunalEndpoint.insertTribunal" : {
+        "request" : {
+          "$ref" : "Tribunal"
+        },
         "response" : {
           "$ref" : "Tribunal"
         }
