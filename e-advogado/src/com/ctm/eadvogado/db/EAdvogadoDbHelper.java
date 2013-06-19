@@ -1,5 +1,6 @@
 package com.ctm.eadvogado.db;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,8 +58,13 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
 				processo.getTribunal().getId());
 		initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_TIPO_JUIZO,
 				processo.getTipoJuizo());
-		initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_XML_DADOS,
-				processo.getProcessoJudicial().toString());
+		try {
+			initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_XML_DADOS,
+					processo.getProcessoJudicial().toPrettyString());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         return getWritableDatabase().insert(EAdvogadoContract.ProcessoTable.TABLE_NAME, null, initialValues);
     }

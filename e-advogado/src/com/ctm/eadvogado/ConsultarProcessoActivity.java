@@ -1,5 +1,6 @@
 package com.ctm.eadvogado;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +30,7 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class ConsultarProcessoActivity extends SlidingActivity {
 
@@ -46,6 +48,8 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 
 	CarregarDadosConsultaTask carregarTask = null;
 	ConsultarProcessoTask consultarProcessoTask = null;
+	
+	public static ProcessoDTO processoResult;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -180,6 +184,7 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 
 		@Override
 		protected ProcessoDTO doInBackground(Void... params) {
+			processoResult = null;
 			ProcessoDTO processoDTO = new ProcessoDTO();
 			Processo processo = null;
 			
@@ -193,12 +198,12 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 				if (processo != null) {
 					String processoXml = dbHelper.selectProcessoXml(
 							processo.getId().getId());
+					Type t = new TypeToken<TipoProcessoJudicial>() {}.getType();
 					Gson gson = new Gson();
-					TipoProcessoJudicial processoJudicial = gson.fromJson(
-							processoXml, TipoProcessoJudicial.class);
-					processo.setProcessoJudicial(processoJudicial);
+					processo.setProcessoJudicial((TipoProcessoJudicial)gson.fromJson(processoXml, t));
 				}
 			} catch (Exception e) {
+				processo = null;
 				Log.e("E-Advogado", "Falha ao consultar processo no banco", e);
 			}
 			if (processo == null) {
@@ -231,7 +236,7 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 				Intent intent = new Intent();
 				intent.setClass(ConsultarProcessoActivity.this,
 						ProcessoTabsPagerFragment.class);
-				intent.putExtra("processo", processoDTO);
+				processoResult = processoDTO;
 				startActivity(intent);
 			} else {
 				Toast.makeText(ConsultarProcessoActivity.this,

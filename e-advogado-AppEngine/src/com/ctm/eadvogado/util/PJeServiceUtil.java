@@ -1,16 +1,15 @@
 package com.ctm.eadvogado.util;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
+import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
 
-import br.jus.cnj.pje.IntercomunicacaoService;
-import br.jus.cnj.pje.ServicoIntercomunicacao21;
-import br.jus.cnj.pje.TipoProcessoJudicial;
+import br.jus.cnj.pje.v1.IntercomunicacaoService;
+import br.jus.cnj.pje.v1.ServicoIntercomunicacao21;
+import br.jus.cnj.pje.v1.TipoProcessoJudicial;
 
 public class PJeServiceUtil {
 	
@@ -24,7 +23,7 @@ public class PJeServiceUtil {
 		Holder<TipoProcessoJudicial> processo = new Holder<TipoProcessoJudicial>();
 		String idConsultante = "123";
 		String senhaConsultante = "123";
-		Calendar dataReferencia = null;
+		String dataReferencia = null;
 		Boolean movimentos = Boolean.TRUE;
 		Boolean incluirDocumentos = Boolean.FALSE;
 		List<String> documento = new ArrayList<String>();
@@ -43,11 +42,23 @@ public class PJeServiceUtil {
 	public static TipoProcessoJudicial consultarProcessoJudicial(
 			String urlEndpoint, String numeroProcesso) throws MalformedURLException {
 		TipoProcessoJudicial processoJudicial = null;
-		IntercomunicacaoService service = new IntercomunicacaoService(new URL(urlEndpoint));
+		IntercomunicacaoService service = new IntercomunicacaoService();
 		if (service != null) {
-			processoJudicial = consultarProcessoJudicial(service.getIntercomunicacaoImplPort(urlEndpoint), numeroProcesso);
+			if (urlEndpoint.toLowerCase().endsWith("?wsdl")) {
+				urlEndpoint = urlEndpoint.substring(0, urlEndpoint.toLowerCase().indexOf("?wsdl"));
+			}
+			ServicoIntercomunicacao21 port = service.getIntercomunicacaoImplPort();
+			BindingProvider bp = (BindingProvider) port;
+            bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlEndpoint);
+			processoJudicial = consultarProcessoJudicial(port, numeroProcesso);
 		}
 		return processoJudicial;
+	}
+	
+	public static void main(String[] args) {
+		String urlEndpoint = "http://www.teste.com?wsdl";
+		urlEndpoint = urlEndpoint.substring(0, urlEndpoint.toLowerCase().indexOf("?wsdl"));
+		System.out.println(urlEndpoint);
 	}
 
 }

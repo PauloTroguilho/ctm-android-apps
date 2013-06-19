@@ -47,7 +47,7 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 	ViewPager mViewPager;
 	TabsAdapter mTabsAdapter;
 	
-	public static ProcessoDTO PROCESSO;
+	public static ProcessoDTO processoResult;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +55,7 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.processo_tabs_pager_fragment);
 		
-		PROCESSO = (ProcessoDTO) getIntent().getExtras().get("processo");
+		processoResult = ConsultarProcessoActivity.processoResult;
 		
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup();

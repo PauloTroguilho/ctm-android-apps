@@ -12,9 +12,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.Transient;
 
-import br.jus.cnj.pje.TipoProcessoJudicial;
+import br.jus.cnj.pje.v1.TipoProcessoJudicial;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -34,10 +33,8 @@ public class Processo implements Serializable {
 	private TipoJuizo tipoJuizo;
 	private Key tribunal;
 	
-	@Transient
-	private TipoProcessoJudicial processoJudicial;
 	@Lob @Basic(fetch = FetchType.EAGER)
-	private String processoJudicialString;
+	private TipoProcessoJudicial processoJudicial;
 
 	/**
 	 * 
@@ -83,14 +80,6 @@ public class Processo implements Serializable {
 
 	public void setProcessoJudicial(TipoProcessoJudicial processoJudicial) {
 		this.processoJudicial = processoJudicial;
-	}
-
-	public String getProcessoJudicialString() {
-		return processoJudicialString;
-	}
-
-	public void setProcessoJudicialString(String processoJudicialString) {
-		this.processoJudicialString = processoJudicialString;
 	}
 
 }

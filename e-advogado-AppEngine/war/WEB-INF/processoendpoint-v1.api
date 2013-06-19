@@ -122,21 +122,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "processoendpoint.insertProcesso" : {
-      "path" : "processo",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.ProcessoEndpoint.insertProcesso",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "processoendpoint.listProcessoNPUsPorAdvogado" : {
       "path" : "processo/{email}/{senha}",
       "httpMethod" : "GET",
@@ -156,6 +141,21 @@
           }
         },
         "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "processoendpoint.insertProcesso" : {
+      "path" : "processo",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.ProcessoEndpoint.insertProcesso",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
@@ -246,9 +246,6 @@
           },
           "processoJudicial" : {
             "$ref" : "TipoProcessoJudicial"
-          },
-          "processoJudicialString" : {
-            "type" : "string"
           }
         }
       },
@@ -699,7 +696,7 @@
             }
           },
           "dataHora" : {
-            "$ref" : "Calendar"
+            "type" : "string"
           },
           "nivelSigilo" : {
             "type" : "integer"
@@ -721,95 +718,6 @@
           },
           "codigoNacional" : {
             "type" : "integer"
-          }
-        }
-      },
-      "Calendar" : {
-        "id" : "Calendar",
-        "type" : "object",
-        "properties" : {
-          "time" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "lenient" : {
-            "type" : "boolean"
-          },
-          "firstDayOfWeek" : {
-            "type" : "integer"
-          },
-          "minimalDaysInFirstWeek" : {
-            "type" : "integer"
-          },
-          "timeZone" : {
-            "$ref" : "TimeZone"
-          },
-          "timeInMillis" : {
-            "type" : "string",
-            "format" : "int64"
-          },
-          "fieldsComputed" : {
-            "type" : "integer"
-          },
-          "fieldsNormalized" : {
-            "type" : "integer"
-          },
-          "zoneShared" : {
-            "type" : "boolean"
-          },
-          "weekCountData" : {
-            "$ref" : "Locale"
-          }
-        }
-      },
-      "TimeZone" : {
-        "id" : "TimeZone",
-        "type" : "object",
-        "properties" : {
-          "displayName" : {
-            "type" : "string"
-          },
-          "rawOffset" : {
-            "type" : "integer"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "dstsavings" : {
-            "type" : "integer"
-          }
-        }
-      },
-      "Locale" : {
-        "id" : "Locale",
-        "type" : "object",
-        "properties" : {
-          "language" : {
-            "type" : "string"
-          },
-          "country" : {
-            "type" : "string"
-          },
-          "variant" : {
-            "type" : "string"
-          },
-          "displayCountry" : {
-            "type" : "string"
-          },
-          "displayLanguage" : {
-            "type" : "string"
-          },
-          "displayName" : {
-            "type" : "string"
-          },
-          "displayVariant" : {
-            "type" : "string"
-          },
-          "iso3Country" : {
-            "type" : "string"
-          },
-          "iso3Language" : {
-            "type" : "string"
           }
         }
       },
@@ -852,7 +760,7 @@
             "type" : "string"
           },
           "dataHora" : {
-            "$ref" : "Calendar"
+            "type" : "string"
           },
           "mimetype" : {
             "type" : "string"
@@ -945,17 +853,17 @@
           "$ref" : "Processo"
         }
       },
+      "com.ctm.eadvogado.ProcessoEndpoint.listProcessoNPUsPorAdvogado" : {
+        "response" : {
+          "$ref" : "ProcessoCollection"
+        }
+      },
       "com.ctm.eadvogado.ProcessoEndpoint.insertProcesso" : {
         "request" : {
           "$ref" : "Processo"
         },
         "response" : {
           "$ref" : "Processo"
-        }
-      },
-      "com.ctm.eadvogado.ProcessoEndpoint.listProcessoNPUsPorAdvogado" : {
-        "response" : {
-          "$ref" : "ProcessoCollection"
         }
       },
       "com.ctm.eadvogado.ProcessoEndpoint.removeProcesso" : {
