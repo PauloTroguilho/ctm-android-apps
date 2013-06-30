@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal|center"
     android:orientation="vertical"
+    android:focusableInTouchMode="true"
     tools:context=".ConsultarProcessoActivity" >
 
     <LinearLayout
@@ -43,6 +44,8 @@
             android:id="@+id/listViewMeusProcessos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusable="true" 
+        	android:descendantFocusability="beforeDescendants"
             tools:listitem="@layout/processo_list_item" >
 
         </ListView>

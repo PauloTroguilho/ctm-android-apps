@@ -13,6 +13,7 @@ import com.ctm.eadvogado.fragment.PreferencesFragment;
 
 public class PreferencesActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 	
+	public static final String PREFS_KEY_PRIMEIRA_EXEC = "primeiraExec";
 	public static final String PREFS_KEY_EMAIL = "email";
 	public static final String PREFS_KEY_SENHA = "senha";
 	

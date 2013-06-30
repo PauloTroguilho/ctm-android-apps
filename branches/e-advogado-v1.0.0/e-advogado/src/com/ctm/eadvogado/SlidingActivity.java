@@ -251,21 +251,24 @@ public class SlidingActivity extends SherlockActivity implements
 		case 0:
 			// Run next activity
 			intent = new Intent();
-			intent.setClass(this, MeusProcessosActivity.class);
+			intent.setClass(MainActivity.INSTANCE, MeusProcessosActivity.class);
 			startActivity(intent);
 			break;
 		case 1:
 			intent = new Intent();
-			intent.setClass(this, ConsultarProcessoActivity.class);
+			intent.setClass(MainActivity.INSTANCE, ConsultarProcessoActivity.class);
 			startActivity(intent);
 			break;
 		case 2:
 			intent = new Intent();
-			intent.setClass(this, PreferencesActivity.class);
+			intent.setClass(MainActivity.INSTANCE, PreferencesActivity.class);
 			startActivity(intent);
 			break;
 		}
 		toggle();
+		if (!(this instanceof MainActivity)) {
+			finish();
+		}
 	}
 	
 	/**

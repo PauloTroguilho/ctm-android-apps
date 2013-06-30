@@ -76,6 +76,8 @@ public class LoginActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		
 		Advogadoendpoint.Builder endpointBuilder = new Advogadoendpoint.Builder(
 		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
 		        new HttpRequestInitializer() {
@@ -85,7 +87,6 @@ public class LoginActivity extends Activity {
 		advogadoEndpoint = CloudEndpointUtils.updateBuilder(endpointBuilder).build();
 		setContentView(R.layout.activity_login);
 
-		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		String email = preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, "");
 		
 		if (email == null || email.trim().length() == 0) {
