@@ -18,23 +18,29 @@ package com.ctm.eadvogado;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
 import android.widget.TabWidget;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.ctm.eadvogado.db.EAdvogadoDbHelper;
 import com.ctm.eadvogado.dto.ProcessoDTO;
 import com.ctm.eadvogado.fragment.TabProcessoDadosFragment;
 import com.ctm.eadvogado.fragment.TabProcessoMovimentoFragment;
 import com.ctm.eadvogado.fragment.TabProcessoPolosFragment;
+import com.ctm.eadvogado.processoendpoint.model.Processo;
 
 /**
  * Demonstrates combining a TabHost with a ViewPager to implement a tab UI that
@@ -47,15 +53,17 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 	ViewPager mViewPager;
 	TabsAdapter mTabsAdapter;
 	
+	private EAdvogadoDbHelper dbHelper;
+	private SalvarProcessoTask salvarProcessoTask;
+	
 	public static ProcessoDTO processoResult;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		//setTheme(R.style.Theme_Sherlock); // Used for theme switching in samples
 		super.onCreate(savedInstanceState);
+		dbHelper = new EAdvogadoDbHelper(this);
 		setContentView(R.layout.processo_tabs_pager_fragment);
-		
-		processoResult = ConsultarProcessoActivity.processoResult;
 		
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup();
@@ -196,6 +204,42 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 		}
 	}
 	
+	public class SalvarProcessoTask extends AsyncTask<Void, Void, String> {
+
+		boolean erroComunicacao = false;
+
+		@Override
+		protected String doInBackground(Void... params) {
+			String npu = null;
+			try {
+				dbHelper.inserirProcesso(processoResult.getProcesso());
+				npu = processoResult.getProcesso().getNpu();
+			} catch(Exception e) {
+				Log.e("E-Advogado", "Falha ao inserir processo no BD.", e);
+			}
+			return npu;
+		}
+
+		@Override
+		protected void onPostExecute(String npu) {
+			if (npu != null) {
+				Toast.makeText(ProcessoTabsPagerFragment.this,
+						R.string.msg_processo_inserido_sucesso,
+						Toast.LENGTH_LONG).show();
+				menuSalvar.setVisible(false);
+			} else {
+				Toast.makeText(ProcessoTabsPagerFragment.this,
+						R.string.msg_processo_inserido_erro,
+						Toast.LENGTH_LONG).show();
+			}
+		}
+
+		@Override
+		protected void onCancelled() {
+			salvarProcessoTask = null;
+		}
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -204,6 +248,37 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 				finish();
 				return true;
 		}
+		if (item == menuSalvar) {
+			salvarProcessoTask = new SalvarProcessoTask();
+			salvarProcessoTask.execute((Void) null);
+		} else if (item == menuAtualizar) {
+			
+		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	private MenuItem menuSalvar = null;
+	private MenuItem menuAtualizar = null;
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		 //Used to put dark icons on light action bar
+        boolean isLight = SlidingActivity.THEME == R.style.Theme_Sherlock_Light;
+
+        menuSalvar = menu.add(R.string.btn_ab_salvar);
+        menuSalvar.setIcon(isLight ? R.drawable.ic_content_save_inverse : R.drawable.ic_content_save)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        Processo selectProcesso = dbHelper.selectProcesso(processoResult.getProcesso().getNpu(),
+				processoResult.getTribunal().getId().getId(), processoResult
+						.getProcesso().getTipoJuizo());
+		if (selectProcesso != null) {
+			menuSalvar.setVisible(false);
+		}
+
+        menuAtualizar = menu.add(R.string.btn_ab_atualizar);
+		menuAtualizar.setIcon(isLight ? R.drawable.ic_refresh_inverse : R.drawable.ic_refresh)
+			.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
+        return true;
 	}
 }

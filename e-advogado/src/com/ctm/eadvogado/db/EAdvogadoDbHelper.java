@@ -1,6 +1,5 @@
 package com.ctm.eadvogado.db;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.ctm.eadvogado.dto.ProcessoDTO;
 import com.ctm.eadvogado.processoendpoint.model.Key;
 import com.ctm.eadvogado.processoendpoint.model.Processo;
 import com.ctm.eadvogado.tribunalendpoint.model.Tribunal;
@@ -58,13 +58,6 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
 				processo.getTribunal().getId());
 		initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_TIPO_JUIZO,
 				processo.getTipoJuizo());
-		try {
-			initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_XML_DADOS,
-					processo.getProcessoJudicial().toPrettyString());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
         return getWritableDatabase().insert(EAdvogadoContract.ProcessoTable.TABLE_NAME, null, initialValues);
     }
@@ -148,45 +141,6 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
         return processo;
     }
     
-    /**
-     * @param npu
-     * @param idTribunal
-     * @param tipoJuizo
-     * @return
-     */
-    public String selectProcessoXml(Long idProcesso) {
-    	// Define a projection that specifies which columns from the database
-    	// you will actually use after this query.
-    	String[] projection = {
-    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_XML_DADOS
-    	};
-    	String selection = EAdvogadoContract.ProcessoTable._ID + " = ?";
-    	String[] columnValues = {
-    			idProcesso.toString()
-    	};
-
-    	// How you want the results sorted in the resulting Cursor
-    	String sortOrder =
-    		EAdvogadoContract.ProcessoTable._ID + " DESC";
-
-    	Cursor c = getReadableDatabase().query(
-    			EAdvogadoContract.ProcessoTable.TABLE_NAME,  // The table to query
-    	    projection,                               // The columns to return
-    	    selection,                                // The columns for the WHERE clause
-    	    columnValues,                            // The values for the WHERE clause
-    	    null,                                     // don't group the rows
-    	    null,                                     // don't filter by row groups
-    	    sortOrder                                 // The sort order
-    	    );
-    	String xmlProcesso = null;
-    	if (c.moveToFirst()) {
-    		xmlProcesso = c.getString(0);
-    	}
-    	c.close();
-
-        return xmlProcesso;
-    }
-    
     public Tribunal selectTribunalPorId(Long id) {
     	// Define a projection that specifies which columns from the database
     	// you will actually use after this query.
@@ -264,5 +218,48 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     	c.close();
 
         return tribunais;
+    }
+    
+    
+    public List<ProcessoDTO> selectProcessos() {
+    	// Define a projection that specifies which columns from the database
+    	// you will actually use after this query.
+    	String[] projection = {
+    			EAdvogadoContract.ProcessoTable._ID,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_NPU,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_TIPO_JUIZO,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_TRIBUNAL
+    	};
+
+    	// How you want the results sorted in the resulting Cursor
+    	String sortOrder =
+    		EAdvogadoContract.ProcessoTable.COLUMN_NAME_NPU + " ASC";
+
+    	Cursor c = getReadableDatabase().query(
+    			EAdvogadoContract.ProcessoTable.TABLE_NAME,  // The table to query
+    	    projection,                               // The columns to return
+    	    null,                                // The columns for the WHERE clause
+    	    null,                            // The values for the WHERE clause
+    	    null,                                     // don't group the rows
+    	    null,                                     // don't filter by row groups
+    	    sortOrder                                 // The sort order
+    	    );
+    	List<ProcessoDTO> processos = new ArrayList<ProcessoDTO>();
+    	if (c.moveToFirst()) {
+    		do {
+    			ProcessoDTO p = new ProcessoDTO();
+    			Processo processo = new Processo();
+    			processo.setId(new Key());
+    			processo.getId().setId(c.getLong(0));
+    			processo.setNpu(c.getString(1));
+        		processo.setTipoJuizo(c.getString(2));
+        		p.setProcesso(processo);
+    			p.setTribunal(this.selectTribunalPorId(c.getLong(3)));
+    			processos.add(p);
+    		} while(c.moveToNext());
+    	}
+    	c.close();
+
+        return processos;
     }
 }

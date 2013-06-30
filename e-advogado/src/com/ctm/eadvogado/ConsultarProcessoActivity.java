@@ -1,6 +1,5 @@
 package com.ctm.eadvogado;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,17 +19,15 @@ import com.ctm.eadvogado.adapters.TipoJuizoAdapter;
 import com.ctm.eadvogado.adapters.TribunalAdapter;
 import com.ctm.eadvogado.db.EAdvogadoDbHelper;
 import com.ctm.eadvogado.dto.ProcessoDTO;
+import com.ctm.eadvogado.dto.TipoJuizo;
 import com.ctm.eadvogado.processoendpoint.Processoendpoint;
 import com.ctm.eadvogado.processoendpoint.model.Processo;
-import com.ctm.eadvogado.processoendpoint.model.TipoProcessoJudicial;
 import com.ctm.eadvogado.tribunalendpoint.Tribunalendpoint;
 import com.ctm.eadvogado.tribunalendpoint.model.Tribunal;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.jackson.JacksonFactory;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 public class ConsultarProcessoActivity extends SlidingActivity {
 
@@ -49,8 +46,6 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 	CarregarDadosConsultaTask carregarTask = null;
 	ConsultarProcessoTask consultarProcessoTask = null;
 	
-	public static ProcessoDTO processoResult;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -184,46 +179,24 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 
 		@Override
 		protected ProcessoDTO doInBackground(Void... params) {
-			processoResult = null;
-			ProcessoDTO processoDTO = new ProcessoDTO();
-			Processo processo = null;
-			
+			ProcessoDTO processoDTO = null;
 			Tribunal tribunal = (Tribunal) mSpinnerTribunais.getAdapter()
 					.getItem(mSpinnerTribunais.getSelectedItemPosition());
-			processoDTO.setTribunal(tribunal);
 			TipoJuizo tipoJuizo = (TipoJuizo) mSpinnerTipoJuizo.getSelectedItem();
+			Processo processo = null;
 			try {
-				processo = dbHelper.selectProcesso(mEditTextNPU.getText()
-						.toString(), tribunal.getId().getId(), tipoJuizo.name());
-				if (processo != null) {
-					String processoXml = dbHelper.selectProcessoXml(
-							processo.getId().getId());
-					Type t = new TypeToken<TipoProcessoJudicial>() {}.getType();
-					Gson gson = new Gson();
-					processo.setProcessoJudicial((TipoProcessoJudicial)gson.fromJson(processoXml, t));
-				}
+				processo = processoEndpoint.consultarProcesso(
+						mEditTextNPU.getText().toString(), 
+						tipoJuizo.name(), tribunal.getId().getId()).execute();
 			} catch (Exception e) {
-				processo = null;
-				Log.e("E-Advogado", "Falha ao consultar processo no banco", e);
+				Log.e("E-Advogado",
+						"Falha ao carregar processo pelo servico", e);
 			}
-			if (processo == null) {
-				try {
-					processo = processoEndpoint.consultarProcesso(
-							mEditTextNPU.getText().toString(), 
-							tipoJuizo.name(), tribunal.getId().getId()).execute();
-				} catch (Exception e) {
-					Log.e("E-Advogado",
-							"Falha ao carregar processo pelo servico", e);
-				}
-				if (processo != null) {
-					try {
-						dbHelper.inserirProcesso(processo);
-					} catch (Exception e) {
-						Log.e("E-Advogado", "Falha ao inserir o processo no banco", e);
-					}
-				}
+			if (processo != null) {
+				processoDTO = new ProcessoDTO();
+				processoDTO.setTribunal(tribunal);
+				processoDTO.setProcesso(processo);
 			}
-			processoDTO.setProcesso(processo);
 			return processoDTO;
 		}
 
@@ -232,11 +205,11 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 			consultarProcessoTask = null;
 			showProgress(false, mConsultarStatusView, mConsultarFormView);
 
-			if (processoDTO.getProcesso() != null) {
+			if (processoDTO != null) {
 				Intent intent = new Intent();
 				intent.setClass(ConsultarProcessoActivity.this,
 						ProcessoTabsPagerFragment.class);
-				processoResult = processoDTO;
+				ProcessoTabsPagerFragment.processoResult = processoDTO;
 				startActivity(intent);
 			} else {
 				Toast.makeText(ConsultarProcessoActivity.this,

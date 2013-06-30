@@ -13,7 +13,7 @@ public class ProcessoActivity extends SlidingActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setTitle(R.string.activity_processo_title);
-		setContentView(R.layout.activity_processo);
+		setContentView(R.layout.activity_meus_processos);
 		
 		final ActionBar ab = getSupportActionBar();
 

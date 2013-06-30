@@ -10,9 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.ctm.eadvogado.R;
-import com.ctm.eadvogado.TipoJuizo;
 import com.ctm.eadvogado.dto.ProcessoDTO;
-import com.ctm.eadvogado.processoendpoint.model.TipoProcessoJudicial;
+import com.ctm.eadvogado.dto.TipoJuizo;
 
 public class ProcessoAdapter extends ArrayAdapter<ProcessoDTO> {
 
@@ -56,9 +55,11 @@ public class ProcessoAdapter extends ArrayAdapter<ProcessoDTO> {
 				.findViewById(R.id.textViewTipoJuizo);
 
 		ProcessoDTO item = getItem(position);
-		TipoProcessoJudicial pj = item.getProcesso().getProcessoJudicial();
-		tvNPU.setText(pj.getDadosBasicos().getNumero());
-		tvTribunal.setText(item.getTribunal().getNome());
+		String npu = item.getProcesso().getNpu();
+		tvNPU.setText(String.format("%s-%s.%s.%s.%s.%s", npu.substring(0, 7),
+				npu.substring(7, 9), npu.substring(9, 13), npu.substring(13, 14),
+				npu.substring(14, 16), npu.substring(16)));
+		tvTribunal.setText(item.getTribunal().getSigla());
 		if (item.getProcesso().getTipoJuizo().equals(TipoJuizo.PRIMEIRO_GRAU.name())) {
 			tvTipoJuizo.setText(R.string.processo_tipoJuizo_1g);
 		} else {

@@ -70,8 +70,8 @@
                 android:value="com.ctm.eadvogado.ConsultarProcessoActivity" />
         </activity>
         <activity
-            android:name="com.ctm.eadvogado.ProcessoActivity"
-            android:label="@string/activity_processo_title"
+            android:name="com.ctm.eadvogado.MeusProcessosActivity"
+            android:label="@string/activity_meus_processo_title"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
