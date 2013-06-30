@@ -11,8 +11,8 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.ctm.eadvogado.ProcessoTabsPagerFragment;
 import com.ctm.eadvogado.R;
-import com.ctm.eadvogado.TipoJuizo;
 import com.ctm.eadvogado.dto.ProcessoDTO;
+import com.ctm.eadvogado.dto.TipoJuizo;
 import com.ctm.eadvogado.processoendpoint.model.TipoCabecalhoProcesso;
 
 /**

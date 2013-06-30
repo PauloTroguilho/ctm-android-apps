@@ -10,7 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.ctm.eadvogado.R;
-import com.ctm.eadvogado.TipoJuizo;
+import com.ctm.eadvogado.dto.TipoJuizo;
 
 public class TipoJuizoAdapter extends ArrayAdapter<TipoJuizo> {
 

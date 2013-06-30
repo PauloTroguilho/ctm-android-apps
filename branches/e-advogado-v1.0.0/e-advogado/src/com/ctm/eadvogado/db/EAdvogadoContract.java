@@ -9,20 +9,18 @@ public class EAdvogadoContract {
 	public static abstract class ProcessoTable implements BaseColumns {
 	    public static final String TABLE_NAME = "processos";
 	    public static final String COLUMN_NAME_NPU = "npu";
-	    public static final String COLUMN_NAME_ID_TRIBUNAL = "id_tribunal";
+	    public static final String COLUMN_NAME_ID_TRIBUNAL = "tribunal_id";
 	    public static final String COLUMN_NAME_TIPO_JUIZO = "tipo_juizo";
-	    public static final String COLUMN_NAME_XML_DADOS = "xml_dados";
 	}
 	public static abstract class TribunalTable implements BaseColumns {
 	    public static final String TABLE_NAME = "tribunais";
-	    public static final String COLUMN_NAME_TRIBUNAL_ID = "id_tribunal";
+	    public static final String COLUMN_NAME_TRIBUNAL_ID = "tribunal_id";
 	    public static final String COLUMN_NAME_NOME = "nome";
 	    public static final String COLUMN_NAME_SIGLA = "sigla";
 	}
 	
 	private static final String TEXT_TYPE = " TEXT";
 	private static final String INTEGER_TYPE = " INTEGER";
-	//private static final String BLOB_TYPE = " BLOB";
 	private static final String COMMA_SEP = ",";
 	
 	public static final String SQL_CREATE_PROCESSOS =
@@ -30,8 +28,7 @@ public class EAdvogadoContract {
 	    EAdvogadoContract.ProcessoTable._ID + " INTEGER PRIMARY KEY" + COMMA_SEP +
 	    EAdvogadoContract.ProcessoTable.COLUMN_NAME_NPU + TEXT_TYPE + COMMA_SEP +
 	    EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_TRIBUNAL + INTEGER_TYPE + COMMA_SEP +
-	    EAdvogadoContract.ProcessoTable.COLUMN_NAME_TIPO_JUIZO + TEXT_TYPE + COMMA_SEP +
-	    EAdvogadoContract.ProcessoTable.COLUMN_NAME_XML_DADOS + TEXT_TYPE +
+	    EAdvogadoContract.ProcessoTable.COLUMN_NAME_TIPO_JUIZO + TEXT_TYPE +
 	    " )";
 
 	public static final String SQL_DELETE_PROCESSOS =

@@ -26,6 +26,8 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityHelper;
  */
 public class SlidingActivity extends SherlockActivity implements
 		SlidingActivityBase, OnItemClickListener {
+	
+	public static int THEME = R.style.Theme_Sherlock;
 
 	private SlidingActivityHelper mHelper;
 
@@ -249,7 +251,7 @@ public class SlidingActivity extends SherlockActivity implements
 		case 0:
 			// Run next activity
 			intent = new Intent();
-			intent.setClass(this, ConsultarProcessoActivity.class);
+			intent.setClass(this, MeusProcessosActivity.class);
 			startActivity(intent);
 			break;
 		case 1:
