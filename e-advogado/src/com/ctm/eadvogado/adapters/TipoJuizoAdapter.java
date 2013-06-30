@@ -46,12 +46,13 @@ public class TipoJuizoAdapter extends ArrayAdapter<TipoJuizo> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		TextView view = (TextView) inflator.inflate(android.R.layout.simple_spinner_item, null);
+		View view = inflator.inflate(R.layout.tipojuizo_list_item, null);
+		TextView tvTipoJuizo = (TextView) view.findViewById(R.id.textViewTipoJuizo);
 		TipoJuizo tipoJuizo = getItem(position);
 		if (tipoJuizo.equals(TipoJuizo.PRIMEIRO_GRAU)) {
-			view.setText(R.string.processo_tipoJuizo_1g);
+			tvTipoJuizo.setText(R.string.processo_tipoJuizo_1g);
 		} else {
-			view.setText(R.string.processo_tipoJuizo_2g);
+			tvTipoJuizo.setText(R.string.processo_tipoJuizo_2g);
 		}
 		return view;
 	}

@@ -24,6 +24,7 @@ import com.ctm.eadvogado.processoendpoint.Processoendpoint;
 import com.ctm.eadvogado.processoendpoint.model.Processo;
 import com.ctm.eadvogado.tribunalendpoint.Tribunalendpoint;
 import com.ctm.eadvogado.tribunalendpoint.model.Tribunal;
+import com.ctm.eadvogado.util.Mask;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -71,13 +72,15 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 		mSpinnerTribunais = (Spinner) findViewById(R.id.spinnerTribunal);
 		mSpinnerTipoJuizo = (Spinner) findViewById(R.id.spinnerTipoJuizo);
 		mSpinnerTipoJuizo.setAdapter(new TipoJuizoAdapter(this,
-				android.R.layout.simple_spinner_item, Arrays.asList(TipoJuizo
+				R.layout.tipojuizo_list_item, Arrays.asList(TipoJuizo
 						.values())));
 		mConsultarFormView = findViewById(R.id.consultar_processo_form);
 		mConsultarStatusView = findViewById(R.id.consultar_processo_status);
 		mConsultarStatusMessageView = (TextView) findViewById(R.id.consultar_processo_status_message);
 		mEditTextNPU = (EditText) findViewById(R.id.editTextNPU);
-		mEditTextNPU.getText().append("01300555520135130015");
+		//0130055-55.2013.5.13.0015
+		mEditTextNPU.addTextChangedListener(Mask.insert("#######-##.####.#.##.####", mEditTextNPU));
+		//mEditTextNPU.getText().append("01300555520135130015");
 		mConsultarButtonView = (Button) findViewById(R.id.buttonConsultarProcesso);
 		mConsultarButtonView.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -186,7 +189,7 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 			Processo processo = null;
 			try {
 				processo = processoEndpoint.consultarProcesso(
-						mEditTextNPU.getText().toString(), 
+						mEditTextNPU.getText().toString().replaceAll("[.-]", ""), 
 						tipoJuizo.name(), tribunal.getId().getId()).execute();
 			} catch (Exception e) {
 				Log.e("E-Advogado",
