@@ -43,5 +43,9 @@
     <string name="title_activity_termos_de_uso">Termos de Uso</string>
     <string name="action_settings">Settings</string>
     <string name="btn_termos_aceito">Aceito</string>
+    
+    <string name="msg_op_incluir_processo_disponivel_versao_paga">Acompanhamento de processos está disponível somente na versão e-Advogado PRO</string>
+    <string name="msg_processo_nao_encontrado">O processo informado não foi encontrado!</string>
+    
 
 </resources>

@@ -27,6 +27,7 @@
     <string name="processo_polo_passivo">Polo Passivo</string>
     <string name="processo_parte_nome">Nome da Parte</string>
     <string name="processo_parte_advogado">Advogado</string>
+    <string name="processo_parte_nenhum_adv">Nenhum</string>
     <string name="processo_mov_datahora">Data/Hora</string>
     <string name="processo_mov_complemento">Complemento</string>
     

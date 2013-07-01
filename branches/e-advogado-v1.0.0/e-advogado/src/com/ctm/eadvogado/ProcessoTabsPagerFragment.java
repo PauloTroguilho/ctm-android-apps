@@ -41,6 +41,7 @@ import com.ctm.eadvogado.fragment.TabProcessoDadosFragment;
 import com.ctm.eadvogado.fragment.TabProcessoMovimentoFragment;
 import com.ctm.eadvogado.fragment.TabProcessoPolosFragment;
 import com.ctm.eadvogado.processoendpoint.model.Processo;
+import com.ctm.eadvogado.util.Consts;
 
 /**
  * Demonstrates combining a TabHost with a ViewPager to implement a tab UI that
@@ -212,7 +213,9 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 		protected String doInBackground(Void... params) {
 			String npu = null;
 			try {
-				dbHelper.inserirProcesso(processoResult.getProcesso());
+				if (!Consts.VERSAO_GRATIS) {
+					dbHelper.inserirProcesso(processoResult.getProcesso());
+				}
 				npu = processoResult.getProcesso().getNpu();
 			} catch(Exception e) {
 				Log.e("E-Advogado", "Falha ao inserir processo no BD.", e);
@@ -223,10 +226,16 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 		@Override
 		protected void onPostExecute(String npu) {
 			if (npu != null) {
-				Toast.makeText(ProcessoTabsPagerFragment.this,
-						R.string.msg_processo_inserido_sucesso,
-						Toast.LENGTH_LONG).show();
-				menuSalvar.setVisible(false);
+				if (! Consts.VERSAO_GRATIS) {
+					Toast.makeText(ProcessoTabsPagerFragment.this,
+							R.string.msg_processo_inserido_sucesso,
+							Toast.LENGTH_LONG).show();
+					menuSalvar.setVisible(false);
+				} else {
+					Toast.makeText(ProcessoTabsPagerFragment.this,
+							R.string.msg_op_incluir_processo_disponivel_versao_paga,
+							Toast.LENGTH_LONG).show();
+				}
 			} else {
 				Toast.makeText(ProcessoTabsPagerFragment.this,
 						R.string.msg_processo_inserido_erro,
@@ -251,6 +260,7 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 		if (item == menuSalvar) {
 			salvarProcessoTask = new SalvarProcessoTask();
 			salvarProcessoTask.execute((Void) null);
+			
 		} else if (item == menuAtualizar) {
 			
 		}

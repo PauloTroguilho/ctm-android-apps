@@ -135,7 +135,7 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 		@Override
 		protected List<Tribunal> doInBackground(Void... params) {
 			List<Tribunal> tribunais = new ArrayList<Tribunal>();
-			try {
+			/*try {
 				tribunais = dbHelper.selectTribunais();
 			} catch (Exception e) {
 				Log.e("E-Advogado", "Falha ao carregar tribunais do banco", e);
@@ -148,6 +148,13 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 					Log.e("E-Advogado",
 							"Falha ao carregar tribunais pelo servico", e);
 				}
+			}*/
+			try {
+				tribunais = tribunalEndpoint.listTribunal().execute().getItems();
+				dbHelper.inserirTribunais(tribunais);
+			} catch (Exception e) {
+				Log.e("E-Advogado",
+						"Falha ao carregar tribunais pelo servico", e);
 			}
 			return tribunais;
 		}
@@ -176,9 +183,13 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 		}
 	}
 	
+	/**
+	 * @author Cleber
+	 *
+	 */
 	public class ConsultarProcessoTask extends AsyncTask<Void, Void, ProcessoDTO> {
-
-		boolean erroComunicacao = false;
+		
+		boolean erroComm = false;
 
 		@Override
 		protected ProcessoDTO doInBackground(Void... params) {
@@ -192,10 +203,11 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 						mEditTextNPU.getText().toString().replaceAll("[.-]", ""), 
 						tipoJuizo.name(), tribunal.getId().getId()).execute();
 			} catch (Exception e) {
+				erroComm = true;
 				Log.e("E-Advogado",
 						"Falha ao carregar processo pelo servico", e);
 			}
-			if (processo != null) {
+			if (processo != null && processo.getNpu() != null) {
 				processoDTO = new ProcessoDTO();
 				processoDTO.setTribunal(tribunal);
 				processoDTO.setProcesso(processo);
@@ -209,15 +221,22 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 			showProgress(false, mConsultarStatusView, mConsultarFormView);
 
 			if (processoDTO != null) {
+				ProcessoTabsPagerFragment.processoResult = processoDTO;
 				Intent intent = new Intent();
 				intent.setClass(ConsultarProcessoActivity.this,
 						ProcessoTabsPagerFragment.class);
-				ProcessoTabsPagerFragment.processoResult = processoDTO;
 				startActivity(intent);
 			} else {
-				Toast.makeText(ConsultarProcessoActivity.this,
-						R.string.msg_nao_foi_possivel_carregar_dados,
-						Toast.LENGTH_LONG).show();
+				if (!erroComm) {
+					Toast.makeText(ConsultarProcessoActivity.this,
+							R.string.msg_processo_nao_encontrado,
+							Toast.LENGTH_LONG).show();
+				} else {
+					Toast.makeText(ConsultarProcessoActivity.this,
+							R.string.msg_nao_foi_possivel_carregar_dados,
+							Toast.LENGTH_LONG).show();
+				}
+				
 			}
 		}
 

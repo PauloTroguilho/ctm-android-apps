@@ -79,6 +79,22 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
         return getWritableDatabase().insert(EAdvogadoContract.TribunalTable.TABLE_NAME, null, initialValues);
     }
     
+    public long updateTribunal(Tribunal tribunal) {
+        ContentValues initialValues = new ContentValues();
+		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_TRIBUNAL_ID,
+				tribunal.getId().getId());
+		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_NOME,
+				tribunal.getNome());
+		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_SIGLA,
+				tribunal.getSigla());
+		
+		String whereClause = EAdvogadoContract.TribunalTable.COLUMN_NAME_TRIBUNAL_ID + " = ?";
+		String[] whereArgs = new String[] {tribunal.getId().getId().toString()};
+
+        return getWritableDatabase().update(EAdvogadoContract.TribunalTable.TABLE_NAME, initialValues, whereClause, 
+        		whereArgs);
+    }
+    
     /**
      * @param tribunais
      */
@@ -87,6 +103,8 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     		Tribunal exTrib = selectTribunalPorId(tribunal.getId().getId());
     		if (exTrib == null) {
     			inserirTribunal(tribunal);
+    		} else {
+    			
     		}
 		}
     }

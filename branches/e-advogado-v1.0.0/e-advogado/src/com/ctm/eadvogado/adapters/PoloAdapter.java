@@ -51,8 +51,19 @@ public class PoloAdapter extends ArrayAdapter<TipoPoloProcessual> {
 		TextView tvParteAdvogado = (TextView) view.findViewById(R.id.tvTabPolos_ParteAdvogado);
 
 		TipoPoloProcessual polo = getItem(position);
-		tvNomeParte.setText(polo.getParte().get(0).getPessoa().getNome());
-		tvParteAdvogado.setText(polo.getParte().get(0).getAdvogado().get(0).getNome());
+		if (polo.getParte() != null) {
+			if (!polo.getParte().isEmpty()) {
+				if (polo.getParte().get(0).getPessoa() != null) {
+					tvNomeParte.setText(polo.getParte().get(0).getPessoa().getNome());
+				}
+				if (polo.getParte().get(0).getAdvogado() != null 
+						&& !polo.getParte().get(0).getAdvogado().isEmpty()) {
+					tvParteAdvogado.setText(polo.getParte().get(0).getAdvogado().get(0).getNome());
+				} else {
+					tvParteAdvogado.setText(R.string.processo_parte_nenhum_adv);
+				}
+			}
+		}
 		return view;
 	}
 

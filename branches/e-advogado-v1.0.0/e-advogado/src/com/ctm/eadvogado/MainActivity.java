@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.ctm.eadvogado.util.Consts;
 
 public class MainActivity extends SlidingActivity {
 	
@@ -31,9 +33,15 @@ public class MainActivity extends SlidingActivity {
 				switch (position) {
 				case 0:
 					// Run next activity
-					intent = new Intent();
-					intent.setClass(MainActivity.INSTANCE, MeusProcessosActivity.class);
-					startActivity(intent);
+					if (!Consts.VERSAO_GRATIS) {
+						intent = new Intent();
+						intent.setClass(MainActivity.INSTANCE, MeusProcessosActivity.class);
+						startActivity(intent);
+					} else {
+						Toast.makeText(MainActivity.this,
+								R.string.msg_op_incluir_processo_disponivel_versao_paga,
+								Toast.LENGTH_LONG).show();
+					}
 					break;
 				case 1:
 					intent = new Intent();
