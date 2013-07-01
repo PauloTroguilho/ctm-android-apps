@@ -86,6 +86,21 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "advogadoendpoint.insertAdvogado" : {
+      "path" : "advogado",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.AdvogadoEndpoint.insertAdvogado",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
     "advogadoendpoint.removeAdvogado" : {
       "path" : "advogado/{id}",
       "httpMethod" : "DELETE",
@@ -101,21 +116,6 @@
           }
         },
         "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "advogadoendpoint.insertAdvogado" : {
-      "path" : "advogado",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.AdvogadoEndpoint.insertAdvogado",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
@@ -238,15 +238,15 @@
           "$ref" : "Advogado"
         }
       },
-      "com.ctm.eadvogado.AdvogadoEndpoint.removeAdvogado" : {
-        "response" : {
-          "$ref" : "Advogado"
-        }
-      },
       "com.ctm.eadvogado.AdvogadoEndpoint.insertAdvogado" : {
         "request" : {
           "$ref" : "Advogado"
         },
+        "response" : {
+          "$ref" : "Advogado"
+        }
+      },
+      "com.ctm.eadvogado.AdvogadoEndpoint.removeAdvogado" : {
         "response" : {
           "$ref" : "Advogado"
         }
