@@ -158,7 +158,7 @@
 	</binding>
 	<service name="IntercomunicacaoService">
 		<port binding="tns:servico-intercomunicacao-2.1Binding" name="IntercomunicacaoImplPort">
-			<soap:address location="http://pje.trt13.jus.br/primeirograu/intercomunicacao" />
+			<!-- <soap:address location="http://pje.trt13.jus.br/primeirograu/intercomunicacao" />  -->
 		</port>
 	</service>
 </definitions>
