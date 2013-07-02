@@ -35,7 +35,7 @@ public class MainActivity extends SlidingActivity {
 					// Run next activity
 					if (!Consts.VERSAO_GRATIS) {
 						intent = new Intent();
-						intent.setClass(MainActivity.INSTANCE, MeusProcessosActivity.class);
+						intent.setClass(MainActivity.this, MeusProcessosActivity.class);
 						startActivity(intent);
 					} else {
 						Toast.makeText(MainActivity.this,
@@ -45,12 +45,12 @@ public class MainActivity extends SlidingActivity {
 					break;
 				case 1:
 					intent = new Intent();
-					intent.setClass(MainActivity.INSTANCE, ConsultarProcessoActivity.class);
+					intent.setClass(MainActivity.this, ConsultarProcessoActivity.class);
 					startActivity(intent);
 					break;
 				case 2:
 					intent = new Intent();
-					intent.setClass(MainActivity.INSTANCE, PreferencesActivity.class);
+					intent.setClass(MainActivity.this, PreferencesActivity.class);
 					startActivity(intent);
 					break;
 				}
