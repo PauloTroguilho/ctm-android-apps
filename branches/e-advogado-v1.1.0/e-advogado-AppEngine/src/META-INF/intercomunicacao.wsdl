@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="IntercomunicacaoService"
+	targetNamespace="http://www.cnj.jus.br/servico-intercomunicacao-2.1/"
+	xmlns:tns="http://www.cnj.jus.br/servico-intercomunicacao-2.1/"
+	xmlns="http://schemas.xmlsoap.org/wsdl/" 
+	xmlns:ns1="http://www.cnj.jus.br/tipos-servico-intercomunicacao-2.1"
+	xmlns:ns2="http://www.cnj.jus.br/intercomunicacao-2.1" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<types>
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://www.cnj.jus.br/tipos-servico-intercomunicacao-2.1">
+			<xs:include schemaLocation="tipos-servico-intercomunicacao-2.1.xsd" />
+		</xs:schema>
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://www.cnj.jus.br/intercomunicacao-2.1">
+			<xs:include schemaLocation="intercomunicacao-2.1.xsd" />
+		</xs:schema>
+			
+		<xs:schema targetNamespace="http://www.cnj.jus.br/servico-intercomunicacao-2.1/"
+			version="1.0" xmlns:ns1="http://www.cnj.jus.br/tipos-servico-intercomunicacao-2.1"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema">
+			<xs:import namespace="http://www.cnj.jus.br/tipos-servico-intercomunicacao-2.1" />
+			<xs:element name="consultarAlteracao" nillable="true"
+				type="ns1:tipoConsultarAlteracao" />
+			<xs:element name="consultarAlteracaoResposta" nillable="true"
+				type="ns1:tipoConsultarAlteracaoResposta" />
+			<xs:element name="consultarAvisosPendentes" nillable="true"
+				type="ns1:tipoConsultarAvisosPendentes" />
+			<xs:element name="consultarAvisosPendentesResposta"
+				nillable="true" type="ns1:tipoConsultarAvisosPendentesResposta" />
+			<xs:element name="consultarProcesso" nillable="true"
+				type="ns1:tipoConsultarProcesso" />
+			<xs:element name="consultarProcessoResposta" nillable="true"
+				type="ns1:tipoConsultarProcessoResposta" />
+			<xs:element name="consultarTeorComunicacao" nillable="true"
+				type="ns1:tipoConsultarTeorComunicacaoResposta" />
+			<xs:element name="consultarTeorComunicacaoResposta"
+				nillable="true" type="ns1:tipoConsultarTeorComunicacaoResposta" />
+			<xs:element name="entregarManifestacaoProcessual"
+				nillable="true" type="ns1:tipoEntregarManifestacaoProcessual" />
+			<xs:element name="entregarManifestacaoProcessualResposta"
+				nillable="true" type="ns1:tipoEntregarManifestacaoProcessualResposta" />
+		</xs:schema>
+	</types>
+	<message
+		name="servico-intercomunicacao-2.1_consultarTeorComunicacaoResponse">
+		<part element="tns:consultarTeorComunicacaoResposta" name="parameters"></part>
+	</message>
+	<message name="servico-intercomunicacao-2.1_consultarProcesso">
+		<part element="tns:consultarProcesso" name="parameters"></part>
+	</message>
+	<message name="servico-intercomunicacao-2.1_consultarAlteracao">
+		<part element="tns:consultarAlteracao" name="parameters"></part>
+	</message>
+	<message name="servico-intercomunicacao-2.1_consultarTeorComunicacao">
+		<part element="tns:consultarTeorComunicacao" name="parameters"></part>
+	</message>
+	<message name="servico-intercomunicacao-2.1_consultarProcessoResponse">
+		<part element="tns:consultarProcessoResposta" name="parameters"></part>
+	</message>
+	<message
+		name="servico-intercomunicacao-2.1_entregarManifestacaoProcessualResponse">
+		<part element="tns:entregarManifestacaoProcessualResposta" name="parameters"></part>
+	</message>
+	<message name="servico-intercomunicacao-2.1_entregarManifestacaoProcessual">
+		<part element="tns:entregarManifestacaoProcessual" name="parameters"></part>
+	</message>
+	<message name="servico-intercomunicacao-2.1_consultarAvisosPendentes">
+		<part element="tns:consultarAvisosPendentes" name="parameters"></part>
+	</message>
+	<message name="servico-intercomunicacao-2.1_consultarAlteracaoResponse">
+		<part element="tns:consultarAlteracaoResposta" name="parameters"></part>
+	</message>
+	<message
+		name="servico-intercomunicacao-2.1_consultarAvisosPendentesResponse">
+		<part element="tns:consultarAvisosPendentesResposta" name="parameters"></part>
+	</message>
+	<portType name="servico-intercomunicacao-2.1">
+		<operation name="consultarAlteracao" parameterOrder="parameters">
+			<input message="tns:servico-intercomunicacao-2.1_consultarAlteracao"></input>
+			<output message="tns:servico-intercomunicacao-2.1_consultarAlteracaoResponse"></output>
+		</operation>
+		<operation name="consultarAvisosPendentes" parameterOrder="parameters">
+			<input message="tns:servico-intercomunicacao-2.1_consultarAvisosPendentes"></input>
+			<output
+				message="tns:servico-intercomunicacao-2.1_consultarAvisosPendentesResponse"></output>
+		</operation>
+		<operation name="consultarProcesso" parameterOrder="parameters">
+			<input message="tns:servico-intercomunicacao-2.1_consultarProcesso"></input>
+			<output message="tns:servico-intercomunicacao-2.1_consultarProcessoResponse"></output>
+		</operation>
+		<operation name="consultarTeorComunicacao" parameterOrder="parameters">
+			<input message="tns:servico-intercomunicacao-2.1_consultarTeorComunicacao"></input>
+			<output
+				message="tns:servico-intercomunicacao-2.1_consultarTeorComunicacaoResponse"></output>
+		</operation>
+		<operation name="entregarManifestacaoProcessual"
+			parameterOrder="parameters">
+			<input
+				message="tns:servico-intercomunicacao-2.1_entregarManifestacaoProcessual"></input>
+			<output
+				message="tns:servico-intercomunicacao-2.1_entregarManifestacaoProcessualResponse"></output>
+		</operation>
+	</portType>
+	<binding name="servico-intercomunicacao-2.1Binding" type="tns:servico-intercomunicacao-2.1">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<operation name="consultarAlteracao">
+			<soap:operation
+				soapAction="http://www.cnj.jus.br/servico-intercomunicacao-2.1/consultarAlteracao" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="consultarAvisosPendentes">
+			<soap:operation
+				soapAction="http://www.cnj.jus.br/servico-intercomunicacao-2.1/consultarAvisosPendentes" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="consultarProcesso">
+			<soap:operation
+				soapAction="http://www.cnj.jus.br/servico-intercomunicacao-2.1/consultarProcesso" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="consultarTeorComunicacao">
+			<soap:operation
+				soapAction="http://www.cnj.jus.br/servico-intercomunicacao-2.1/consultarTeorComunicacao" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="entregarManifestacaoProcessual">
+			<soap:operation
+				soapAction="http://www.cnj.jus.br/servico-intercomunicacao-2.1/entregarManifestacaoProcessual" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+	</binding>
+	<service name="IntercomunicacaoService">
+		<port binding="tns:servico-intercomunicacao-2.1Binding" name="IntercomunicacaoImplPort">
+			<!-- <soap:address location="http://pje.trt13.jus.br/primeirograu/intercomunicacao" />  -->
+		</port>
+	</service>
+</definitions>

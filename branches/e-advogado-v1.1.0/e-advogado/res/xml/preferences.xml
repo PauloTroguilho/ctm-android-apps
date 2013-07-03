@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/prefs_category_conta">
+        <EditTextPreference
+            android:key="email"
+            android:dialogTitle="@string/prefs_category_conta_email"
+            android:dialogMessage="@string/prefs_category_conta_email_msg"
+            android:title="@string/prefs_category_conta_email" />
+        <!-- <EditTextPreference
+            android:key="senha"
+            android:dialogTitle="@string/prefs_category_conta_senha"
+            android:dialogMessage="@string/prefs_category_conta_senha_msg"
+            android:inputType="textPassword"
+            android:title="@string/prefs_category_conta_senha" /> -->
+    </PreferenceCategory>
+
+</PreferenceScreen>
