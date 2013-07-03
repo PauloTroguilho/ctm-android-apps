@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="service_base_url">https://192.168.1.5:8443/advogadope-web/services</string>
+    <string name="app_name">e-Advogado</string>
+    <string name="prefs_category_conta">Conta do Usuário</string>
+    <string name="prefs_category_conta_email">E-mail</string>
+    <string name="prefs_category_conta_email_msg">Informe o e-mail de acesso ao serviço.</string>
+    <string name="prefs_category_conta_senha">Senha</string>
+    <string name="prefs_category_conta_senha_msg">Informe sua senha de acesso ao serviço.</string>
+    <string name="main_msg_1">O aplicativo e-Advogado possibilita efetuar de forma simples, a consulta e o acompanhamento de processos judiciais, on-line.</string>
+    <string name="main_msg_2">Acesse uma das opções:</string>
+    <string name="menu_meus_processos">Meus Processos</string>
+    <string name="menu_consultar_processos">Consultar Processos</string>
+    <string name="menu_configuracoes">Configurações</string>
+
+    <string-array name="menu_itens">
+        <item>@string/menu_meus_processos</item>
+        <item>@string/menu_consultar_processos</item>
+        <item>@string/menu_configuracoes</item>
+    </string-array>
+
+    <string name="criar_conta">Cadastro</string>
+    <string name="termos_de_uso_titulo">Termos de Uso</string>
+    <string name="term_de_uso_1">Este documento contém os termos de uso do aplicativo e-Advogado, cuja aceitação plena e integral é requisito para todos os seus usuários. Ele inclui, os termos gerais, os termos de limitação de responsabilidade, a política de privacidade e confidencialidade, a licença de uso, e as informações sobre como reportar violações.</string>
+    <string name="term_de_uso_2">O cadastro no e-Advogado implica no reconhecimento e na plena aceitação dos termos a seguir.</string>
+    <string name="term_do_objeto">Do objeto</string>
+    <string name="term_do_objeto_1">O objeto destes Termos de Uso é o aplicativo e-Advogado, que possibilita efetuar de forma simples, a consulta e o acompanhamento de processos judiciais, on-line.</string>
+    <string name="term_limit_e_resp">Limitação de responsabilidade</string>
+    <string name="term_limit_e_resp_desc_1">Os dados apresentados neste aplicativo são obtidos diretamente das consultas públicas disponibilizadas pelos Tribunais, podendo sua veracidade ser verificada no site de cada tribunal, por meio das consultas públicas cidatas anteriormente. Destaca-se, porém, que os dados apresentados pelo e-Advogado são apenas para fins de consulta, não devendo ser caracterizado como qualquer instrumento de prova.</string>
+    <string name="term_limit_e_resp_desc_2">Será atribuído ao usuário toda e qualquer responsabilidade, de caráter civil e/ou criminal, pelo uso inadequado das informações presentes.</string>
+    <string name="term_limit_e_resp_desc_3">Em nenhuma situação o e-Advogado, seus autores, editores ou mantenedores serão responsáveis por quaisquer danos, prejuízos ou outro efeito, direto ou indireto, relacionados ao uso, por parte de seus usuários ou de qualquer outra pessoa, deste aplicativo, de seu conteúdo ou de qualquer outro aqui mencionado.</string>
+    <string name="term_limit_e_resp_desc_4">Em especial, o e-Advogado não classifica nem analisa o conteúdo que seus usuários acrescentam, conforme exposto nestes Termos de Uso, no item “Licença de uso do conteúdo”, abaixo.</string>
+    <string name="term_polit_e_conf">Política de privacidade e confidencialidade</string>
+    <string name="term_polit_e_conf_1">O e-Advogado se compromete a não monitorar, editar, acessar ou divulgar informações privativas de seus usuários.</string>
+    <string name="term_polit_e_conf_2">Todos os dados trafegados pelo e-Advogado entre o dispositivo e o servidor, são realizados por meio de um canal seguro (HTTPS).</string>
+    <string name="term_licenca_de_uso">Licença de uso</string>
+    <string name="term_licenca_de_uso_1">O usuário do e-Advogado detém apenas uma licença de uso do software, não caracterizando qualquer propriedade sobre aplicativo. O aplicativo e-Advogado poderá ser atualizado ou extinquido à critério do autor deste software.</string>
+    <string name="term_inexistencia">Inexistência de vínculo</string>
+    <string name="term_inexistencia_1">Estes Termos de Uso não geram a criação de qualquer vínculo trabalhista, societário, de parceria ou associativo entre o usuário e o e-Advogado, sendo excluídas quaisquer presunções de solidariedade entre ambos no cumprimento de suas obrigações.</string>
+    <string name="term_disposicoes_finais">Disposições finais</string>
+    <string name="term_disposicoes_finais_1">Estas condições gerais serão regidas e interpretadas de acordo com a legislação brasileira. Fica eleito o Foro da Comarca de Recife, Estado de Pernambuco, para dirimir questões relativas a estas condições gerais, com renúncia expressa a qualquer outro. Estes Termos de Uso podem ser modificados pelo e-Advogado, e as modificações terão efeito a partir da data de sua publicação no aplicativo e/ou website, mediante a sua comunicação em local que seja de fácil identificação para o usuário.</string>
+    <string name="title_activity_termos_de_uso">Termos de Uso</string>
+    <string name="action_settings">Settings</string>
+    <string name="btn_termos_aceito">Aceito</string>
+    
+    <string name="msg_op_incluir_processo_disponivel_versao_paga">Acompanhamento de processos está disponível somente na versão e-Advogado PRO</string>
+    <string name="msg_processo_nao_encontrado">O processo informado não foi encontrado!</string>
+    
+
+</resources>
