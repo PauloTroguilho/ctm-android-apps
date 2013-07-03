@@ -1,0 +1,9 @@
+<resources>
+
+    <string name="activity_consultar_processo_title">Consultar Processo</string>
+    <string name="btn_consultar">Consultar</string>
+    <string name="msg_carregando_dados">Carregando Dados &#8230;</string>
+    <string name="msg_consultando_processos">Consultando Processos &#8230;</string>
+    <string name="msg_nao_foi_possivel_carregar_dados">Não foi possivel carregar os dados! Verifique o acesso a internet.</string>
+
+</resources>

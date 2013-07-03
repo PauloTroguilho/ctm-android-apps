@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5dp" >
+
+    <TextView
+        android:id="@+id/textViewTipoJuizo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal|center"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="1º Grau"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textIsSelectable="false"
+        android:textStyle="bold" />
+
+</LinearLayout>
