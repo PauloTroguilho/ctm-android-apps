@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -16,6 +17,10 @@ import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.ctm.eadvogado.util.Consts;
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityHelper;
@@ -30,6 +35,8 @@ public class SlidingActivity extends SherlockActivity implements
 	public static int THEME = R.style.Theme_Sherlock;
 
 	private SlidingActivityHelper mHelper;
+	
+	private AdView adView;
 
 	/*
 	 * (non-Javadoc)
@@ -58,7 +65,32 @@ public class SlidingActivity extends SherlockActivity implements
 		getSlidingMenu().setBehindOffsetRes(R.dimen.slidingmenu_offset);
 		getSlidingMenu().setFadeDegree(0.35f);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		
 	}
+	
+	/**
+	 * @param resLayoutId
+	 */
+	protected void addAdmobBanner(int resLayoutId) {
+		if (Consts.VERSAO_GRATIS) {
+			// Create the adView
+		    adView = new AdView(this, AdSize.BANNER, "a151d4864c21b19");
+		    ViewGroup view = (ViewGroup)findViewById(resLayoutId);
+		    // Add the adView to it
+		    view.addView(adView);
+		    // Initiate a generic request to load it with an ad
+		    adView.loadAd(new AdRequest());
+		}
+	}
+	
+	@Override
+	protected void onDestroy() {
+		if (adView != null) {
+			adView.destroy();
+		}
+		super.onDestroy();
+	}
+	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
