@@ -53,6 +53,7 @@ public class MeusProcessosActivity extends SlidingActivity {
 		processoEndpoint = CloudEndpointUtils.updateBuilder(procEndpointBuilder).build();
 		
 		setContentView(R.layout.activity_meus_processos);
+		initAdmobBanner(R.id.adView);
 		
 		listarFormView = findViewById(R.id.listar_processos_form);
 		statusView = findViewById(R.id.listar_status);

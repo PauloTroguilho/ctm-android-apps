@@ -15,6 +15,9 @@ import com.ctm.eadvogado.R;
 import com.ctm.eadvogado.adapters.PoloAdapter;
 import com.ctm.eadvogado.dto.ProcessoDTO;
 import com.ctm.eadvogado.processoendpoint.model.TipoPoloProcessual;
+import com.ctm.eadvogado.util.Consts;
+import com.google.ads.AdRequest;
+import com.google.ads.AdView;
 
 /**
  * @author Cleber
@@ -32,6 +35,20 @@ public class TabProcessoPolosFragment extends SherlockFragment {
 		super.onCreate(savedInstanceState);
 		processoDTO = ProcessoTabsPagerFragment.processoResult;
 	}
+	
+	/**
+	 * @param admobViewId
+	 */
+	protected void initAdmobBanner(int admobViewId, View parentView) {
+		if (Consts.VERSAO_GRATIS) {
+			// Look up the AdView as a resource and load a request.
+		    AdView adView = (AdView) parentView.findViewById(admobViewId);
+		    AdRequest request = new AdRequest();
+			request.addTestDevice(AdRequest.TEST_EMULATOR);
+			adView.loadAd(request);
+			adView.setVisibility(View.VISIBLE);
+		}
+	}
 
 	/**
 	 * The Fragment's UI is just a simple text view showing its instance number.
@@ -41,6 +58,7 @@ public class TabProcessoPolosFragment extends SherlockFragment {
 			Bundle savedInstanceState) {
 		View v = inflater
 				.inflate(R.layout.processo_tab_polos, container, false);
+		initAdmobBanner(R.id.adView, v);
 		ListView lvPoloAtivo = (ListView) v
 				.findViewById(R.id.lvTabMov_movimentos);
 		ListView lvPoloPassivo = (ListView) v

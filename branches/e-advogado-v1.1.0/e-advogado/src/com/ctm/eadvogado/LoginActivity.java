@@ -5,21 +5,15 @@ import java.util.Locale;
 
 import org.apache.http.HttpStatus;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -27,31 +21,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Window;
 import com.ctm.eadvogado.advogadoendpoint.Advogadoendpoint;
 import com.ctm.eadvogado.advogadoendpoint.model.Advogado;
+import com.ctm.eadvogado.util.Consts;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.jackson.JacksonFactory;
 
-/**
- * Activity which displays a login screen to the user, offering registration as
- * well.
- */
-public class LoginActivity extends Activity {
+public class LoginActivity extends SherlockActivity {
 	
 	public static enum LoginStatus {
 		LOGIN_OK, LOGIN_ERROR, INVALID_PASSWORD, ACCOUNT_NOT_FOUND, NETWORK_ERROR;
 	}
-
-	/**
-	 * The default email to populate the email field with.
-	 */
+	
 	public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
 	
 	private Advogadoendpoint advogadoEndpoint;
-	
 	private SharedPreferences preferences;
 
 	/**
@@ -62,62 +51,63 @@ public class LoginActivity extends Activity {
 	private boolean byPassLogin = false;
 
 	// Values for email and password at the time of the login attempt.
-	private String mEmail;
-	private String mPassword;
+	private String email;
+	private String password;
 
 	// UI references.
-	private EditText mEmailView;
-	private EditText mPasswordView;
-	private Button mLoginButtonView;
-	private View mLoginFormView;
-	private View mLoginStatusView;
-	private TextView mLoginStatusMessageView;
-
+	private EditText emailEt;
+	private EditText passwordEt;
+	private Button loginBt;
+	private Button cancelLoginBt;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		setTheme(Consts.THEME);
 		super.onCreate(savedInstanceState);
-		preferences = PreferenceManager.getDefaultSharedPreferences(this);
-		
-		Advogadoendpoint.Builder endpointBuilder = new Advogadoendpoint.Builder(
-		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
-		        new HttpRequestInitializer() {
-		          public void initialize(HttpRequest httpRequest) {
-		          }
-		        });
-		advogadoEndpoint = CloudEndpointUtils.updateBuilder(endpointBuilder).build();
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_login);
+		getSupportActionBar().setTitle(R.string.title_activity_login);
+		
+		initAdvogadoEndpoint();
 
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		String email = preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, "");
 		
 		if (email == null || email.trim().length() == 0) {
 			// Set up the login form.
-			mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
-			mEmailView = (EditText) findViewById(R.id.email);
-			mEmailView.setText(mEmail);
+			email = getIntent().getStringExtra(EXTRA_EMAIL);
+			emailEt = (EditText) findViewById(R.id.email);
+			emailEt.setText(email);
 
-			mPasswordView = (EditText) findViewById(R.id.password);
-			mPasswordView
+			passwordEt = (EditText) findViewById(R.id.password);
+			passwordEt
 					.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 						@Override
 						public boolean onEditorAction(TextView textView, int id,
 								KeyEvent keyEvent) {
 							if (id == R.id.login || id == EditorInfo.IME_NULL) {
-								attemptLogin();
+								doLogin();
 								return true;
 							}
 							return false;
 						}
 					});
-
-			mLoginFormView = findViewById(R.id.login_form);
-			mLoginStatusView = findViewById(R.id.login_status);
-			mLoginStatusMessageView = (TextView) findViewById(R.id.login_status_message);
-			mLoginButtonView = (Button) findViewById(R.id.sign_in_button);
-			mLoginButtonView.setOnClickListener(
+			loginBt = (Button) findViewById(R.id.sign_in_button);
+			loginBt.setOnClickListener(
 					new View.OnClickListener() {
 						@Override
 						public void onClick(View view) {
-							attemptLogin();
+							doLogin();
+						}
+					});
+			cancelLoginBt = (Button) findViewById(R.id.login_cancel_button);
+			cancelLoginBt.setOnClickListener(
+					new View.OnClickListener() {
+						@Override
+						public void onClick(View view) {
+							if (mAuthTask != null) {
+								mAuthTask.cancel(true);
+							}
 						}
 					});
 		} else {
@@ -126,114 +116,81 @@ public class LoginActivity extends Activity {
 			startActivity(intent);
 			finish();
 		}
-		
 	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		getMenuInflater().inflate(R.menu.login, menu);
-		return true;
+	
+	/**
+	 * Inicializa o endpoint de Advogado
+	 */
+	private void initAdvogadoEndpoint() {
+		Advogadoendpoint.Builder endpointBuilder = new Advogadoendpoint.Builder(
+		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
+		        new HttpRequestInitializer() {
+		          public void initialize(HttpRequest httpRequest) {
+		          }
+		        });
+		advogadoEndpoint = CloudEndpointUtils.updateBuilder(endpointBuilder).build();
 	}
-
+	
 	/**
 	 * Attempts to sign in or register the account specified by the login form.
 	 * If there are form errors (invalid email, missing fields, etc.), the
 	 * errors are presented and no actual login attempt is made.
 	 */
-	public void attemptLogin() {
+	public void doLogin() {
 		if (mAuthTask != null) {
 			return;
 		}
-
 		// Reset errors.
-		mEmailView.setError(null);
-		mPasswordView.setError(null);
-
+		emailEt.setError(null);
+		passwordEt.setError(null);
 		// Store values at the time of the login attempt.
-		mEmail = mEmailView.getText().toString();
-		mPassword = mPasswordView.getText().toString();
+		email = emailEt.getText().toString();
+		password = passwordEt.getText().toString();
 
 		boolean cancel = false;
 		View focusView = null;
-
 		// Check for a valid password.
-		if (TextUtils.isEmpty(mPassword)) {
-			mPasswordView.setError(getString(R.string.error_field_required));
-			focusView = mPasswordView;
+		if (TextUtils.isEmpty(password)) {
+			passwordEt.setError(getString(R.string.error_field_required));
+			focusView = passwordEt;
 			cancel = true;
-		} else if (mPassword.length() < 3) {
-			mPasswordView.setError(getString(R.string.error_invalid_password));
-			focusView = mPasswordView;
+		} else if (password.length() < 3) {
+			passwordEt.setError(getString(R.string.error_invalid_password));
+			focusView = passwordEt;
 			cancel = true;
 		}
-
 		// Check for a valid email address.
-		if (TextUtils.isEmpty(mEmail)) {
-			mEmailView.setError(getString(R.string.error_field_required));
-			focusView = mEmailView;
+		if (TextUtils.isEmpty(email)) {
+			emailEt.setError(getString(R.string.error_field_required));
+			focusView = emailEt;
 			cancel = true;
-		} else if (!mEmail.contains("@")) {
-			mEmailView.setError(getString(R.string.error_invalid_email));
-			focusView = mEmailView;
+		} else if (!email.contains("@")) {
+			emailEt.setError(getString(R.string.error_invalid_email));
+			focusView = emailEt;
 			cancel = true;
 		}
 
 		if (cancel) {
-			// There was an error; don't attempt login and focus the first
-			// form field with an error.
 			focusView.requestFocus();
 		} else {
-			// Show a progress spinner, and kick off a background task to
-			// perform the user login attempt.
-			mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
-			showProgress(true);
+			setSupportProgressBarIndeterminateVisibility(true);
+			setControlsEnabled(false);
 			mAuthTask = new UserLoginTask();
 			mAuthTask.execute((Void) null);
 		}
 	}
-
+	
 	/**
-	 * Shows the progress UI and hides the login form.
+	 * @param enabled
 	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-	private void showProgress(final boolean show) {
-		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-		// for very easy animations. If available, use these APIs to fade-in
-		// the progress spinner.
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-			int shortAnimTime = getResources().getInteger(
-					android.R.integer.config_shortAnimTime);
-
-			mLoginStatusView.setVisibility(View.VISIBLE);
-			mLoginStatusView.animate().setDuration(shortAnimTime)
-					.alpha(show ? 1 : 0)
-					.setListener(new AnimatorListenerAdapter() {
-						@Override
-						public void onAnimationEnd(Animator animation) {
-							mLoginStatusView.setVisibility(show ? View.VISIBLE
-									: View.GONE);
-						}
-					});
-
-			mLoginFormView.setVisibility(View.VISIBLE);
-			mLoginFormView.animate().setDuration(shortAnimTime)
-					.alpha(show ? 0 : 1)
-					.setListener(new AnimatorListenerAdapter() {
-						@Override
-						public void onAnimationEnd(Animator animation) {
-							mLoginFormView.setVisibility(show ? View.GONE
-									: View.VISIBLE);
-						}
-					});
-		} else {
-			// The ViewPropertyAnimator APIs are not available, so simply show
-			// and hide the relevant UI components.
-			mLoginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
-			mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-		}
+	private void setControlsEnabled(boolean enabled) {
+		emailEt.setEnabled(enabled);
+		passwordEt.setEnabled(enabled);
+		loginBt.setVisibility(enabled ? View.VISIBLE : View.GONE);
+		cancelLoginBt.setVisibility(enabled ? View.GONE : View.VISIBLE);
 	}
-
+	
+	
 	/**
 	 * Represents an asynchronous login/registration task used to authenticate
 	 * the user.
@@ -248,7 +205,7 @@ public class LoginActivity extends Activity {
 			errorMessage = "";
 			if (!byPassLogin) {
 				try {
-					Advogado advogado = advogadoEndpoint.autenticarAdvogado(mEmail, mPassword).execute();
+					Advogado advogado = advogadoEndpoint.autenticarAdvogado(email, password).execute();
 					status = advogado != null ? LoginStatus.LOGIN_OK : LoginStatus.LOGIN_ERROR;
 				} catch(GoogleJsonResponseException e) {
 					if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_NOT_FOUND)
@@ -268,8 +225,8 @@ public class LoginActivity extends Activity {
 			if (status == LoginStatus.ACCOUNT_NOT_FOUND) {
 				try {
 					Advogado advogado = new Advogado();
-					advogado.setEmail(mEmail);
-					advogado.setSenha(mPassword);
+					advogado.setEmail(email);
+					advogado.setSenha(password);
 					advogadoEndpoint.insertAdvogado(advogado).execute();
 					status = LoginStatus.LOGIN_OK;
 				} catch (IOException e) {
@@ -286,13 +243,13 @@ public class LoginActivity extends Activity {
 		@Override
 		protected void onPostExecute(LoginStatus status) {
 			mAuthTask = null;
-			showProgress(false);
-			
+			setSupportProgressBarIndeterminateVisibility(false);
+			setControlsEnabled(true);
 			switch (status) {
 				case LOGIN_OK:
 					Editor editor = preferences.edit();
-					editor.putString(PreferencesActivity.PREFS_KEY_EMAIL, mEmail);
-					//editor.putString(PreferencesActivity.PREFS_KEY_SENHA, mPassword);
+					editor.putString(PreferencesActivity.PREFS_KEY_EMAIL, email);
+					//editor.putString(PreferencesActivity.PREFS_KEY_SENHA, password);
 					editor.commit();
 					
 					Intent intent = new Intent();
@@ -301,8 +258,8 @@ public class LoginActivity extends Activity {
 					finish();
 					break;
 				case INVALID_PASSWORD:
-					mPasswordView.setError(getString(R.string.error_incorrect_password));
-					mPasswordView.requestFocus();
+					passwordEt.setError(getString(R.string.error_incorrect_password));
+					passwordEt.requestFocus();
 					break;
 				case ACCOUNT_NOT_FOUND:
 					if (errorMessage != null && errorMessage.trim().length() > 0) {
@@ -316,12 +273,12 @@ public class LoginActivity extends Activity {
 					}
 					break;
 				case LOGIN_ERROR:
-					mLoginButtonView.setError(getString(R.string.error_login_fail));
-					mLoginButtonView.requestFocus();
+					loginBt.setError(getString(R.string.error_login_fail));
+					loginBt.requestFocus();
 					break;
 				case NETWORK_ERROR:
-					mLoginButtonView.setError(getString(R.string.error_communication));
-					mLoginButtonView.requestFocus();
+					loginBt.setError(getString(R.string.error_communication));
+					loginBt.requestFocus();
 			}
 
 		}
@@ -329,7 +286,9 @@ public class LoginActivity extends Activity {
 		@Override
 		protected void onCancelled() {
 			mAuthTask = null;
-			showProgress(false);
+			setSupportProgressBarIndeterminateVisibility(false);
+			setControlsEnabled(true);
 		}
 	}
+
 }
