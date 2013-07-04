@@ -14,8 +14,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
+import com.ctm.eadvogado.util.Consts;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityHelper;
@@ -24,11 +26,9 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityHelper;
  * @author ctm
  * 
  */
-public class SlidingActivity extends SherlockActivity implements
+public class SlidingActivity extends SherlockFragmentActivity implements
 		SlidingActivityBase, OnItemClickListener {
 	
-	public static int THEME = R.style.Theme_Sherlock;
-
 	private SlidingActivityHelper mHelper;
 
 	/*
@@ -38,7 +38,10 @@ public class SlidingActivity extends SherlockActivity implements
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		setTheme(Consts.THEME);
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		
 		mHelper = new SlidingActivityHelper(this);
 		mHelper.onCreate(savedInstanceState);
 		setBehindContentView(R.layout.main_menu_sliding);
@@ -246,27 +249,23 @@ public class SlidingActivity extends SherlockActivity implements
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
-		Intent intent = null;
+		boolean finishActivity = false;
 		switch (position) {
-		case 0:
-			// Run next activity
-			intent = new Intent();
-			intent.setClass(MainActivity.INSTANCE, MeusProcessosActivity.class);
-			startActivity(intent);
-			break;
-		case 1:
-			intent = new Intent();
-			intent.setClass(MainActivity.INSTANCE, ConsultarProcessoActivity.class);
-			startActivity(intent);
-			break;
-		case 2:
-			intent = new Intent();
-			intent.setClass(MainActivity.INSTANCE, PreferencesActivity.class);
-			startActivity(intent);
-			break;
+			case 0:
+				// Run next activity
+				startActivity(new Intent(this, MeusProcessosActivity.class));
+				finishActivity = true;
+				break;
+			case 1:
+				startActivity(new Intent(this, ConsultarProcessoActivity.class));
+				finishActivity = true;
+				break;
+			case 2:
+				startActivity(new Intent(this, PreferencesActivity.class));
+				break;
 		}
 		toggle();
-		if (!(this instanceof MainActivity)) {
+		if (!(this instanceof MainActivity) && finishActivity) {
 			finish();
 		}
 	}
@@ -305,6 +304,7 @@ public class SlidingActivity extends SherlockActivity implements
 						}
 					});
 		} else {
+			setSupportProgressBarIndeterminateVisibility(show);
 			// The ViewPropertyAnimator APIs are not available, so simply show
 			// and hide the relevant UI components.
 			statusView.setVisibility(show ? View.VISIBLE : View.GONE);
