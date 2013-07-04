@@ -68,6 +68,7 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 		
 		setTitle(R.string.activity_consultar_processo_title);
 		setContentView(R.layout.activity_consultar_processo);
+		initAdmobBanner(R.id.adView);
 
 		mSpinnerTribunais = (Spinner) findViewById(R.id.spinnerTribunal);
 		mSpinnerTipoJuizo = (Spinner) findViewById(R.id.spinnerTipoJuizo);

@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -15,15 +15,14 @@ import com.ctm.eadvogado.util.Consts;
 
 public class MainActivity extends SlidingActivity {
 	
-	public static MainActivity INSTANCE = null;
-	
 	private ListView listViewMenu;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		INSTANCE = this;
+		initAdmobBanner(R.id.adView);
+		
 		listViewMenu = (ListView) findViewById(R.id.listViewMain);
 		listViewMenu.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -32,7 +31,6 @@ public class MainActivity extends SlidingActivity {
 				Intent intent = null;
 				switch (position) {
 				case 0:
-					// Run next activity
 					if (!Consts.VERSAO_GRATIS) {
 						intent = new Intent();
 						intent.setClass(MainActivity.this, MeusProcessosActivity.class);
@@ -70,10 +68,8 @@ public class MainActivity extends SlidingActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_preferences:
-				Intent intent = new Intent();
-				intent.setClass(this, PreferencesActivity.class);
-				startActivity(intent);
-				return true;
+				startActivity(new Intent(this, PreferencesActivity.class));
+		        return(true);
 		}
 		return super.onOptionsItemSelected(item);
 	}
