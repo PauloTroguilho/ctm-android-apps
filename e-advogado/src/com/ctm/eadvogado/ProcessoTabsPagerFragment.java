@@ -32,7 +32,6 @@ import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.ctm.eadvogado.db.EAdvogadoDbHelper;
@@ -48,7 +47,7 @@ import com.ctm.eadvogado.util.Consts;
  * switches between tabs and also allows the user to perform horizontal flicks
  * to move between the tabs.
  */
-public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
+public class ProcessoTabsPagerFragment extends SlidingActivity {
 
 	TabHost mTabHost;
 	ViewPager mViewPager;
@@ -61,7 +60,6 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		//setTheme(R.style.Theme_Sherlock); // Used for theme switching in samples
 		super.onCreate(savedInstanceState);
 		dbHelper = new EAdvogadoDbHelper(this);
 		setContentView(R.layout.processo_tabs_pager_fragment);
@@ -251,12 +249,12 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
+		/*switch (item.getItemId()) {
 			case android.R.id.home:
 				NavUtils.navigateUpFromSameTask(this);
 				finish();
 				return true;
-		}
+		}*/
 		if (item == menuSalvar) {
 			salvarProcessoTask = new SalvarProcessoTask();
 			salvarProcessoTask.execute((Void) null);
@@ -273,7 +271,7 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		 //Used to put dark icons on light action bar
-        boolean isLight = SlidingActivity.THEME == R.style.Theme_Sherlock_Light;
+        boolean isLight = Consts.THEME == R.style.Theme_Sherlock_Light;
 
         menuSalvar = menu.add(R.string.btn_ab_salvar);
         menuSalvar.setIcon(isLight ? R.drawable.ic_content_save_inverse : R.drawable.ic_content_save)

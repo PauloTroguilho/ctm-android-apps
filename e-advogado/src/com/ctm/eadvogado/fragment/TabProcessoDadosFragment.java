@@ -55,7 +55,7 @@ public class TabProcessoDadosFragment extends SherlockFragment {
 		TextView tvClasse = (TextView) v.findViewById(R.id.tvTabDados_ClasseProc);
 		tvClasse.setText(dadosBasicos.getClasseProcessual() + "");
 		TextView tvValor = (TextView) v.findViewById(R.id.tvTabDados_ValorCausa);
-		tvValor.setText(NumberFormat.getNumberInstance().format(
+		tvValor.setText(NumberFormat.getCurrencyInstance().format(
 				dadosBasicos.getValorCausa()));
 		return v;
 	}

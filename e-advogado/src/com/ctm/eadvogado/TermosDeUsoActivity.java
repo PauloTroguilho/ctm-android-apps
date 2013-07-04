@@ -1,6 +1,5 @@
 package com.ctm.eadvogado;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,13 +8,17 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-public class TermosDeUsoActivity extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+import com.ctm.eadvogado.util.Consts;
+
+public class TermosDeUsoActivity extends SherlockActivity {
 	
 	private Button btnAceito;
 	private SharedPreferences preferences;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		setTheme(Consts.THEME);
 		super.onCreate(savedInstanceState);
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean primeiraExec = preferences.getBoolean(PreferencesActivity.PREFS_KEY_PRIMEIRA_EXEC, true);

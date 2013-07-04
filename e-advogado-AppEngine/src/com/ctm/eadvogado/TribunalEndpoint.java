@@ -40,7 +40,7 @@ public class TribunalEndpoint {
 
 		try {
 			mgr = getEntityManager();
-			Query query = mgr.createQuery("select from Tribunal as Tribunal");
+			Query query = mgr.createQuery("select from Tribunal as Tribunal order by Tribunal.sigla asc");
 			if (cursorString != null && cursorString != "") {
 				cursor = Cursor.fromWebSafeString(cursorString);
 				query.setHint(JPACursorHelper.CURSOR_HINT, cursor);

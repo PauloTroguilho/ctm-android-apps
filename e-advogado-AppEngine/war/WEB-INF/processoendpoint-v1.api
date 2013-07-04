@@ -122,21 +122,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "processoendpoint.insertProcesso" : {
-      "path" : "processo",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.ProcessoEndpoint.insertProcesso",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "processoendpoint.listProcessoNPUsPorAdvogado" : {
       "path" : "processo/{email}/{senha}",
       "httpMethod" : "GET",
@@ -156,6 +141,21 @@
           }
         },
         "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "processoendpoint.insertProcesso" : {
+      "path" : "processo",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.ProcessoEndpoint.insertProcesso",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
@@ -853,17 +853,17 @@
           "$ref" : "Processo"
         }
       },
+      "com.ctm.eadvogado.ProcessoEndpoint.listProcessoNPUsPorAdvogado" : {
+        "response" : {
+          "$ref" : "ProcessoCollection"
+        }
+      },
       "com.ctm.eadvogado.ProcessoEndpoint.insertProcesso" : {
         "request" : {
           "$ref" : "Processo"
         },
         "response" : {
           "$ref" : "Processo"
-        }
-      },
-      "com.ctm.eadvogado.ProcessoEndpoint.listProcessoNPUsPorAdvogado" : {
-        "response" : {
-          "$ref" : "ProcessoCollection"
         }
       },
       "com.ctm.eadvogado.ProcessoEndpoint.removeProcesso" : {
