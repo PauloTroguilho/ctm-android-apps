@@ -34,6 +34,9 @@ import com.google.api.client.json.jackson.JacksonFactory;
 
 public class LoginActivity extends SherlockActivity {
 	
+	//protected AccountManager accountManager;
+	//protected Account[] accounts;
+	
 	public static enum LoginStatus {
 		LOGIN_OK, LOGIN_ERROR, INVALID_PASSWORD, ACCOUNT_NOT_FOUND, NETWORK_ERROR;
 	}
@@ -69,6 +72,12 @@ public class LoginActivity extends SherlockActivity {
 		getSupportActionBar().setTitle(R.string.title_activity_login);
 		
 		initAdvogadoEndpoint();
+		/*accountManager = AccountManager.get(getApplicationContext());
+        accounts = accountManager.getAccountsByType("com.google");
+        if (accounts != null && accounts.length > 0) {
+        	ListView listViewAccounts = (ListView) findViewById(R.id.listViewAccounts);
+            listViewAccounts.setAdapter(new ArrayAdapter(this, R.layout.account_list_item, accounts));
+        }*/
 
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		String email = preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, "");

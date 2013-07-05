@@ -3,6 +3,13 @@
     style="@style/LoginFormContainer"
     android:orientation="vertical"
     tools:context=".LoginActivity" >
+    
+    <LinearLayout
+        style="@style/LoginBtnsContainer"
+        android:gravity="right"
+        android:orientation="horizontal" >
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textView1"

@@ -1,11 +1,11 @@
 {
   "files": [
     {
-      "path": "e-advogado-processoendpoint-v1-20130704042726-java-1.15.0-rc-sources.jar", 
+      "path": "e-advogado-processoendpoint-v1-20130704081918-java-1.15.0-rc-sources.jar", 
       "type": "source"
     }, 
     {
-      "path": "e-advogado-processoendpoint-v1-20130704042726-java-1.15.0-rc.jar.properties", 
+      "path": "e-advogado-processoendpoint-v1-20130704081918-java-1.15.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -689,7 +689,7 @@
     }
   ], 
   "language_version": "1.15.0-rc", 
-  "revision": 20130704042726, 
+  "revision": 20130704081918, 
   "id": "processoendpoint:v1", 
   "modulePath": "com/ctm/eadvogado"
 }

@@ -6,12 +6,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.ctm.eadvogado.util.Consts;
 
 public class MainActivity extends SlidingActivity {
 	
@@ -28,28 +26,15 @@ public class MainActivity extends SlidingActivity {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 					long arg3) {
-				Intent intent = null;
 				switch (position) {
 				case 0:
-					if (!Consts.VERSAO_GRATIS) {
-						intent = new Intent();
-						intent.setClass(MainActivity.this, MeusProcessosActivity.class);
-						startActivity(intent);
-					} else {
-						Toast.makeText(MainActivity.this,
-								R.string.msg_op_incluir_processo_disponivel_versao_paga,
-								Toast.LENGTH_LONG).show();
-					}
+					startActivity(new Intent(MainActivity.this, MeusProcessosActivity.class));
 					break;
 				case 1:
-					intent = new Intent();
-					intent.setClass(MainActivity.this, ConsultarProcessoActivity.class);
-					startActivity(intent);
+					startActivity(new Intent(MainActivity.this, ConsultarProcessoActivity.class));
 					break;
 				case 2:
-					intent = new Intent();
-					intent.setClass(MainActivity.this, PreferencesActivity.class);
-					startActivity(intent);
+					startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
 					break;
 				}
 				
