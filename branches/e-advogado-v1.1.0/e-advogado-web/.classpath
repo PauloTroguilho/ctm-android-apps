@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/el-impl-2.2.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/javax.faces-2.2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/weld-servlet-1.1.13.Final.jar" sourcepath="F:/DesenvolvimentoJ2EE/localRepository/org/jboss/weld/servlet/weld-servlet/1.1.13.Final/weld-servlet-1.1.13.Final-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-codec-1.8.jar"/>
+	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+</classpath>
