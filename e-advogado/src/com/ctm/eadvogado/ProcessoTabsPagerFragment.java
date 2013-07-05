@@ -204,13 +204,20 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 	
 	public class SalvarProcessoTask extends AsyncTask<Void, Void, String> {
 
-		boolean erroComunicacao = false;
+		boolean atingiuMaxProcessos = false;
 
 		@Override
 		protected String doInBackground(Void... params) {
 			String npu = null;
 			try {
-				if (!Consts.VERSAO_GRATIS) {
+				long countProcessos = dbHelper.selectProcessosCount();
+				if (Consts.VERSAO_GRATIS) {
+					if (countProcessos < Consts.MAX_PROCESSOS_VERSAO_GRATIS) {
+						dbHelper.inserirProcesso(processoResult.getProcesso());
+					} else {
+						atingiuMaxProcessos = true;
+					}
+				} else {
 					dbHelper.inserirProcesso(processoResult.getProcesso());
 				}
 				npu = processoResult.getProcesso().getNpu();
@@ -223,14 +230,14 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 		@Override
 		protected void onPostExecute(String npu) {
 			if (npu != null) {
-				if (! Consts.VERSAO_GRATIS) {
+				if (!Consts.VERSAO_GRATIS || (Consts.VERSAO_GRATIS && !atingiuMaxProcessos)) {
 					Toast.makeText(ProcessoTabsPagerFragment.this,
 							R.string.msg_processo_inserido_sucesso,
 							Toast.LENGTH_LONG).show();
 					menuSalvar.setVisible(false);
 				} else {
 					Toast.makeText(ProcessoTabsPagerFragment.this,
-							R.string.msg_op_incluir_processo_disponivel_versao_paga,
+							R.string.msg_op_incluir_atingiu_max_versao_gratis,
 							Toast.LENGTH_LONG).show();
 				}
 			} else {

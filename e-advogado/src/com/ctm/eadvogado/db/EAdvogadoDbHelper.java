@@ -238,6 +238,27 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
         return tribunais;
     }
     
+    public long selectProcessosCount() {
+    	// Define a projection that specifies which columns from the database
+    	// you will actually use after this query.
+    	String[] projection = {
+    			EAdvogadoContract.ProcessoTable._ID
+    	};
+
+    	Cursor c = getReadableDatabase().query(
+    			EAdvogadoContract.ProcessoTable.TABLE_NAME,  // The table to query
+    	    projection,                               // The columns to return
+    	    null,                                // The columns for the WHERE clause
+    	    null,                            // The values for the WHERE clause
+    	    null,                                     // don't group the rows
+    	    null,                                     // don't filter by row groups
+    	    null                                 // The sort order
+    	    );
+    	long count = c.getCount();
+    	c.close();
+        return count;
+    }
+    
     
     public List<ProcessoDTO> selectProcessos() {
     	// Define a projection that specifies which columns from the database
