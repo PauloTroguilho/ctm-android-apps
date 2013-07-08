@@ -10,6 +10,7 @@ import javax.persistence.Query;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import com.ctm.eadvogado.exception.DAOException;
 import com.ctm.eadvogado.interceptors.Transacional;
 import com.ctm.eadvogado.model.Usuario;
 
@@ -36,10 +37,11 @@ public class UsuarioDao extends BaseDao<Usuario> {
 	 * @param email
 	 * @return
 	 * @throws PersistenceException
+	 * @throws NoResultException
 	 */
-	public Usuario findByEmail(String email) throws PersistenceException {
+	public Usuario findByEmail(String email) throws PersistenceException, NoResultException {
 		Query query = entityManager.createNamedQuery("usuarioPorEmail");
-		query.setParameter(0, email);
+		query.setParameter("email", email.toLowerCase());
 		return (Usuario) query.getSingleResult();
 	}
 	
@@ -47,25 +49,23 @@ public class UsuarioDao extends BaseDao<Usuario> {
 	 * @param email
 	 * @param senha
 	 * @return
+	 * @throws DAOException
 	 */
-	public Usuario autenticar(String email, String senha) {
-		Usuario usuario = null;
-		try {
-			usuario = findByEmail(email);
-		} catch (NoResultException nre) {
-		}
+	public Usuario autenticar(String email, String senha) throws SecurityException {
+		Usuario usuario = findByEmail(email);
 		if (usuario != null
 				&& usuario.getSenha().equals(
 						DigestUtils.sha256Hex(senha))) {
 			return usuario;
 		} else {
-			return null;
+			throw new SecurityException("usuario.autenticacao.senhaInvalida");
 		}
 	}
 	
 	@Override
 	@Transacional
 	public Usuario insert(Usuario entity) throws PersistenceException {
+		entity.setEmail(entity.getEmail().toLowerCase());
 		entity.setSenha(DigestUtils.sha256Hex(entity.getSenha()));
 		return super.insert(entity);
 	}
