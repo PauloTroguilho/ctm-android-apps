@@ -115,6 +115,30 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "processoEndpoint.associarProcessoAoUsuario" : {
+      "path" : "associarProcessoAoUsuario/{email}/{idProcesso}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.associarProcessoAoUsuario",
+      "request" : {
+        "parameters" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          },
+          "idProcesso" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
     "processoEndpoint.listAll" : {
       "path" : "processo",
       "httpMethod" : "GET",
@@ -151,30 +175,6 @@
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "processoEndpoint.associarProcessoAoUsuario" : {
-      "path" : "associarProcessoAoUsuario/{email}/{idProcesso}",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.associarProcessoAoUsuario",
-      "request" : {
-        "parameters" : {
-          "email" : {
-            "type" : "string",
-            "required" : true
-          },
-          "idProcesso" : {
-            "type" : "int64",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "empty"
       }
     },
     "processoEndpoint.removerProcessoDoUsuario" : {
@@ -840,12 +840,12 @@
           "$ref" : "Processo"
         }
       },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.associarProcessoAoUsuario" : {
+      },
       "com.ctm.eadvogado.endpoints.ProcessoEndpoint.listAll" : {
         "response" : {
           "$ref" : "CollectionResponse_Processo"
         }
-      },
-      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.associarProcessoAoUsuario" : {
       },
       "com.ctm.eadvogado.endpoints.ProcessoEndpoint.removerProcessoDoUsuario" : {
       },

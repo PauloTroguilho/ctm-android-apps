@@ -8,8 +8,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
-import com.ctm.eadvogado.exception.DAOException;
-import com.ctm.eadvogado.interceptors.Transacional;
 import com.ctm.eadvogado.model.Processo;
 import com.ctm.eadvogado.model.TipoJuizo;
 import com.ctm.eadvogado.model.Tribunal;
@@ -53,14 +51,4 @@ public class ProcessoDao extends BaseDao<Processo> {
 		return processo;
 	}
 	
-	@Override
-	@Transacional
-	public Processo insert(Processo entity) throws PersistenceException {
-		Processo p = findByNpuTribunalTipoJuizo(entity.getNpu(), entity.getTribunal().getId(), entity.getTipoJuizo());
-		if (p != null) {
-			throw new DAOException("processo.erro.npu.jaExiste");
-		}
-		return super.insert(entity);
-	}
-
 }

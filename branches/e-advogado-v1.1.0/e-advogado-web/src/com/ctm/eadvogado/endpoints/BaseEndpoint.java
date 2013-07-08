@@ -9,20 +9,21 @@ import javax.inject.Named;
 import com.ctm.eadvogado.dao.BaseDao;
 import com.ctm.eadvogado.dao.BaseDao.SortOrder;
 import com.ctm.eadvogado.model.BaseEntity;
+import com.ctm.eadvogado.negocio.BaseNegocio;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.response.CollectionResponse;
 
-public abstract class BaseEndpoint<E extends BaseEntity, Dao extends BaseDao<E>> {
+public abstract class BaseEndpoint<E extends BaseEntity, Negocio extends BaseNegocio<E, ? extends BaseDao<E>>> {
 	
 	protected static Logger logger = Logger.getLogger(BaseEndpoint.class.getSimpleName());
 	
-	private Dao dao;
+	private Negocio negocio;
 	
-	protected void setDao(Dao dao) {
-		this.dao = dao;
+	protected void setNegocio(Negocio negocio) {
+		this.negocio = negocio;
 	}
-	protected Dao getDao() {
-		return dao;
+	protected Negocio getNegocio() {
+		return negocio;
 	}
 
 	/**
@@ -42,7 +43,7 @@ public abstract class BaseEndpoint<E extends BaseEntity, Dao extends BaseDao<E>>
 			@Nullable @Named("sortField") String sortField,
 			@Nullable @Named("sortOrder") SortOrder sortOrder) {
 		
-		List<E> resultList = dao.findAll(sortField, sortOrder);
+		List<E> resultList = negocio.findAll(sortField, sortOrder);
 		return CollectionResponse.<E> builder().setItems(resultList).build();
 	}
 	
@@ -54,7 +55,7 @@ public abstract class BaseEndpoint<E extends BaseEntity, Dao extends BaseDao<E>>
 	 */
 	@ApiMethod(name = "getByID")
 	public E getByID(@Named("id") Long id) {
-		return dao.findByID(id);
+		return negocio.findByID(id);
 	}
 	
 	/**
@@ -67,7 +68,7 @@ public abstract class BaseEndpoint<E extends BaseEntity, Dao extends BaseDao<E>>
 	 */
 	@ApiMethod(name = "insert")
 	public E insert(E entidade) {
-		return dao.insert(entidade);
+		return negocio.insert(entidade);
 	}
 	
 	/**
@@ -79,7 +80,7 @@ public abstract class BaseEndpoint<E extends BaseEntity, Dao extends BaseDao<E>>
 	 */
 	@ApiMethod(name = "update")
 	public E update(E entidade) {
-		return dao.update(entidade);
+		return negocio.update(entidade);
 	}
 	
 	/**
@@ -91,9 +92,9 @@ public abstract class BaseEndpoint<E extends BaseEntity, Dao extends BaseDao<E>>
 	 */
 	@ApiMethod(name = "remove")
 	public E remove(@Named("id") Long id) {
-		E entidade = dao.findByID(id);
+		E entidade = negocio.findByID(id);
 		if (entidade != null) {
-			dao.remove(entidade);
+			negocio.remove(entidade);
 		}
 		return entidade;
 	}

@@ -5,13 +5,13 @@ package com.ctm.eadvogado.dao;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
-import com.ctm.eadvogado.interceptors.Transacional;
 import com.ctm.eadvogado.model.BaseEntity;
 import com.ctm.eadvogado.qualifiers.EntityManagerQualifier;
 
@@ -25,6 +25,8 @@ public abstract class BaseDao<E extends BaseEntity> implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	protected static Logger logger = Logger.getLogger(BaseDao.class.getSimpleName());
 
 	/**
 	 * Tipo de ordenação.
@@ -53,9 +55,9 @@ public abstract class BaseDao<E extends BaseEntity> implements Serializable {
 	 * @return
 	 * @throws PersistenceException
 	 */
-	@Transacional
 	public E insert(E entity) throws PersistenceException {
 		entityManager.persist(entity);
+		entityManager.flush();
 		return entity;
 	}
 	
@@ -65,9 +67,9 @@ public abstract class BaseDao<E extends BaseEntity> implements Serializable {
 	 * @return
 	 * @throws PersistenceException
 	 */
-	@Transacional
 	public E update(E entity) throws PersistenceException {
 		entityManager.merge(entity);
+		entityManager.flush();
 		return entity;
 	}
 	
@@ -77,9 +79,9 @@ public abstract class BaseDao<E extends BaseEntity> implements Serializable {
 	 * @return
 	 * @throws PersistenceException
 	 */
-	@Transacional
 	public E remove(E entity) throws PersistenceException {
 		entityManager.remove(entity);
+		entityManager.flush();
 		return entity;
 	}
 	
@@ -89,7 +91,6 @@ public abstract class BaseDao<E extends BaseEntity> implements Serializable {
 	 * @return
 	 * @throws PersistenceException
 	 */
-	@Transacional
 	public E refresh(E entity) throws PersistenceException {
 		entityManager.refresh(entity);
 		return entity;
@@ -118,6 +119,10 @@ public abstract class BaseDao<E extends BaseEntity> implements Serializable {
 		}
 		Query query = entityManager.createQuery(strQuery);
 		return query.getResultList();
+	}
+
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 	
 }
