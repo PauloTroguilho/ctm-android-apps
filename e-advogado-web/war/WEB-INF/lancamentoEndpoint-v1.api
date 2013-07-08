@@ -2,7 +2,7 @@
   "extends" : "thirdParty.api",
   "abstract" : false,
   "root" : "https://myapp.appspot.com/_ah/api",
-  "name" : "usuarioEndpoint",
+  "name" : "lancamentoEndpoint",
   "version" : "v1",
   "defaultVersion" : false,
   "adapter" : {
@@ -27,28 +27,13 @@
   "ownerName" : "eadvogado.ctm.com",
   "packagePath" : "endpoints",
   "methods" : {
-    "usuarioEndpoint.update" : {
-      "path" : "usuario",
-      "httpMethod" : "PUT",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.update",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "usuarioEndpoint.autenticar" : {
-      "path" : "autenticar/{email}/{senha}",
+    "lancamentoEndpoint.saldoLancamentos" : {
+      "path" : "saldoLancamentos/{email}/{senha}",
       "httpMethod" : "POST",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.autenticar",
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.LancamentoEndpoint.saldoLancamentos",
       "request" : {
         "parameters" : {
           "email" : {
@@ -66,13 +51,13 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "usuarioEndpoint.insert" : {
-      "path" : "usuario",
-      "httpMethod" : "POST",
+    "lancamentoEndpoint.update" : {
+      "path" : "lancamento",
+      "httpMethod" : "PUT",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.insert",
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.LancamentoEndpoint.update",
       "request" : {
         "body" : "autoTemplate(backendRequest)",
         "bodyName" : "resource"
@@ -81,13 +66,28 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "usuarioEndpoint.remove" : {
+    "lancamentoEndpoint.insert" : {
+      "path" : "lancamento",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.LancamentoEndpoint.insert",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "lancamentoEndpoint.remove" : {
       "path" : "remove/{id}",
       "httpMethod" : "DELETE",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.remove",
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.LancamentoEndpoint.remove",
       "request" : {
         "parameters" : {
           "id" : {
@@ -101,13 +101,13 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "usuarioEndpoint.listAll" : {
-      "path" : "usuario",
+    "lancamentoEndpoint.listAll" : {
+      "path" : "lancamento",
       "httpMethod" : "GET",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.listAll",
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.LancamentoEndpoint.listAll",
       "request" : {
         "parameters" : {
           "firstReault" : {
@@ -139,13 +139,13 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "usuarioEndpoint.getByID" : {
-      "path" : "usuario/{id}",
+    "lancamentoEndpoint.getByID" : {
+      "path" : "lancamento/{id}",
       "httpMethod" : "GET",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.getByID",
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.LancamentoEndpoint.getByID",
       "request" : {
         "parameters" : {
           "id" : {
@@ -162,35 +162,34 @@
   },
   "descriptor" : {
     "schemas" : {
-      "Usuario" : {
-        "id" : "Usuario",
+      "WrappedLong" : {
+        "id" : "WrappedLong",
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "format" : "int64"
+          }
+        }
+      },
+      "Lancamento" : {
+        "id" : "Lancamento",
         "type" : "object",
         "properties" : {
           "key" : {
             "$ref" : "Key"
           },
-          "email" : {
-            "type" : "string"
+          "data" : {
+            "type" : "string",
+            "format" : "date-time"
           },
-          "senha" : {
-            "type" : "string"
+          "tipo" : {
+            "$ref" : "TipoLancamento"
           },
-          "tipoConta" : {
-            "$ref" : "TipoConta"
+          "quantidade" : {
+            "type" : "integer"
           },
-          "papeis" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "Key"
-            }
-          },
-          "processos" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "Key"
-            }
-          },
-          "advogado" : {
+          "usuario" : {
             "$ref" : "Key"
           }
         }
@@ -223,19 +222,19 @@
           }
         }
       },
-      "TipoConta" : {
-        "id" : "TipoConta",
+      "TipoLancamento" : {
+        "id" : "TipoLancamento",
         "type" : "string",
-        "enum" : [ "BASICA", "PREMIUM" ]
+        "enum" : [ "CREDITO", "DEBITO" ]
       },
-      "CollectionResponse_Usuario" : {
-        "id" : "CollectionResponse_Usuario",
+      "CollectionResponse_Lancamento" : {
+        "id" : "CollectionResponse_Lancamento",
         "type" : "object",
         "properties" : {
           "items" : {
             "type" : "array",
             "items" : {
-              "$ref" : "Usuario"
+              "$ref" : "Lancamento"
             }
           },
           "nextPageToken" : {
@@ -245,40 +244,40 @@
       }
     },
     "methods" : {
-      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.update" : {
+      "com.ctm.eadvogado.endpoints.LancamentoEndpoint.saldoLancamentos" : {
+        "response" : {
+          "$ref" : "WrappedLong"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.LancamentoEndpoint.update" : {
         "request" : {
-          "$ref" : "Usuario"
+          "$ref" : "Lancamento"
         },
         "response" : {
-          "$ref" : "Usuario"
+          "$ref" : "Lancamento"
         }
       },
-      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.autenticar" : {
-        "response" : {
-          "$ref" : "Usuario"
-        }
-      },
-      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.insert" : {
+      "com.ctm.eadvogado.endpoints.LancamentoEndpoint.insert" : {
         "request" : {
-          "$ref" : "Usuario"
+          "$ref" : "Lancamento"
         },
         "response" : {
-          "$ref" : "Usuario"
+          "$ref" : "Lancamento"
         }
       },
-      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.remove" : {
+      "com.ctm.eadvogado.endpoints.LancamentoEndpoint.remove" : {
         "response" : {
-          "$ref" : "Usuario"
+          "$ref" : "Lancamento"
         }
       },
-      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.listAll" : {
+      "com.ctm.eadvogado.endpoints.LancamentoEndpoint.listAll" : {
         "response" : {
-          "$ref" : "CollectionResponse_Usuario"
+          "$ref" : "CollectionResponse_Lancamento"
         }
       },
-      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.getByID" : {
+      "com.ctm.eadvogado.endpoints.LancamentoEndpoint.getByID" : {
         "response" : {
-          "$ref" : "Usuario"
+          "$ref" : "Lancamento"
         }
       }
     }

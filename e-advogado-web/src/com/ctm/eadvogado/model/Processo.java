@@ -3,7 +3,14 @@
  */
 package com.ctm.eadvogado.model;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+
+import br.jus.cnj.pje.v1.TipoProcessoJudicial;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -12,6 +19,11 @@ import com.google.appengine.api.datastore.Key;
  * 
  */
 @Entity
+@NamedQueries(
+	@NamedQuery(
+		name = "processoPorNpuTribunalTipoJuizo", 
+		query = "select p from Processo as p where p.npu = :npu and p.tribunal = :idTribunal and p.tipoJuizo = :tipoJuizo")
+)
 public class Processo extends BaseEntity {
 
 	private static final long serialVersionUID = 1L;
@@ -20,8 +32,8 @@ public class Processo extends BaseEntity {
 	private TipoJuizo tipoJuizo;
 	private Key tribunal;
 	
-/*	@Lob @Basic(fetch = FetchType.EAGER)
-	private TipoProcessoJudicial processoJudicial;*/
+	@Lob @Basic(fetch = FetchType.EAGER)
+	private TipoProcessoJudicial processoJudicial;
 
 	/**
 	 * 
@@ -53,12 +65,12 @@ public class Processo extends BaseEntity {
 		this.tribunal = tribunal;
 	}
 
-	/*public TipoProcessoJudicial getProcessoJudicial() {
+	public TipoProcessoJudicial getProcessoJudicial() {
 		return processoJudicial;
 	}
 
 	public void setProcessoJudicial(TipoProcessoJudicial processoJudicial) {
 		this.processoJudicial = processoJudicial;
-	}*/
+	}
 
 }

@@ -46,7 +46,6 @@
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>/faces/*</url-pattern>
 		<url-pattern>*.jsf</url-pattern>
-		<url-pattern>/**/*Endpoint/*</url-pattern>
 	</servlet-mapping>
 	<listener>
 		<listener-class>com.ctm.eadvogado.listener.ContextListener</listener-class>
@@ -65,7 +64,7 @@
   <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
   <init-param>
    <param-name>services</param-name>
-   <param-value>com.ctm.eadvogado.endpoints.TribunalEndpoint,com.ctm.eadvogado.endpoints.UsuarioEndpoint</param-value>
+   <param-value>com.ctm.eadvogado.endpoints.LancamentoEndpoint,com.ctm.eadvogado.endpoints.ProcessoEndpoint,com.ctm.eadvogado.endpoints.TribunalEndpoint,com.ctm.eadvogado.endpoints.UsuarioEndpoint</param-value>
   </init-param>
  </servlet>
  <servlet-mapping>

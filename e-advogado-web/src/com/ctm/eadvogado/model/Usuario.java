@@ -19,7 +19,7 @@ import com.google.appengine.api.datastore.Key;
  */
 @Entity
 @NamedQueries(
-	@NamedQuery(name = "usuarioPorEmail", query = "select usu from Usuario as usu where lower(usu.email) = lower(?)")
+	@NamedQuery(name = "usuarioPorEmail", query = "select usu from Usuario as usu where usu.email = :email")
 )
 public class Usuario extends BaseEntity {
 
@@ -27,6 +27,7 @@ public class Usuario extends BaseEntity {
 
 	private String email;
 	private String senha;
+	private TipoConta tipoConta;
 	private Set<Key> papeis = new HashSet<Key>();
 	private Set<Key> processos = new HashSet<Key>();
 	private Key advogado;
@@ -52,9 +53,19 @@ public class Usuario extends BaseEntity {
 	public void setSenha(String senha) {
 		this.senha = senha;
 	}
+	@Persistent
+	public TipoConta getTipoConta() {
+		return tipoConta;
+	}
+
+	public void setTipoConta(TipoConta tipoConta) {
+		this.tipoConta = tipoConta;
+	}
 
 	@Persistent
 	public Set<Key> getPapeis() {
+		if (papeis == null)
+			papeis = new HashSet<Key>();
 		return papeis;
 	}
 
