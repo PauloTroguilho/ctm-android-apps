@@ -14,13 +14,13 @@ import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 import br.jus.cnj.pje.v1.TipoProcessoJudicial;
 
-import com.ctm.eadvogado.dao.ProcessoDao;
-import com.ctm.eadvogado.dao.TribunalDao;
-import com.ctm.eadvogado.dao.UsuarioDao;
 import com.ctm.eadvogado.model.Processo;
 import com.ctm.eadvogado.model.TipoJuizo;
 import com.ctm.eadvogado.model.Tribunal;
 import com.ctm.eadvogado.model.Usuario;
+import com.ctm.eadvogado.negocio.ProcessoNegocio;
+import com.ctm.eadvogado.negocio.TribunalNegocio;
+import com.ctm.eadvogado.negocio.UsuarioNegocio;
 import com.ctm.eadvogado.util.PJeServiceUtil;
 import com.ctm.eadvogado.util.WeldUtils;
 import com.google.api.server.spi.config.Api;
@@ -31,17 +31,17 @@ import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
 
 @Api(name = "processoEndpoint", namespace = @ApiNamespace(ownerDomain = "eadvogado.ctm.com", ownerName = "eadvogado.ctm.com", packagePath = "endpoints"))
-public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoDao> {
+public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 	
 	private static Cache cache;
 	
-	private TribunalDao tribunalDao;
-	private UsuarioDao usuarioDao;
+	private TribunalNegocio tribunalNegocio;
+	private UsuarioNegocio usuarioNegocio;
 
 	public ProcessoEndpoint() {
-		setDao(WeldUtils.getBean(ProcessoDao.class));
-		tribunalDao = WeldUtils.getBean(TribunalDao.class);
-		usuarioDao = WeldUtils.getBean(UsuarioDao.class);
+		setNegocio(WeldUtils.getBean(ProcessoNegocio.class));
+		tribunalNegocio = WeldUtils.getBean(TribunalNegocio.class);
+		usuarioNegocio = WeldUtils.getBean(UsuarioNegocio.class);
 	}
 	
 	/**
@@ -120,10 +120,10 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoDao> {
 			processo = getProcessoFromCache(npu, tipoJuizo, idTribunal);
 		}
 		if (processo == null) {
-			processo = getDao().findByNpuTribunalTipoJuizo(npu, idTribunal, tipoJuizo);
+			processo = getNegocio().findByNpuTribunalTipoJuizo(npu, idTribunal, tipoJuizo);
 		}
 		if (processo == null || (processo != null && ignorarCache)) {
-			Tribunal tribunal = tribunalDao.findByID(idTribunal);
+			Tribunal tribunal = tribunalNegocio.findByID(idTribunal);
 			String endpoint = null;
 			switch (tipoJuizo) {
 				case PRIMEIRO_GRAU:
@@ -147,14 +147,14 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoDao> {
 			if (processoJudicial != null) {
 				if (processo != null) {
 					processo.setProcessoJudicial(processoJudicial);
-					getDao().update(processo);
+					getNegocio().update(processo);
 				} else {
 					processo = new Processo();
 					processo.setNpu(npu);
 					processo.setTipoJuizo(tipoJuizo);
 					processo.setTribunal(tribunal.getKey());
 					processo.setProcessoJudicial(processoJudicial);
-					getDao().insert(processo);
+					getNegocio().insert(processo);
 				}
 			}
 		}
@@ -182,16 +182,16 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoDao> {
 			InternalServerErrorException {
 		Usuario usuario = null;
 		try {
-			usuario = usuarioDao.findByEmail(email);
+			usuario = usuarioNegocio.findByEmail(email);
 		} catch (NoResultException e) {
 			throw new NotFoundException("Usuário não encontrado!");
 		}
 		if (usuario != null) {
-			Processo processo = getDao().findByID(idProcesso);
+			Processo processo = getNegocio().findByID(idProcesso);
 			if (processo != null) {
 				usuario.getProcessos().add(processo.getKey());
 				try {
-					usuarioDao.update(usuario);
+					usuarioNegocio.update(usuario);
 				} catch (PersistenceException e) {
 					throw new InternalServerErrorException(
 							"Falha ao associar processo ao usuário!", e);
@@ -208,16 +208,16 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoDao> {
 			InternalServerErrorException {
 		Usuario usuario = null;
 		try {
-			usuario = usuarioDao.findByEmail(email);
+			usuario = usuarioNegocio.findByEmail(email);
 		} catch (NoResultException e) {
 			throw new NotFoundException("Usuário não encontrado!");
 		}
 		if (usuario != null) {
-			Processo processo = getDao().findByID(idProcesso);
+			Processo processo = getNegocio().findByID(idProcesso);
 			if (processo != null) {
 				if (usuario.getProcessos().remove(processo.getKey())) {
 					try {
-						usuarioDao.update(usuario);
+						usuarioNegocio.update(usuario);
 					} catch (PersistenceException e) {
 						throw new InternalServerErrorException(
 								"Falha ao associar processo ao usuário!", e);
