@@ -3,6 +3,9 @@ package com.ctm.eadvogado.util;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,90 +16,211 @@ import javax.xml.ws.Holder;
 
 import br.jus.cnj.pje.v1.IntercomunicacaoService;
 import br.jus.cnj.pje.v1.ServicoIntercomunicacao21;
+import br.jus.cnj.pje.v1.TipoDocumento;
 import br.jus.cnj.pje.v1.TipoProcessoJudicial;
 
 public class PJeServiceUtil {
 	
 	private static final Logger log = Logger.getLogger(PJeServiceUtil.class.getName());
-
+	
+	private static final String ID_CONSULTANTE = "123";
+	private static final String SENHA_CONSULTANTE = "123";
+	
+	
 	/**
-	 * @param service
-	 * @param npu
+	 * Consulta um processo no endereço wsdl informado.
+	 * 
+	 * @param wsdlURL
+	 * @param idConsultante
+	 * @param senhaConsultante
+	 * @param numeroProcesso
+	 * @param dataReferencia
+	 * @param incluirMovimentos
+	 * @param incluirDocumentos
+	 * @param documento
 	 * @return
 	 */
-	public static TipoProcessoJudicial consultarProcessoJudicial(
-			ServicoIntercomunicacao21 servico, String numeroProcesso) {
-		Holder<TipoProcessoJudicial> processo = new Holder<TipoProcessoJudicial>();
-		String idConsultante = "123";
-		String senhaConsultante = "123";
-		String dataReferencia = null;
-		Boolean movimentos = Boolean.TRUE;
-		Boolean incluirDocumentos = Boolean.FALSE;
-		List<String> documento = new ArrayList<String>();
+	public static TipoProcessoJudicial consultarProcessoJudicial(String wsdlURL, String idConsultante,
+			String senhaConsultante, String numeroProcesso,
+			Date dataReferencia, Boolean incluirMovimentos,
+			Boolean incluirDocumentos, List<String> documento) {
 		Holder<Boolean> sucesso = new Holder<Boolean>();
 		Holder<String> mensagem = new Holder<String>();
-		servico.consultarProcesso(idConsultante, senhaConsultante,
-				numeroProcesso, dataReferencia, movimentos, incluirDocumentos,
-				documento, sucesso, mensagem, processo);
+		Holder<TipoProcessoJudicial> processo = new Holder<TipoProcessoJudicial>();
+		String dataRefStr = null;
+		if (dataReferencia != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dataReferencia);
+			dataRefStr = TipoDataHoraConverter.marshal(cal);
+		}
+		ServicoIntercomunicacao21 servico = getPortFromEndpoint(wsdlURL);
+		try {
+			servico.consultarProcesso(idConsultante, senhaConsultante,
+					numeroProcesso, dataRefStr, incluirMovimentos,
+					incluirDocumentos, documento, sucesso, mensagem, processo);
+		}catch(Exception e) {
+			log.log(Level.WARNING, 
+				"Erro ao consultar processo com endereço do endpoint: " + wsdlURL, e);
+			servico = getPortFromURL(wsdlURL);
+			try {
+				servico.consultarProcesso(idConsultante, senhaConsultante,
+						numeroProcesso, dataRefStr, incluirMovimentos,
+						incluirDocumentos, documento, sucesso, mensagem, processo);
+			} catch(Exception e1) {
+				log.log(Level.WARNING, "Erro ao consultar processo com wsdlURL: " + wsdlURL, e);
+				throw new RuntimeException("Falha ao consultar processo.", e1);
+			}
+		}
 		return processo.value;
 	}
-
+	
 	/**
+	 * Consulta um processo no endereço wsdl informado.
+	 * 
+	 * @param wsdlURL
+	 * @param numeroProcesso
+	 * @param dataReferencia
+	 * @param incluirMovimentos
+	 * @param incluirDocumentos
+	 * @param documento
+	 * @return
+	 */
+	public static TipoProcessoJudicial consultarProcessoJudicial(String wsdlURL,
+			String numeroProcesso, Date dataReferencia,
+			Boolean incluirMovimentos, Boolean incluirDocumentos,
+			List<String> documento) {
+		return consultarProcessoJudicial(wsdlURL, ID_CONSULTANTE,
+				SENHA_CONSULTANTE, numeroProcesso, dataReferencia,
+				incluirMovimentos, incluirDocumentos, documento);
+	}
+	
+	/**
+	 * Consulta um processo no endereço wsdl informado.
+	 * 
+	 * @param wsdlURL
+	 * @param idConsultante
+	 * @param senhaConsultante
+	 * @param numeroProcesso
+	 * @return
+	 */
+	public static TipoProcessoJudicial consultarProcessoJudicial(String wsdlURL,
+			String idConsultante,
+			String senhaConsultante,
+			String numeroProcesso) {
+		return consultarProcessoJudicial(wsdlURL, idConsultante, senhaConsultante, numeroProcesso, null, Boolean.TRUE, Boolean.FALSE, null);
+	}
+	
+	
+	
+	/**
+	 * Consulta um processo no endereço wsdl informado.
+	 * 
 	 * @param wsdlURL
 	 * @param numeroProcesso
 	 * @return
-	 * @throws MalformedURLException
 	 */
-	public static TipoProcessoJudicial consultarProcessoJudicial(
-			String wsdlURL, String numeroProcesso)
-			throws MalformedURLException {
-		TipoProcessoJudicial processoJudicial = null;
+	public static TipoProcessoJudicial consultarProcessoJudicial(String wsdlURL,
+			String numeroProcesso) {
+		return consultarProcessoJudicial(wsdlURL, ID_CONSULTANTE, SENHA_CONSULTANTE, numeroProcesso);
+	}
+	
+	/**
+	 * Consultar uma lista de documentos do processo.
+	 * 
+	 * @param wsdlURL
+	 * @param idConsultante
+	 * @param senhaConsultante
+	 * @param numeroProcesso
+	 * @param documentoIds
+	 * @return
+	 */
+	public static List<TipoDocumento> consultarDocumentos(String wsdlURL, String idConsultante,
+			String senhaConsultante, String numeroProcesso, List<String> documentoIds) {
+		TipoProcessoJudicial processoJudicial = consultarProcessoJudicial(
+				wsdlURL, idConsultante, senhaConsultante, numeroProcesso, null, Boolean.FALSE, Boolean.TRUE, documentoIds);
+		List<TipoDocumento> documentosList = new ArrayList<TipoDocumento>();
+		if (processoJudicial != null) {
+			if (!processoJudicial.getDocumento().isEmpty()) {
+				for (TipoDocumento tipoDocumento : processoJudicial.getDocumento()) {
+					if (documentoIds.contains(tipoDocumento.getIdDocumento())) {
+						documentosList.add(tipoDocumento);
+					}
+				}
+			}
+		}
+		return documentosList;
+	}
+	
+	/**
+	 * Consultar uma lista de documentos do processo.
+	 * 
+	 * @param wsdlURL
+	 * @param numeroProcesso
+	 * @param documentoIds
+	 * @return
+	 */
+	public static List<TipoDocumento> consultarDocumentos(String wsdlURL, String numeroProcesso, List<String> documentoIds) {
+		return consultarDocumentos(wsdlURL, ID_CONSULTANTE, SENHA_CONSULTANTE, numeroProcesso, documentoIds);
+	}
+	
+	/**
+	 * @param wsdlURL
+	 * @return
+	 */
+	private static ServicoIntercomunicacao21 getPortFromEndpoint(String wsdlURL) {
 		String endpoint = null;
 		if (wsdlURL.toLowerCase().endsWith("?wsdl")) {
 			endpoint = wsdlURL.substring(0, 
 					wsdlURL.toLowerCase().indexOf("?wsdl"));
 		}
-		try {
-			IntercomunicacaoService service = new IntercomunicacaoService();
-			ServicoIntercomunicacao21 port = service
-					.getPort(ServicoIntercomunicacao21.class);
-			BindingProvider bp = (BindingProvider) port;
-			bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint);
-			bp.getRequestContext().put("com.sun.xml.ws.request.timeout", 60000 * 3);
-			bp.getRequestContext().put("com.sun.xml.ws.connect.timeout", 60000 * 3);
-			bp.getRequestContext().put("com.sun.xml.internal.ws.request.timeout", 60000 * 3);
-			bp.getRequestContext().put("com.sun.xml.internal.ws.connect.timeout", 60000 * 3);
-			processoJudicial = consultarProcessoJudicial(port, numeroProcesso);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			log.log(Level.WARNING, "Erro ao consultar processo", e);
-			try {
-				URL url = new URL(wsdlURL);
-				IntercomunicacaoService service = new IntercomunicacaoService(
-						url, new QName("http://www.cnj.jus.br/servico-intercomunicacao-2.1/", "IntercomunicacaoService"));
-				ServicoIntercomunicacao21 port = service
-						.getPort(ServicoIntercomunicacao21.class);
-				BindingProvider bp = (BindingProvider) port;
-				bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint);
-				bp.getRequestContext().put("com.sun.xml.ws.request.timeout", 60000 * 3);
-				bp.getRequestContext().put("com.sun.xml.ws.connect.timeout", 60000 * 3);
-				bp.getRequestContext().put("com.sun.xml.internal.ws.request.timeout", 60000 * 3);
-				bp.getRequestContext().put("com.sun.xml.internal.ws.connect.timeout", 60000 * 3);
-				processoJudicial = consultarProcessoJudicial(port, numeroProcesso);
-			} catch (Exception e1) {
-				System.out.println(e1.getMessage());
-				log.log(Level.WARNING, "Erro ao consultar processo", e1);
-				throw new RuntimeException(e1);
-			}
+		IntercomunicacaoService service = new IntercomunicacaoService();
+		ServicoIntercomunicacao21 port = service.getPort(ServicoIntercomunicacao21.class);
+		BindingProvider bp = (BindingProvider) port;
+		setupBindingProvider(bp, endpoint);
+		return port;
+	}
+	
+	/**
+	 * @param wsdlURL
+	 * @return
+	 */
+	private static ServicoIntercomunicacao21 getPortFromURL(String wsdlURL) {
+		String endpoint = null;
+		if (wsdlURL.toLowerCase().endsWith("?wsdl")) {
+			endpoint = wsdlURL.substring(0, 
+					wsdlURL.toLowerCase().indexOf("?wsdl"));
 		}
-		return processoJudicial;
+		URL url = null;
+		try {
+			url = new URL(wsdlURL);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		IntercomunicacaoService service = new IntercomunicacaoService(
+				url, new QName("http://www.cnj.jus.br/servico-intercomunicacao-2.1/", "IntercomunicacaoService"));
+		ServicoIntercomunicacao21 port = service
+				.getPort(ServicoIntercomunicacao21.class);
+		BindingProvider bp = (BindingProvider) port;
+		setupBindingProvider(bp, endpoint);
+		return port;
+	}
+	
+	/**
+	 * @param bp
+	 * @param endpoint
+	 */
+	private static void setupBindingProvider(BindingProvider bp, String endpoint) {
+		bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint);
+		bp.getRequestContext().put("com.sun.xml.ws.request.timeout", 60000 * 3);
+		bp.getRequestContext().put("com.sun.xml.ws.connect.timeout", 60000 * 3);
+		bp.getRequestContext().put("com.sun.xml.internal.ws.request.timeout", 60000 * 3);
+		bp.getRequestContext().put("com.sun.xml.internal.ws.connect.timeout", 60000 * 3);
 	}
 
+
 	public static void main(String[] args) {
-		String urlEndpoint = "https://www.tjpe.jus.br/pje/intercomunicacao?WSDL";
-		urlEndpoint = urlEndpoint.substring(0, urlEndpoint.toLowerCase()
-				.indexOf("?wsdl"));
-		System.out.println(urlEndpoint);
+		List<TipoDocumento> documentos = consultarDocumentos("https://www.tjpe.jus.br/pje/intercomunicacao?WSDL", "00004663820118178124", Arrays.asList("6751"));
+		System.out.println(documentos);
 	}
 
 }

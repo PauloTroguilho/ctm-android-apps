@@ -12,6 +12,7 @@ import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
+import br.jus.cnj.pje.v1.TipoDocumento;
 import br.jus.cnj.pje.v1.TipoProcessoJudicial;
 
 import com.ctm.eadvogado.model.Processo;
@@ -227,5 +228,21 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 				throw new NotFoundException("Processo não encontrado!");
 			}
 		}
+	}
+	
+	
+	/**
+	 * Faz a consulta de um processo.
+	 * @param npu
+	 * @param idTribunal
+	 * @param tipoJuizo
+	 * @return
+	 */
+	@ApiMethod(name = "consultarDocumento")
+	public TipoDocumento consultarDocumento(@Named("npu") String npu,
+			@Named("idTribunal") Long idTribunal,
+			@Named("tipoJuizo") TipoJuizo tipoJuizo,
+			@Named("idDocumento") String idDocumento) throws NotFoundException {
+		return null;
 	}
 }
