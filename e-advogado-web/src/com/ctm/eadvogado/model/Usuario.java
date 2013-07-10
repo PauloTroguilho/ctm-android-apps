@@ -10,6 +10,7 @@ import javax.jdo.annotations.Persistent;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Transient;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -31,6 +32,7 @@ public class Usuario extends BaseEntity {
 	private Set<Key> papeis = new HashSet<Key>();
 	private Set<Key> processos = new HashSet<Key>();
 	private Key advogado;
+	private Long saldo;
 
 	/**
 	 * 
@@ -91,6 +93,15 @@ public class Usuario extends BaseEntity {
 
 	public void setAdvogado(Key advogado) {
 		this.advogado = advogado;
+	}
+
+	@Transient
+	public Long getSaldo() {
+		return saldo;
+	}
+
+	public void setSaldo(Long saldo) {
+		this.saldo = saldo;
 	}
 
 }

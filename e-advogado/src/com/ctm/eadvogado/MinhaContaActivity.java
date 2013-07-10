@@ -7,6 +7,7 @@ import org.apache.http.HttpStatus;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,6 +63,9 @@ public class MinhaContaActivity extends SlidingActivity {
 	private void setControlsEnabled(boolean enabled) {
 		btContaPremium.setEnabled(enabled);
 		btCompraPacote.setEnabled(enabled);
+		tvCategoria.setVisibility(enabled ? View.VISIBLE : View.GONE);
+		tvQtdeCadastrados.setVisibility(enabled ? View.VISIBLE : View.GONE);
+		tvQtdeDisponivel.setVisibility(enabled ? View.VISIBLE : View.GONE);
 	}
 	
 	/**
@@ -104,9 +108,9 @@ public class MinhaContaActivity extends SlidingActivity {
 			if (usuario != null) {
 				USUARIO = usuario;
 				tvCategoria.setText(usuario.getTipoConta());
-				tvQtdeCadastrados.setText(usuario.getProcessos() != null ? usuario.getProcessos().size() : 0);
+				tvQtdeCadastrados.setText((usuario.getProcessos() != null ? usuario.getProcessos().size() : 0) + "");
 				//tvQtdeDisponivel.setText(usuario.getSaldo());
-				tvQtdeDisponivel.setText(0);
+				tvQtdeDisponivel.setText("0");
 			} else {
 				if (errorCode == HttpStatus.SC_UNAUTHORIZED) {
 					Toast.makeText(MinhaContaActivity.this,
