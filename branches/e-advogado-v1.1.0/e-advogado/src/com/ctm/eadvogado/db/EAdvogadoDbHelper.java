@@ -10,14 +10,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.ctm.eadvogado.dto.ProcessoDTO;
-import com.ctm.eadvogado.processoendpoint.model.Key;
-import com.ctm.eadvogado.processoendpoint.model.Processo;
-import com.ctm.eadvogado.tribunalendpoint.model.Tribunal;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.Key;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
+import com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Tribunal;
 
 public class EAdvogadoDbHelper extends SQLiteOpenHelper {
 	// If you change the database schema, you must increment the database
 	// version.
-	public static final int DATABASE_VERSION = 3;
+	public static final int DATABASE_VERSION = 4;
 	public static final String DATABASE_NAME = "EAdvogado.db";
 	
 	protected final Context mHelperContext;
@@ -30,19 +30,104 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(EAdvogadoContract.SQL_CREATE_TRIBUNAIS);
 		db.execSQL(EAdvogadoContract.SQL_CREATE_PROCESSOS);
+		db.execSQL(EAdvogadoContract.SQL_CREATE_LANCAMENTOS);
 	}
 
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// This database is only a cache for online data, so its upgrade policy
 		// is to simply to discard the data and start over
-		db.execSQL(EAdvogadoContract.SQL_DELETE_PROCESSOS);
-		db.execSQL(EAdvogadoContract.SQL_DELETE_TRIBUNAIS);
+		
+		//db.execSQL(EAdvogadoContract.SQL_DELETE_PROCESSOS);
+		//db.execSQL(EAdvogadoContract.SQL_DELETE_TRIBUNAIS);
 		onCreate(db);
 	}
 
 	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		onUpgrade(db, oldVersion, newVersion);
+		//onUpgrade(db, oldVersion, newVersion);
+		db.execSQL(EAdvogadoContract.SQL_DELETE_LANCAMENTOS);
 	}
+	
+	/**
+	 * Insere um lançamento
+     * @param tipoLancamento
+     * @param quantidade
+     * @return
+     */
+    public long inserirLancamento(String tipoLancamento, int quantidade) {
+        ContentValues initialValues = new ContentValues();
+		initialValues.put(EAdvogadoContract.LancamentosTable.COLUMN_NAME_TIPO_LANCAMENTO,
+				tipoLancamento);
+		initialValues.put(EAdvogadoContract.LancamentosTable.COLUMN_NAME_QUANTIDADE,
+				quantidade);
+        return getWritableDatabase().insert(EAdvogadoContract.LancamentosTable.TABLE_NAME, null, initialValues);
+    }
+    
+    /**
+     * @param id
+     * @return
+     */
+    public long removerLancamento(Long id) {
+		String whereClause = EAdvogadoContract.LancamentosTable._ID + " = ?";
+		String[] whereArgs = new String[] {id.toString()};
+
+        return getWritableDatabase().delete(EAdvogadoContract.LancamentosTable.TABLE_NAME, whereClause, 
+        		whereArgs);
+    }
+    
+    
+    /**
+     * @return
+     */
+    public long selectQtdeProcessosDisponiveis() {
+    	Cursor c = getReadableDatabase().rawQuery(
+    			"SELECT SUM("+EAdvogadoContract.LancamentosTable._ID+") FROM " 
+    			+ EAdvogadoContract.LancamentosTable.TABLE_NAME + " WHERE " 
+    			+ EAdvogadoContract.LancamentosTable.COLUMN_NAME_TIPO_LANCAMENTO + " = ?", 
+    			new String[] { EAdvogadoContract.LancamentosTable.TIPO_LANC_CREDITO });
+    	long qtdeCredito = 0;
+    	if(c.moveToFirst()) {
+    	    qtdeCredito = c.getInt(0);
+    	}
+    	c = getReadableDatabase().rawQuery(
+    			"SELECT SUM("+EAdvogadoContract.LancamentosTable._ID+") FROM " 
+    			+ EAdvogadoContract.LancamentosTable.TABLE_NAME + " WHERE " 
+    			+ EAdvogadoContract.LancamentosTable.COLUMN_NAME_TIPO_LANCAMENTO + " = ?", 
+    			new String[] { EAdvogadoContract.LancamentosTable.TIPO_LANC_DEBITO });
+    	long qtdeDebito = 0;
+    	if(c.moveToFirst()) {
+    	    qtdeCredito = c.getInt(0);
+    	}
+    	return qtdeCredito - qtdeDebito;
+    }
+    
+    /**
+     * @return
+     */
+    public boolean possuiContaPremium() {
+    	// Define a projection that specifies which columns from the database
+    	// you will actually use after this query.
+    	String[] projection = {
+    			EAdvogadoContract.LancamentosTable._ID
+    	};
+    	String selection = EAdvogadoContract.LancamentosTable.COLUMN_NAME_TIPO_LANCAMENTO + " = ?";
+	   	String[] columnValues = {
+	   			EAdvogadoContract.LancamentosTable.TIPO_LANC_CONTA_PREMIUM
+	   	};
+
+    	Cursor c = getReadableDatabase().query(
+    			EAdvogadoContract.ProcessoTable.TABLE_NAME,	// The table to query
+    	    projection,										// The columns to return
+    	    selection,										// The columns for the WHERE clause
+    	    columnValues,									// The values for the WHERE clause
+    	    null,											// don't group the rows
+    	    null,											// don't filter by row groups
+    	    null											// The sort order
+    	    );
+    	long count = c.getCount();
+    	c.close();
+        return count > 0;
+    }
+	
 	
     /**
      * Insere um {@link Processo} no banco de dados
@@ -70,7 +155,7 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     public long inserirTribunal(Tribunal tribunal) {
         ContentValues initialValues = new ContentValues();
 		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_TRIBUNAL_ID,
-				tribunal.getId().getId());
+				tribunal.getKey().getId());
 		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_NOME,
 				tribunal.getNome());
 		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_SIGLA,
@@ -82,14 +167,14 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     public long updateTribunal(Tribunal tribunal) {
         ContentValues initialValues = new ContentValues();
 		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_TRIBUNAL_ID,
-				tribunal.getId().getId());
+				tribunal.getKey().getId());
 		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_NOME,
 				tribunal.getNome());
 		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_SIGLA,
 				tribunal.getSigla());
 		
 		String whereClause = EAdvogadoContract.TribunalTable.COLUMN_NAME_TRIBUNAL_ID + " = ?";
-		String[] whereArgs = new String[] {tribunal.getId().getId().toString()};
+		String[] whereArgs = new String[] {tribunal.getKey().getId().toString()};
 
         return getWritableDatabase().update(EAdvogadoContract.TribunalTable.TABLE_NAME, initialValues, whereClause, 
         		whereArgs);
@@ -99,14 +184,16 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
      * @param tribunais
      */
     public void inserirTribunais(List<Tribunal> tribunais) {
-    	for (Tribunal tribunal : tribunais) {
-    		Tribunal exTrib = selectTribunalPorId(tribunal.getId().getId());
-    		if (exTrib == null) {
-    			inserirTribunal(tribunal);
-    		} else {
-    			
+    	if (tribunais != null && !tribunais.isEmpty()) {
+    		for (Tribunal tribunal : tribunais) {
+        		Tribunal exTrib = selectTribunalPorId(tribunal.getKey().getId());
+        		if (exTrib == null) {
+        			inserirTribunal(tribunal);
+        		} else {
+        			
+        		}
     		}
-		}
+    	}
     }
     
     /**
@@ -147,8 +234,8 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     	Processo processo = null;
     	if (c.moveToFirst()) {
     		processo = new Processo();
-    		processo.setId(new Key()); 
-    		processo.getId().setId(c.getLong(0));
+    		processo.setKey(new Key()); 
+    		processo.getKey().setId(c.getLong(0));
 			processo.setNpu(c.getString(1));
 			processo.setTribunal(new Key());
 			processo.getTribunal().setId(c.getLong(2));
@@ -189,8 +276,8 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     	Tribunal tribunal = null;
     	if (c.moveToFirst()) {
     		tribunal = new Tribunal();
-    		tribunal.setId(new com.ctm.eadvogado.tribunalendpoint.model.Key());
-    		tribunal.getId().setId(c.getLong(1));
+    		tribunal.setKey(new com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Key());
+    		tribunal.getKey().setId(c.getLong(1));
 			tribunal.setNome(c.getString(2));
 			tribunal.setSigla(c.getString(3));
     	}
@@ -226,8 +313,8 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     	if (c.moveToFirst()) {
     		do {
     			Tribunal t = new Tribunal();
-        		t.setId(new com.ctm.eadvogado.tribunalendpoint.model.Key());
-        		t.getId().setId(c.getLong(1));
+        		t.setKey(new com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Key());
+        		t.getKey().setId(c.getLong(1));
     			t.setNome(c.getString(2));
     			t.setSigla(c.getString(3));
     			tribunais.add(t);
@@ -288,8 +375,8 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     		do {
     			ProcessoDTO p = new ProcessoDTO();
     			Processo processo = new Processo();
-    			processo.setId(new Key());
-    			processo.getId().setId(c.getLong(0));
+    			processo.setKey(new Key());
+    			processo.getKey().setId(c.getLong(0));
     			processo.setNpu(c.getString(1));
         		processo.setTipoJuizo(c.getString(2));
         		p.setProcesso(processo);

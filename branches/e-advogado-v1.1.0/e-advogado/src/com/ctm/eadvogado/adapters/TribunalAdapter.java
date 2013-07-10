@@ -10,7 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.ctm.eadvogado.R;
-import com.ctm.eadvogado.tribunalendpoint.model.Tribunal;
+import com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Tribunal;
 
 public class TribunalAdapter extends ArrayAdapter<Tribunal> {
 
@@ -41,7 +41,7 @@ public class TribunalAdapter extends ArrayAdapter<Tribunal> {
 	}
 
 	public long getItemId(int position) {
-		return getItem(position).getId().getId();
+		return getItem(position).getKey().getId();
 	}
 
 	@Override

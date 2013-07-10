@@ -4,8 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +35,11 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityHelper;
 public class SlidingActivity extends SherlockFragmentActivity implements
 		SlidingActivityBase, OnItemClickListener {
 	
+	protected static final String TAG = "e-Advogado";
+	
 	private SlidingActivityHelper mHelper;
+	
+	protected SharedPreferences preferences;
 	
 	private AdView adView;
 
@@ -47,6 +53,8 @@ public class SlidingActivity extends SherlockFragmentActivity implements
 		setTheme(Consts.THEME);
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		mHelper = new SlidingActivityHelper(this);
 		mHelper.onCreate(savedInstanceState);

@@ -23,8 +23,8 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Window;
-import com.ctm.eadvogado.advogadoendpoint.Advogadoendpoint;
-import com.ctm.eadvogado.advogadoendpoint.model.Advogado;
+import com.ctm.eadvogado.endpoints.usuarioEndpoint.UsuarioEndpoint;
+import com.ctm.eadvogado.endpoints.usuarioEndpoint.model.Usuario;
 import com.ctm.eadvogado.util.Consts;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -33,6 +33,8 @@ import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.jackson.JacksonFactory;
 
 public class LoginActivity extends SherlockActivity {
+	
+	private static final String TAG = "e-Advogado"; 
 	
 	//protected AccountManager accountManager;
 	//protected Account[] accounts;
@@ -43,7 +45,7 @@ public class LoginActivity extends SherlockActivity {
 	
 	public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
 	
-	private Advogadoendpoint advogadoEndpoint;
+	private UsuarioEndpoint usuarioEndpoint;
 	private SharedPreferences preferences;
 
 	/**
@@ -71,14 +73,14 @@ public class LoginActivity extends SherlockActivity {
 		setContentView(R.layout.activity_login);
 		getSupportActionBar().setTitle(R.string.title_activity_login);
 		
-		initAdvogadoEndpoint();
+		initUsuarioEndpoint();
 		/*accountManager = AccountManager.get(getApplicationContext());
         accounts = accountManager.getAccountsByType("com.google");
         if (accounts != null && accounts.length > 0) {
         	ListView listViewAccounts = (ListView) findViewById(R.id.listViewAccounts);
             listViewAccounts.setAdapter(new ArrayAdapter(this, R.layout.account_list_item, accounts));
         }*/
-
+		
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		String email = preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, "");
 		
@@ -128,16 +130,16 @@ public class LoginActivity extends SherlockActivity {
 	}
 	
 	/**
-	 * Inicializa o endpoint de Advogado
+	 * Inicializa o endpoint {@link UsuarioEndpoint}
 	 */
-	private void initAdvogadoEndpoint() {
-		Advogadoendpoint.Builder endpointBuilder = new Advogadoendpoint.Builder(
+	private void initUsuarioEndpoint() {
+		UsuarioEndpoint.Builder endpointBuilder = new UsuarioEndpoint.Builder(
 		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
 		        new HttpRequestInitializer() {
 		          public void initialize(HttpRequest httpRequest) {
 		          }
 		        });
-		advogadoEndpoint = CloudEndpointUtils.updateBuilder(endpointBuilder).build();
+		usuarioEndpoint = CloudEndpointUtils.updateBuilder(endpointBuilder).build();
 	}
 	
 	/**
@@ -214,8 +216,8 @@ public class LoginActivity extends SherlockActivity {
 			errorMessage = "";
 			if (!byPassLogin) {
 				try {
-					Advogado advogado = advogadoEndpoint.autenticarAdvogado(email, password).execute();
-					status = advogado != null ? LoginStatus.LOGIN_OK : LoginStatus.LOGIN_ERROR;
+					Usuario usuario = usuarioEndpoint.autenticar(email, password).execute();
+					status = usuario != null ? LoginStatus.LOGIN_OK : LoginStatus.LOGIN_ERROR;
 				} catch(GoogleJsonResponseException e) {
 					if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_NOT_FOUND)
 							|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("not found"))) {
@@ -225,7 +227,7 @@ public class LoginActivity extends SherlockActivity {
 						status = LoginStatus.INVALID_PASSWORD;
 					}
 				} catch (Exception e) {
-					Log.e("E-Advogado", "Falha ao realizar login.", e);
+					Log.e(TAG, "Falha ao realizar login.", e);
 					status = LoginStatus.NETWORK_ERROR;
 				}
 			} else {
@@ -233,16 +235,16 @@ public class LoginActivity extends SherlockActivity {
 			}
 			if (status == LoginStatus.ACCOUNT_NOT_FOUND) {
 				try {
-					Advogado advogado = new Advogado();
-					advogado.setEmail(email);
-					advogado.setSenha(password);
-					advogadoEndpoint.insertAdvogado(advogado).execute();
+					Usuario usuario = new Usuario();
+					usuario.setEmail(email);
+					usuario.setSenha(password);
+					usuarioEndpoint.insert(usuario).execute();
 					status = LoginStatus.LOGIN_OK;
 				} catch (IOException e) {
-					Log.e("E-Advogado", "Falha comunicaÃ§Ã£o ao realizar cadastro.", e);
+					Log.e(TAG, "Falha comunicação ao realizar cadastro.", e);
 					errorMessage = getString(R.string.error_cadastro_fail);
 				} catch (Exception e) {
-					Log.e("E-Advogado", "Erro ao realizar cadastro.", e);
+					Log.e(TAG, "Erro ao realizar cadastro.", e);
 					errorMessage = getString(R.string.error_cadastro_fail);
 				}
 			}
@@ -258,7 +260,7 @@ public class LoginActivity extends SherlockActivity {
 				case LOGIN_OK:
 					Editor editor = preferences.edit();
 					editor.putString(PreferencesActivity.PREFS_KEY_EMAIL, email);
-					//editor.putString(PreferencesActivity.PREFS_KEY_SENHA, password);
+					editor.putString(PreferencesActivity.PREFS_KEY_SENHA, password);
 					editor.commit();
 					
 					Intent intent = new Intent();
