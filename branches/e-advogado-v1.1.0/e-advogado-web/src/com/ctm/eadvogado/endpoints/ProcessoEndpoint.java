@@ -1,6 +1,8 @@
 package com.ctm.eadvogado.endpoints;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -12,10 +14,15 @@ import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
+
+import org.apache.commons.codec.binary.Hex;
+
 import br.jus.cnj.pje.v1.TipoDocumento;
 import br.jus.cnj.pje.v1.TipoProcessoJudicial;
 
+import com.ctm.eadvogado.model.Documento;
 import com.ctm.eadvogado.model.Processo;
+import com.ctm.eadvogado.model.ProcessoUsuario;
 import com.ctm.eadvogado.model.TipoJuizo;
 import com.ctm.eadvogado.model.Tribunal;
 import com.ctm.eadvogado.model.Usuario;
@@ -29,6 +36,8 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.InternalServerErrorException;
 import com.google.api.server.spi.response.NotFoundException;
+import com.google.api.server.spi.response.ServiceUnavailableException;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
 
 @Api(name = "processoEndpoint", namespace = @ApiNamespace(ownerDomain = "eadvogado.ctm.com", ownerName = "eadvogado.ctm.com", packagePath = "endpoints"))
@@ -115,7 +124,8 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 	public Processo consultarProcesso(@Named("npu") String npu,
 			@Named("idTribunal") Long idTribunal,
 			@Named("tipoJuizo") TipoJuizo tipoJuizo,
-			@Named("ignorarCache") Boolean ignorarCache) throws NotFoundException {
+			@Named("ignorarCache") Boolean ignorarCache) throws NotFoundException, ServiceUnavailableException, UnauthorizedException {
+		boolean falhaNoServico = false;
 		Processo processo = null;
 		if (!ignorarCache) {
 			processo = getProcessoFromCache(npu, tipoJuizo, idTribunal);
@@ -139,23 +149,34 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 				try {
 					processoJudicial = PJeServiceUtil.consultarProcessoJudicial(endpoint, npu);
 				} catch(Exception e) {
+					falhaNoServico = true;
 					logger.log(Level.SEVERE, String.format("Falha ao consultar processo %s, %s, %s no servico", npu, idTribunal, tipoJuizo.name()), e);
-					throw new NotFoundException("Não foi possível consultar este processo neste momento");
 				}
 			} else {
 				throw new NotFoundException("Serviço não disponivel para o Tipo de Juízo informado.");
 			}
 			if (processoJudicial != null) {
-				if (processo != null) {
-					processo.setProcessoJudicial(processoJudicial);
-					getNegocio().update(processo);
+				if (processoJudicial.getDadosBasicos().getNivelSigilo() == 0) {
+					if (processo != null) {
+						processo.setProcessoJudicial(processoJudicial);
+						getNegocio().update(processo);
+					} else {
+						processo = new Processo();
+						processo.setNpu(npu);
+						processo.setTipoJuizo(tipoJuizo);
+						processo.setTribunal(tribunal.getKey());
+						processo.setProcessoJudicial(processoJudicial);
+						getNegocio().insert(processo);
+					}
 				} else {
-					processo = new Processo();
-					processo.setNpu(npu);
-					processo.setTipoJuizo(tipoJuizo);
-					processo.setTribunal(tribunal.getKey());
-					processo.setProcessoJudicial(processoJudicial);
-					getNegocio().insert(processo);
+					throw new UnauthorizedException("Desculpe! O processo informado não pode ser acessado!");
+				}
+			} else {
+				if (ignorarCache) {
+					processo = getProcessoFromCache(npu, tipoJuizo, idTribunal);
+					if (processo == null) {
+						processo = getNegocio().findByNpuTribunalTipoJuizo(npu, idTribunal, tipoJuizo);
+					}
 				}
 			}
 		}
@@ -164,6 +185,12 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 				putProcessoToCache(npu, tipoJuizo, idTribunal, processo);
 			} catch(Exception e) {
 				logger.log(Level.SEVERE, String.format("Falha ao colocar processo %s, %s, %s na cache", npu, idTribunal, tipoJuizo.name()), e);
+			}
+		} else {
+			if (falhaNoServico) {
+				throw new ServiceUnavailableException("Desculpe! Serviço de consulta processual temporáriamente indisponível neste tribunal.");
+			} else {
+				throw new NotFoundException("Desculpe! O Processo informado não foi localizado.");
 			}
 		}
 		return processo;
@@ -239,10 +266,69 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 	 * @return
 	 */
 	@ApiMethod(name = "consultarDocumento")
-	public TipoDocumento consultarDocumento(@Named("npu") String npu,
+	public Documento consultarDocumento(@Named("npu") String npu,
 			@Named("idTribunal") Long idTribunal,
 			@Named("tipoJuizo") TipoJuizo tipoJuizo,
-			@Named("idDocumento") String idDocumento) throws NotFoundException {
-		return null;
+			@Named("idDocumento") String idDocumento) throws NotFoundException, ServiceUnavailableException, UnauthorizedException {
+		Tribunal tribunal = tribunalNegocio.findByID(idTribunal);
+		String endpoint = null;
+		switch (tipoJuizo) {
+			case PRIMEIRO_GRAU:
+				endpoint = tribunal.getPje1gEndpoint();
+				break;
+			case SEGUNDO_GRAU:
+				endpoint = tribunal.getPje2gEndpoint();
+				break;
+		}
+		TipoDocumento tipoDoc = null;
+		if (endpoint != null) {
+			try {
+				tipoDoc = PJeServiceUtil.consultarDocumento(endpoint, npu, idDocumento);
+			} catch(Exception e) {
+				logger.log(Level.SEVERE, String.format("Falha ao consultar documento %s, do processo %s, %s, %s no servico.", idDocumento, npu, idTribunal, tipoJuizo.name()), e);
+				throw new ServiceUnavailableException("Não foi possível consultar o documento neste momento!");
+			}
+		} else {
+			throw new ServiceUnavailableException("Serviço não disponivel para o Tipo de Juízo informado.");
+		}
+		if (tipoDoc != null) {
+			if (tipoDoc.getNivelSigilo().equals(0)) {
+				Documento documento = new Documento();
+				documento.setConteudo(Hex.encodeHexString(tipoDoc.getConteudo()));
+				documento.setIdDocumento(idDocumento);
+				documento.setMimeType(tipoDoc.getMimetype());
+				return documento;
+			} else {
+				throw new UnauthorizedException("Desculpe! O documento informado não pode ser acessado!");
+			}
+		} else {
+			throw new NotFoundException("Desculpe! O documento informado não foi localizado!");
+		}
+	}
+	
+	
+	@ApiMethod(name = "consultarProcessosDoUsuario")
+	public List<ProcessoUsuario> consultarProcessosDoUsuario(@Named("email") String email,
+			@Named("senha") String senha) throws NotFoundException, UnauthorizedException{
+		Usuario usuario = null;
+		try {
+			usuario = usuarioNegocio.autenticar(email, senha);
+		} catch(NoResultException e) {
+			throw new NotFoundException("Usuário não encontrado!");
+		} catch (SecurityException e) {
+			throw new UnauthorizedException("Usuário e/ou senha inválidos!");
+		}
+		List<ProcessoUsuario> processosList = new ArrayList<ProcessoUsuario>();
+		if (usuario != null) {
+			List<Processo> processos = getNegocio().findByUsuario(usuario);
+			for (Processo processo : processos) {
+				ProcessoUsuario pu = new ProcessoUsuario();
+				pu.setNpu(processo.getNpu());
+				pu.setIdTribunal(processo.getTribunal().getId());
+				pu.setTipoJuizo(processo.getTipoJuizo());
+				processosList.add(pu);
+			}
+		}
+		return processosList;
 	}
 }

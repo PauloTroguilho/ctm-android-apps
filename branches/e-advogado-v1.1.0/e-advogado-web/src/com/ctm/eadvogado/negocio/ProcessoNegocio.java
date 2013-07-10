@@ -3,6 +3,8 @@
  */
 package com.ctm.eadvogado.negocio;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.PersistenceException;
@@ -12,6 +14,7 @@ import com.ctm.eadvogado.exception.DAOException;
 import com.ctm.eadvogado.interceptors.Transacional;
 import com.ctm.eadvogado.model.Processo;
 import com.ctm.eadvogado.model.TipoJuizo;
+import com.ctm.eadvogado.model.Usuario;
 
 /**
  * @author Cleber
@@ -34,6 +37,16 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	public Processo findByNpuTribunalTipoJuizo(String npu, Long idTribunal,
 			TipoJuizo tipoJuizo) throws PersistenceException {
 		return getDao().findByNpuTribunalTipoJuizo(npu, idTribunal, tipoJuizo);
+	}
+	
+	/**
+	 * Busca os processos do Usuário.
+	 * @param usuario
+	 * @return
+	 * @throws PersistenceException
+	 */
+	public List<Processo> findByUsuario(Usuario usuario) throws PersistenceException{
+		return getDao().findByUsuario(usuario);
 	}
 
 	@Override

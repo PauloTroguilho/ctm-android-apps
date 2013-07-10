@@ -3,6 +3,9 @@
  */
 package com.ctm.eadvogado.dao;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Named;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
@@ -11,6 +14,7 @@ import javax.persistence.Query;
 import com.ctm.eadvogado.model.Processo;
 import com.ctm.eadvogado.model.TipoJuizo;
 import com.ctm.eadvogado.model.Tribunal;
+import com.ctm.eadvogado.model.Usuario;
 import com.google.appengine.api.datastore.KeyFactory;
 
 /**
@@ -47,8 +51,29 @@ public class ProcessoDao extends BaseDao<Processo> {
 		Processo processo = null;
 		try {
 			processo = (Processo) query.getSingleResult();
-		} catch(NoResultException e) {}
+		} catch(NoResultException e) {
+			logger.info(String.format("Processo não encontrado. %s, %s, %s", npu, idTribunal, tipoJuizo.name()));
+		}
 		return processo;
+	}
+	
+	/**
+	 * Busca os Processos do Usuário
+	 * @param usuario
+	 * @return
+	 * @throws PersistenceException
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Processo> findByUsuario(Usuario usuario) throws PersistenceException {
+		Query query = entityManager.createNamedQuery("processosInElements");
+		query.setParameter("processos", usuario.getProcessos());
+		List<Processo> resultList = new ArrayList<Processo>();
+		try {
+			resultList = query.getResultList();
+		} catch(NoResultException e) {
+			logger.info("Nenhum processo encontrado para o Usuário: " + usuario.getEmail());
+		}
+		return resultList;
 	}
 	
 }

@@ -164,6 +164,34 @@ public class PJeServiceUtil {
 	}
 	
 	/**
+	 * Consultar um documento do processo.
+	 * 
+	 * @param wsdlURL
+	 * @param idConsultante
+	 * @param senhaConsultante
+	 * @param numeroProcesso
+	 * @param documentoId
+	 * @return
+	 */
+	public static TipoDocumento consultarDocumento(String wsdlURL, String idConsultante,
+			String senhaConsultante, String numeroProcesso, String documentoId) {
+		List<TipoDocumento> documentos = consultarDocumentos(wsdlURL, idConsultante, senhaConsultante, numeroProcesso, Arrays.asList(documentoId));
+		return (documentos.size() > 0) ? documentos.get(0) : null;
+	}
+	
+	/**
+	 * Consultar um documento do processo.
+	 * 
+	 * @param wsdlURL
+	 * @param numeroProcesso
+	 * @param documentoId
+	 * @return
+	 */
+	public static TipoDocumento consultarDocumento(String wsdlURL, String numeroProcesso, String documentoId) {
+		return consultarDocumento(wsdlURL, ID_CONSULTANTE, SENHA_CONSULTANTE, numeroProcesso, documentoId);
+	}
+	
+	/**
 	 * @param wsdlURL
 	 * @return
 	 */

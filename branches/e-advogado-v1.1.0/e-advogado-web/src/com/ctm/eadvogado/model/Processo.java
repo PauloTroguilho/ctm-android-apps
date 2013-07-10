@@ -19,11 +19,20 @@ import com.google.appengine.api.datastore.Key;
  * 
  */
 @Entity
-@NamedQueries(
+@NamedQueries({
 	@NamedQuery(
 		name = "processoPorNpuTribunalTipoJuizo", 
-		query = "select p from Processo as p where p.npu = :npu and p.tribunal = :idTribunal and p.tipoJuizo = :tipoJuizo")
-)
+		query = "select p from Processo as p where p.npu = :npu and p.tribunal = :idTribunal and p.tipoJuizo = :tipoJuizo"
+	),
+	@NamedQuery(
+		name = "processosPorUsuario",
+		query = "select usu.processos from Usuario as usu where usu = :usuario"
+	),
+	@NamedQuery(
+		name = "processosInElements",
+		query = "select p from Processo as p where p.key in (:processos)"
+	)
+})
 public class Processo extends BaseEntity {
 
 	private static final long serialVersionUID = 1L;
