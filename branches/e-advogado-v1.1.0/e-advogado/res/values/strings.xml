@@ -8,9 +8,8 @@
     <string name="main_msg_2">Acesse uma das opções:</string>
     <string name="menu_meus_processos">Meus Processos</string>
     <string name="menu_consultar_processos">Consultar Processos</string>
+    <string name="menu_minha_conta">Minha Conta</string>
     <string name="menu_preferences">Preferências</string>
-    
-    
     <string name="preferences_title">Preferências</string>
     <string name="pref_conta_usuario">Conta de Usuário</string>
     <string name="pref_conta_usuario_summary">Configurações da conta de usuário utilizada na aplicação.</string>
@@ -22,6 +21,7 @@
     <string-array name="menu_itens">
         <item>@string/menu_meus_processos</item>
         <item>@string/menu_consultar_processos</item>
+        <item>@string/menu_minha_conta</item>
         <item>@string/menu_preferences</item>
     </string-array>
 
@@ -48,11 +48,20 @@
     <string name="title_activity_termos_de_uso">Termos de Uso</string>
     <string name="action_settings">Settings</string>
     <string name="btn_termos_aceito">Aceito</string>
-    
     <string name="msg_op_incluir_atingiu_max_versao_gratis">Para incluir mais processos, adquira a versão PREMIUM do aplicativo e-Advogado!</string>
     <string name="msg_op_incluir_processo_disponivel_versao_paga">Acompanhamento de processos está disponível somente na versão e-Advogado PRO</string>
     <string name="msg_processo_nao_encontrado">O processo informado não foi encontrado!</string>
     <string name="msg_nenhum_processo_cadastrado">Você ainda não possui processos em acompanhamento!</string>
-    
+    <string name="title_activity_minha_conta">MinhaContaActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="msg_minha_conta">Aqui você pode verificar as informações sobre sua conta.</string>
+    <string name="conta_categoria">Categoria da Conta:</string>
+    <string name="conta_saldo_processos">Saldo de Processos:</string>
+    <string name="conta_qtde_cadastrada">"Qtde. Cadastrada: "</string>
+    <string name="conta_qtde_disponivel">Qtde. Disponível</string>
+    <string name="conta_btn_conta_premium">Conta Premium</string>
+    <string name="conta_btn_comprar_pacote">Comprar Pacote</string>
+    <string name="conta_erro_carregando_dados">Não foi possível carregar os dados da conta! Verifique o acesso a internet.</string>
+    <string name="conta_erro_carregando_dados_nao_autorizado">Não foi possível autenticar seu usuário! Verifique suas credenciais de acesso.</string>
 
 </resources>
