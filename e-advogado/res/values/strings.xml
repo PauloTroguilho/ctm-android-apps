@@ -52,6 +52,7 @@
     <string name="msg_op_incluir_atingiu_max_versao_gratis">Para incluir mais processos, adquira a versão PREMIUM do aplicativo e-Advogado!</string>
     <string name="msg_op_incluir_processo_disponivel_versao_paga">Acompanhamento de processos está disponível somente na versão e-Advogado PRO</string>
     <string name="msg_processo_nao_encontrado">O processo informado não foi encontrado!</string>
+    <string name="msg_nenhum_processo_cadastrado">Você ainda não possui processos em acompanhamento!</string>
     
 
 </resources>

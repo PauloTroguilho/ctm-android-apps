@@ -14,7 +14,7 @@ import com.ctm.eadvogado.ProcessoTabsPagerFragment;
 import com.ctm.eadvogado.R;
 import com.ctm.eadvogado.adapters.PoloAdapter;
 import com.ctm.eadvogado.dto.ProcessoDTO;
-import com.ctm.eadvogado.processoendpoint.model.TipoPoloProcessual;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoPoloProcessual;
 import com.ctm.eadvogado.util.Consts;
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;

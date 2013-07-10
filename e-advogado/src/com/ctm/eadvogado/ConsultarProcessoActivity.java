@@ -20,10 +20,10 @@ import com.ctm.eadvogado.adapters.TribunalAdapter;
 import com.ctm.eadvogado.db.EAdvogadoDbHelper;
 import com.ctm.eadvogado.dto.ProcessoDTO;
 import com.ctm.eadvogado.dto.TipoJuizo;
-import com.ctm.eadvogado.processoendpoint.Processoendpoint;
-import com.ctm.eadvogado.processoendpoint.model.Processo;
-import com.ctm.eadvogado.tribunalendpoint.Tribunalendpoint;
-import com.ctm.eadvogado.tribunalendpoint.model.Tribunal;
+import com.ctm.eadvogado.endpoints.processoEndpoint.ProcessoEndpoint;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
+import com.ctm.eadvogado.endpoints.tribunalEndpoint.TribunalEndpoint;
+import com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Tribunal;
 import com.ctm.eadvogado.util.Mask;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.http.HttpRequest;
@@ -33,8 +33,8 @@ import com.google.api.client.json.jackson.JacksonFactory;
 public class ConsultarProcessoActivity extends SlidingActivity {
 
 	private EAdvogadoDbHelper dbHelper;
-	private Processoendpoint processoEndpoint;
-	private Tribunalendpoint tribunalEndpoint;
+	private ProcessoEndpoint processoEndpoint;
+	private TribunalEndpoint tribunalEndpoint;
 
 	private View mConsultarFormView;
 	private View mConsultarStatusView;
@@ -51,14 +51,14 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		dbHelper = new EAdvogadoDbHelper(this);
-		Processoendpoint.Builder procEndpointBuilder = new Processoendpoint.Builder(
+		ProcessoEndpoint.Builder procEndpointBuilder = new ProcessoEndpoint.Builder(
 		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
 		        new HttpRequestInitializer() {
 		          public void initialize(HttpRequest httpRequest) {
 		          }
 		        });
 		processoEndpoint = CloudEndpointUtils.updateBuilder(procEndpointBuilder).build();
-		Tribunalendpoint.Builder tribEndpointBuilder = new Tribunalendpoint.Builder(
+		TribunalEndpoint.Builder tribEndpointBuilder = new TribunalEndpoint.Builder(
 		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
 		        new HttpRequestInitializer() {
 		          public void initialize(HttpRequest httpRequest) {
@@ -136,22 +136,8 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 		@Override
 		protected List<Tribunal> doInBackground(Void... params) {
 			List<Tribunal> tribunais = new ArrayList<Tribunal>();
-			/*try {
-				tribunais = dbHelper.selectTribunais();
-			} catch (Exception e) {
-				Log.e("E-Advogado", "Falha ao carregar tribunais do banco", e);
-			}
-			if (tribunais.isEmpty()) {
-				try {
-					tribunais = tribunalEndpoint.listTribunal().execute().getItems();
-					dbHelper.inserirTribunais(tribunais);
-				} catch (Exception e) {
-					Log.e("E-Advogado",
-							"Falha ao carregar tribunais pelo servico", e);
-				}
-			}*/
 			try {
-				tribunais = tribunalEndpoint.listTribunal().execute().getItems();
+				tribunais = tribunalEndpoint.listAll().execute().getItems();
 				dbHelper.inserirTribunais(tribunais);
 			} catch (Exception e) {
 				Log.e("E-Advogado",
@@ -165,7 +151,7 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 			carregarTask = null;
 			showProgress(false, mConsultarStatusView, mConsultarFormView);
 
-			if (!tribunais.isEmpty()) {
+			if (tribunais != null && !tribunais.isEmpty()) {
 				TribunalAdapter tribunalAdapter = new TribunalAdapter(
 						ConsultarProcessoActivity.this,
 						R.layout.tribunal_list_item, tribunais);
@@ -201,8 +187,9 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 			Processo processo = null;
 			try {
 				processo = processoEndpoint.consultarProcesso(
-						mEditTextNPU.getText().toString().replaceAll("[.-]", ""), 
-						tipoJuizo.name(), tribunal.getId().getId()).execute();
+						mEditTextNPU.getText().toString().replaceAll("[.-]", ""),
+						tribunal.getKey().getId(), tipoJuizo.name(), false)
+						.execute();
 			} catch (Exception e) {
 				erroComm = true;
 				Log.e("E-Advogado",

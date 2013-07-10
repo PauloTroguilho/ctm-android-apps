@@ -1,6 +1,8 @@
 package com.ctm.eadvogado.adapters;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,24 +12,30 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.ctm.eadvogado.R;
-import com.ctm.eadvogado.dto.ProcessoDTO;
+import com.ctm.eadvogado.db.EAdvogadoDbHelper;
 import com.ctm.eadvogado.dto.TipoJuizo;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.ProcessoUsuario;
+import com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Tribunal;
 
-public class ProcessoAdapter extends ArrayAdapter<ProcessoDTO> {
+public class ProcessoUsuarioAdapter extends ArrayAdapter<ProcessoUsuario> {
 
+	private EAdvogadoDbHelper dbHelper;
 	// Your sent context
 	private LayoutInflater inflator;
 	// Your custom values for the spinner (User)
-	private List<ProcessoDTO> values;
+	private List<ProcessoUsuario> values;
+	
+	private Map<Long, Tribunal> tribunaisMap = new HashMap<Long, Tribunal>();
 
 	/**
 	 * @param context
 	 * @param textViewResourceId
 	 * @param values
 	 */
-	public ProcessoAdapter(Context context, int textViewResourceId,
-			List<ProcessoDTO> values) {
+	public ProcessoUsuarioAdapter(Context context, int textViewResourceId,
+			List<ProcessoUsuario> values) {
 		super(context, textViewResourceId, values);
+		dbHelper = new EAdvogadoDbHelper(context);
 		this.values = values;
 		inflator = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -37,12 +45,13 @@ public class ProcessoAdapter extends ArrayAdapter<ProcessoDTO> {
 		return values.size();
 	}
 
-	public ProcessoDTO getItem(int position) {
+	public ProcessoUsuario getItem(int position) {
 		return values.get(position);
 	}
 
 	public long getItemId(int position) {
-		return getItem(position).getProcesso().getKey().getId();
+		ProcessoUsuario item = getItem(position);
+		return String.format("%s-%s-%s", item.getNpu(), item.getTipoJuizo(), item.getIdTribunal()).hashCode();
 	}
 
 	@Override
@@ -54,13 +63,18 @@ public class ProcessoAdapter extends ArrayAdapter<ProcessoDTO> {
 		TextView tvTipoJuizo = (TextView) view
 				.findViewById(R.id.textViewTipoJuizo);
 
-		ProcessoDTO item = getItem(position);
-		String npu = item.getProcesso().getNpu();
+		ProcessoUsuario item = getItem(position);
+		String npu = item.getNpu();
 		tvNPU.setText(String.format("%s-%s.%s.%s.%s.%s", npu.substring(0, 7),
 				npu.substring(7, 9), npu.substring(9, 13), npu.substring(13, 14),
 				npu.substring(14, 16), npu.substring(16)));
-		tvTribunal.setText(item.getTribunal().getSigla());
-		if (item.getProcesso().getTipoJuizo().equals(TipoJuizo.PRIMEIRO_GRAU.name())) {
+		Tribunal tribunal = tribunaisMap.get(item.getIdTribunal());
+		if (tribunal == null) {
+			tribunal = dbHelper.selectTribunalPorId(item.getIdTribunal());
+			tribunaisMap.put(item.getIdTribunal(), tribunal);
+		}
+		tvTribunal.setText(tribunal.getSigla());
+		if (item.getTipoJuizo().equals(TipoJuizo.PRIMEIRO_GRAU.name())) {
 			tvTipoJuizo.setText(R.string.processo_tipoJuizo_1g);
 		} else {
 			tvTipoJuizo.setText(R.string.processo_tipoJuizo_2g);

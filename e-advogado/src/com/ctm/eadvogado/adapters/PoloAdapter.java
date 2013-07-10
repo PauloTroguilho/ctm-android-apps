@@ -10,7 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.ctm.eadvogado.R;
-import com.ctm.eadvogado.processoendpoint.model.TipoPoloProcessual;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoPoloProcessual;
 
 public class PoloAdapter extends ArrayAdapter<TipoPoloProcessual> {
 

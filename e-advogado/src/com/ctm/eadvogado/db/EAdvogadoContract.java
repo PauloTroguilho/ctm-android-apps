@@ -18,6 +18,15 @@ public class EAdvogadoContract {
 	    public static final String COLUMN_NAME_NOME = "nome";
 	    public static final String COLUMN_NAME_SIGLA = "sigla";
 	}
+	public static abstract class LancamentosTable implements BaseColumns {
+	    public static final String TABLE_NAME = "lancamentos";
+	    public static final String COLUMN_NAME_TIPO_LANCAMENTO = "tipo_lancamento";
+	    public static final String COLUMN_NAME_QUANTIDADE = "quantidade";
+	    
+	    public static final String TIPO_LANC_CREDITO = "C";
+	    public static final String TIPO_LANC_DEBITO = "D";
+	    public static final String TIPO_LANC_CONTA_PREMIUM = "P";
+	}
 	
 	private static final String TEXT_TYPE = " TEXT";
 	private static final String INTEGER_TYPE = " INTEGER";
@@ -37,12 +46,22 @@ public class EAdvogadoContract {
 	public static final String SQL_DELETE_TRIBUNAIS =
 	    "DROP TABLE IF EXISTS " + EAdvogadoContract.TribunalTable.TABLE_NAME;
 	
+	public static final String SQL_DELETE_LANCAMENTOS =
+		    "DROP TABLE IF EXISTS " + EAdvogadoContract.LancamentosTable.TABLE_NAME;
+	
 	public static final String SQL_CREATE_TRIBUNAIS =
 	    "CREATE TABLE " + EAdvogadoContract.TribunalTable.TABLE_NAME + " (" +
 	    EAdvogadoContract.TribunalTable._ID + " INTEGER PRIMARY KEY" + COMMA_SEP +
 	    EAdvogadoContract.TribunalTable.COLUMN_NAME_TRIBUNAL_ID + INTEGER_TYPE + COMMA_SEP +
 	    EAdvogadoContract.TribunalTable.COLUMN_NAME_NOME + TEXT_TYPE + COMMA_SEP +
 	    EAdvogadoContract.TribunalTable.COLUMN_NAME_SIGLA + TEXT_TYPE +
+	    " )";
+	
+	public static final String SQL_CREATE_LANCAMENTOS =
+	    "CREATE TABLE " + EAdvogadoContract.LancamentosTable.TABLE_NAME + " (" +
+	    EAdvogadoContract.LancamentosTable._ID + " INTEGER PRIMARY KEY" + COMMA_SEP +
+	    EAdvogadoContract.LancamentosTable.COLUMN_NAME_TIPO_LANCAMENTO + TEXT_TYPE + COMMA_SEP +
+	    EAdvogadoContract.LancamentosTable.COLUMN_NAME_QUANTIDADE + INTEGER_TYPE +
 	    " )";
 
 

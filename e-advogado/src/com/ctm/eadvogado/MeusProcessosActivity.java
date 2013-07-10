@@ -16,11 +16,11 @@ import android.widget.Toast;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.ctm.eadvogado.adapters.ProcessoAdapter;
-import com.ctm.eadvogado.db.EAdvogadoDbHelper;
+import com.ctm.eadvogado.adapters.ProcessoUsuarioAdapter;
 import com.ctm.eadvogado.dto.ProcessoDTO;
-import com.ctm.eadvogado.processoendpoint.Processoendpoint;
-import com.ctm.eadvogado.processoendpoint.model.Processo;
+import com.ctm.eadvogado.endpoints.processoEndpoint.ProcessoEndpoint;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.ProcessoUsuario;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -28,8 +28,7 @@ import com.google.api.client.json.jackson.JacksonFactory;
 
 public class MeusProcessosActivity extends SlidingActivity {
 	
-	private EAdvogadoDbHelper dbHelper;
-	private Processoendpoint processoEndpoint;
+	private ProcessoEndpoint processoEndpoint;
 	
 	private ConsultarMeusProcessosTask consultarMeusProcessosTask;
 	private ConsultarMeuProcessoTask consultarProcessoTask;
@@ -43,8 +42,7 @@ public class MeusProcessosActivity extends SlidingActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		dbHelper = new EAdvogadoDbHelper(this);
-		Processoendpoint.Builder procEndpointBuilder = new Processoendpoint.Builder(
+		ProcessoEndpoint.Builder procEndpointBuilder = new ProcessoEndpoint.Builder(
 		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
 		        new HttpRequestInitializer() {
 		          public void initialize(HttpRequest httpRequest) {
@@ -127,29 +125,36 @@ public class MeusProcessosActivity extends SlidingActivity {
 	 * @author Cleber
 	 *
 	 */
-	public class ConsultarMeusProcessosTask extends AsyncTask<Void, Void, List<ProcessoDTO>> {
+	public class ConsultarMeusProcessosTask extends AsyncTask<Void, Void, List<ProcessoUsuario>> {
 		@Override
-		protected List<ProcessoDTO> doInBackground(Void... params) {
-			List<ProcessoDTO> processos = null;
+		protected List<ProcessoUsuario> doInBackground(Void... params) {
+			List<ProcessoUsuario> processos = null;
 			try {
-				processos = dbHelper.selectProcessos();
+				processos = processoEndpoint.consultarProcessosDoUsuario(
+						preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, ""), 
+						preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, "")).execute().getItems();
 			} catch (Exception e) {
-				Log.e("E-Advogado",
-						"Falha ao carregar processos do BD", e);
+				Log.e(TAG,
+						"Falha ao carregar processos meus processos", e);
 			}
 			return processos;
 		}
 
 		@Override
-		protected void onPostExecute(List<ProcessoDTO> processos) {
+		protected void onPostExecute(List<ProcessoUsuario> processos) {
 			consultarMeusProcessosTask = null;
 			showProgress(false, statusView, listarFormView);
-
 			if (processos != null) {
-				ProcessoAdapter processoAdapter = new ProcessoAdapter(
-						MeusProcessosActivity.this,
-						R.layout.processo_list_item, processos);
-				processosListView.setAdapter(processoAdapter);
+				if (processos != null && processos.isEmpty()) {
+					ProcessoUsuarioAdapter processoAdapter = new ProcessoUsuarioAdapter(
+							MeusProcessosActivity.this,
+							R.layout.processo_list_item, processos);
+					processosListView.setAdapter(processoAdapter);
+				} else {
+					Toast.makeText(MeusProcessosActivity.this,
+							R.string.msg_nenhum_processo_cadastrado,
+							Toast.LENGTH_LONG).show();
+				}
 			} else {
 				Toast.makeText(MeusProcessosActivity.this,
 						R.string.msg_nao_foi_possivel_carregar_dados,
@@ -172,11 +177,11 @@ public class MeusProcessosActivity extends SlidingActivity {
 			Processo processo = null;
 			try {
 				processo = processoEndpoint.consultarProcesso(
-						params[0].getProcesso().getNpu().replaceAll("[-.]", ""), 
-						params[0].getProcesso().getTipoJuizo(), 
-						params[0].getTribunal().getId().getId()).execute();
+						params[0].getProcesso().getNpu().replaceAll("[-.]", ""),
+						params[0].getTribunal().getKey().getId(),
+						params[0].getProcesso().getTipoJuizo(), false).execute();
 			} catch (Exception e) {
-				Log.e("E-Advogado",
+				Log.e(TAG,
 						"Falha ao carregar processo pelo servico", e);
 			}
 			if (processo != null) {

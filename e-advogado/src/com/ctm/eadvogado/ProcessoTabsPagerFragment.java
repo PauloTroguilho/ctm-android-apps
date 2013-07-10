@@ -35,11 +35,16 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.ctm.eadvogado.db.EAdvogadoDbHelper;
 import com.ctm.eadvogado.dto.ProcessoDTO;
+import com.ctm.eadvogado.endpoints.processoEndpoint.ProcessoEndpoint;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
 import com.ctm.eadvogado.fragment.TabProcessoDadosFragment;
 import com.ctm.eadvogado.fragment.TabProcessoMovimentoFragment;
 import com.ctm.eadvogado.fragment.TabProcessoPolosFragment;
-import com.ctm.eadvogado.processoendpoint.model.Processo;
 import com.ctm.eadvogado.util.Consts;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.json.jackson.JacksonFactory;
 
 /**
  * Demonstrates combining a TabHost with a ViewPager to implement a tab UI that
@@ -51,7 +56,8 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 	TabHost mTabHost;
 	ViewPager mViewPager;
 	TabsAdapter mTabsAdapter;
-	
+
+	private ProcessoEndpoint processoEndpoint;
 	private EAdvogadoDbHelper dbHelper;
 	private SalvarProcessoTask salvarProcessoTask;
 	
@@ -62,6 +68,14 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 		super.onCreate(savedInstanceState);
 		dbHelper = new EAdvogadoDbHelper(this);
 		setContentView(R.layout.processo_tabs_pager_fragment);
+		
+		ProcessoEndpoint.Builder procEndpointBuilder = new ProcessoEndpoint.Builder(
+		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
+		        new HttpRequestInitializer() {
+		          public void initialize(HttpRequest httpRequest) {
+		          }
+		        });
+		processoEndpoint = CloudEndpointUtils.updateBuilder(procEndpointBuilder).build();
 		
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup();
@@ -202,44 +216,30 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 		}
 	}
 	
-	public class SalvarProcessoTask extends AsyncTask<Void, Void, String> {
-
-		boolean atingiuMaxProcessos = false;
+	public class SalvarProcessoTask extends AsyncTask<Void, Void, Boolean> {
 
 		@Override
-		protected String doInBackground(Void... params) {
-			String npu = null;
+		protected Boolean doInBackground(Void... params) {
+			Boolean result = Boolean.FALSE;
 			try {
-				long countProcessos = dbHelper.selectProcessosCount();
-				if (Consts.VERSAO_GRATIS) {
-					if (countProcessos < Consts.MAX_PROCESSOS_VERSAO_GRATIS) {
-						dbHelper.inserirProcesso(processoResult.getProcesso());
-					} else {
-						atingiuMaxProcessos = true;
-					}
-				} else {
-					dbHelper.inserirProcesso(processoResult.getProcesso());
-				}
-				npu = processoResult.getProcesso().getNpu();
+				processoEndpoint.associarProcessoAoUsuario(
+						preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, ""), 
+						processoResult.getProcesso().getKey().getId()).execute();
+				result = Boolean.TRUE;
 			} catch(Exception e) {
-				Log.e("E-Advogado", "Falha ao inserir processo no BD.", e);
+				result = Boolean.FALSE;
+				Log.e(TAG, "Falha ao inserir processo no BD.", e);
 			}
-			return npu;
+			return result;
 		}
 
 		@Override
-		protected void onPostExecute(String npu) {
-			if (npu != null) {
-				if (!Consts.VERSAO_GRATIS || (Consts.VERSAO_GRATIS && !atingiuMaxProcessos)) {
-					Toast.makeText(ProcessoTabsPagerFragment.this,
-							R.string.msg_processo_inserido_sucesso,
-							Toast.LENGTH_LONG).show();
-					menuSalvar.setVisible(false);
-				} else {
-					Toast.makeText(ProcessoTabsPagerFragment.this,
-							R.string.msg_op_incluir_atingiu_max_versao_gratis,
-							Toast.LENGTH_LONG).show();
-				}
+		protected void onPostExecute(Boolean result) {
+			if (result.booleanValue()) {
+				Toast.makeText(ProcessoTabsPagerFragment.this,
+						R.string.msg_processo_inserido_sucesso,
+						Toast.LENGTH_LONG).show();
+				menuSalvar.setVisible(false);
 			} else {
 				Toast.makeText(ProcessoTabsPagerFragment.this,
 						R.string.msg_processo_inserido_erro,
@@ -283,7 +283,7 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
         menuSalvar.setIcon(isLight ? R.drawable.ic_content_save_inverse : R.drawable.ic_content_save)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         Processo selectProcesso = dbHelper.selectProcesso(processoResult.getProcesso().getNpu(),
-				processoResult.getTribunal().getId().getId(), processoResult
+				processoResult.getTribunal().getKey().getId(), processoResult
 						.getProcesso().getTipoJuizo());
 		if (selectProcesso != null) {
 			menuSalvar.setVisible(false);

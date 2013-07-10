@@ -2,8 +2,8 @@ package com.ctm.eadvogado.dto;
 
 import java.io.Serializable;
 
-import com.ctm.eadvogado.processoendpoint.model.Processo;
-import com.ctm.eadvogado.tribunalendpoint.model.Tribunal;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
+import com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Tribunal;
 
 public class ProcessoDTO implements Serializable {
 

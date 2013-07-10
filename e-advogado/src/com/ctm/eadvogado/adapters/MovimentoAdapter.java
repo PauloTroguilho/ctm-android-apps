@@ -14,7 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.ctm.eadvogado.R;
-import com.ctm.eadvogado.processoendpoint.model.TipoMovimentoProcessual;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoMovimentoProcessual;
 
 public class MovimentoAdapter extends ArrayAdapter<TipoMovimentoProcessual> {
 
