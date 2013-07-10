@@ -34,6 +34,9 @@ public class MainActivity extends SlidingActivity {
 					startActivity(new Intent(MainActivity.this, ConsultarProcessoActivity.class));
 					break;
 				case 2:
+					startActivity(new Intent(MainActivity.this, MinhaContaActivity.class));
+					break;
+				case 3:
 					startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
 					break;
 				}

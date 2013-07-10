@@ -315,6 +315,9 @@ public class SlidingActivity extends SherlockFragmentActivity implements
 				finishActivity = true;
 				break;
 			case 2:
+				startActivity(new Intent(this, MinhaContaActivity.class));
+				break;
+			case 3:
 				startActivity(new Intent(this, PreferencesActivity.class));
 				break;
 		}
