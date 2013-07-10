@@ -144,20 +144,14 @@ public class MeusProcessosActivity extends SlidingActivity {
 		protected void onPostExecute(List<ProcessoUsuario> processos) {
 			consultarMeusProcessosTask = null;
 			showProgress(false, statusView, listarFormView);
-			if (processos != null) {
-				if (processos != null && processos.isEmpty()) {
-					ProcessoUsuarioAdapter processoAdapter = new ProcessoUsuarioAdapter(
-							MeusProcessosActivity.this,
-							R.layout.processo_list_item, processos);
-					processosListView.setAdapter(processoAdapter);
-				} else {
-					Toast.makeText(MeusProcessosActivity.this,
-							R.string.msg_nenhum_processo_cadastrado,
-							Toast.LENGTH_LONG).show();
-				}
+			if (processos != null && !processos.isEmpty()) {
+				ProcessoUsuarioAdapter processoAdapter = new ProcessoUsuarioAdapter(
+						MeusProcessosActivity.this,
+						R.layout.processo_list_item, processos);
+				processosListView.setAdapter(processoAdapter);
 			} else {
 				Toast.makeText(MeusProcessosActivity.this,
-						R.string.msg_nao_foi_possivel_carregar_dados,
+						R.string.msg_nenhum_processo_cadastrado,
 						Toast.LENGTH_LONG).show();
 			}
 		}
