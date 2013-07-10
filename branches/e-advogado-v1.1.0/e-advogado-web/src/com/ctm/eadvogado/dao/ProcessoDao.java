@@ -65,13 +65,15 @@ public class ProcessoDao extends BaseDao<Processo> {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Processo> findByUsuario(Usuario usuario) throws PersistenceException {
-		Query query = entityManager.createNamedQuery("processosInElements");
-		query.setParameter("processos", usuario.getProcessos());
 		List<Processo> resultList = new ArrayList<Processo>();
-		try {
-			resultList = query.getResultList();
-		} catch(NoResultException e) {
-			logger.info("Nenhum processo encontrado para o Usuário: " + usuario.getEmail());
+		if (!usuario.getProcessos().isEmpty()) {
+			Query query = entityManager.createNamedQuery("processosInElements");
+			query.setParameter("processos", usuario.getProcessos());
+			try {
+				resultList = query.getResultList();
+			} catch(NoResultException e) {
+				logger.info("Nenhum processo encontrado para o Usuário: " + usuario.getEmail());
+			}
 		}
 		return resultList;
 	}

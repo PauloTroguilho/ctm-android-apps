@@ -2,7 +2,7 @@
   "extends" : "thirdParty.api",
   "abstract" : false,
   "root" : "https://e-advogado-web.appspot.com/_ah/api",
-  "name" : "lancamentoEndpoint",
+  "name" : "deviceInfoEndpoint",
   "version" : "v1",
   "defaultVersion" : false,
   "adapter" : {
@@ -27,37 +27,13 @@
   "ownerName" : "eadvogado.ctm.com",
   "packagePath" : "endpoints",
   "methods" : {
-    "lancamentoEndpoint.saldoLancamentos" : {
-      "path" : "saldoLancamentos/{email}/{senha}",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.LancamentoEndpoint.saldoLancamentos",
-      "request" : {
-        "parameters" : {
-          "email" : {
-            "type" : "string",
-            "required" : true
-          },
-          "senha" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "lancamentoEndpoint.update" : {
-      "path" : "lancamento",
+    "deviceInfoEndpoint.update" : {
+      "path" : "deviceinfo",
       "httpMethod" : "PUT",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.LancamentoEndpoint.update",
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.DeviceInfoEndpoint.update",
       "request" : {
         "body" : "autoTemplate(backendRequest)",
         "bodyName" : "resource"
@@ -66,13 +42,13 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "lancamentoEndpoint.insert" : {
-      "path" : "lancamento",
+    "deviceInfoEndpoint.insert" : {
+      "path" : "deviceinfo",
       "httpMethod" : "POST",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.LancamentoEndpoint.insert",
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.DeviceInfoEndpoint.insert",
       "request" : {
         "body" : "autoTemplate(backendRequest)",
         "bodyName" : "resource"
@@ -81,13 +57,13 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "lancamentoEndpoint.remove" : {
+    "deviceInfoEndpoint.remove" : {
       "path" : "remove/{id}",
       "httpMethod" : "DELETE",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.LancamentoEndpoint.remove",
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.DeviceInfoEndpoint.remove",
       "request" : {
         "parameters" : {
           "id" : {
@@ -101,13 +77,13 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "lancamentoEndpoint.listAll" : {
-      "path" : "lancamento",
+    "deviceInfoEndpoint.listAll" : {
+      "path" : "deviceinfo",
       "httpMethod" : "GET",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.LancamentoEndpoint.listAll",
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.DeviceInfoEndpoint.listAll",
       "request" : {
         "parameters" : {
           "firstReault" : {
@@ -139,13 +115,13 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "lancamentoEndpoint.getByID" : {
-      "path" : "lancamento/{id}",
+    "deviceInfoEndpoint.getByID" : {
+      "path" : "deviceinfo/{id}",
       "httpMethod" : "GET",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.LancamentoEndpoint.getByID",
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.DeviceInfoEndpoint.getByID",
       "request" : {
         "parameters" : {
           "id" : {
@@ -162,35 +138,22 @@
   },
   "descriptor" : {
     "schemas" : {
-      "WrappedLong" : {
-        "id" : "WrappedLong",
-        "type" : "object",
-        "properties" : {
-          "value" : {
-            "type" : "string",
-            "format" : "int64"
-          }
-        }
-      },
-      "Lancamento" : {
-        "id" : "Lancamento",
+      "DeviceInfo" : {
+        "id" : "DeviceInfo",
         "type" : "object",
         "properties" : {
           "key" : {
             "$ref" : "Key"
           },
-          "data" : {
+          "deviceRegistrationID" : {
+            "type" : "string"
+          },
+          "deviceInformation" : {
+            "type" : "string"
+          },
+          "timestamp" : {
             "type" : "string",
-            "format" : "date-time"
-          },
-          "tipo" : {
-            "$ref" : "TipoLancamento"
-          },
-          "quantidade" : {
-            "type" : "integer"
-          },
-          "usuario" : {
-            "$ref" : "Key"
+            "format" : "int64"
           }
         }
       },
@@ -222,19 +185,14 @@
           }
         }
       },
-      "TipoLancamento" : {
-        "id" : "TipoLancamento",
-        "type" : "string",
-        "enum" : [ "CREDITO", "DEBITO" ]
-      },
-      "CollectionResponse_Lancamento" : {
-        "id" : "CollectionResponse_Lancamento",
+      "CollectionResponse_DeviceInfo" : {
+        "id" : "CollectionResponse_DeviceInfo",
         "type" : "object",
         "properties" : {
           "items" : {
             "type" : "array",
             "items" : {
-              "$ref" : "Lancamento"
+              "$ref" : "DeviceInfo"
             }
           },
           "nextPageToken" : {
@@ -244,40 +202,35 @@
       }
     },
     "methods" : {
-      "com.ctm.eadvogado.endpoints.LancamentoEndpoint.saldoLancamentos" : {
-        "response" : {
-          "$ref" : "WrappedLong"
-        }
-      },
-      "com.ctm.eadvogado.endpoints.LancamentoEndpoint.update" : {
+      "com.ctm.eadvogado.endpoints.DeviceInfoEndpoint.update" : {
         "request" : {
-          "$ref" : "Lancamento"
+          "$ref" : "DeviceInfo"
         },
         "response" : {
-          "$ref" : "Lancamento"
+          "$ref" : "DeviceInfo"
         }
       },
-      "com.ctm.eadvogado.endpoints.LancamentoEndpoint.insert" : {
+      "com.ctm.eadvogado.endpoints.DeviceInfoEndpoint.insert" : {
         "request" : {
-          "$ref" : "Lancamento"
+          "$ref" : "DeviceInfo"
         },
         "response" : {
-          "$ref" : "Lancamento"
+          "$ref" : "DeviceInfo"
         }
       },
-      "com.ctm.eadvogado.endpoints.LancamentoEndpoint.remove" : {
+      "com.ctm.eadvogado.endpoints.DeviceInfoEndpoint.remove" : {
         "response" : {
-          "$ref" : "Lancamento"
+          "$ref" : "DeviceInfo"
         }
       },
-      "com.ctm.eadvogado.endpoints.LancamentoEndpoint.listAll" : {
+      "com.ctm.eadvogado.endpoints.DeviceInfoEndpoint.listAll" : {
         "response" : {
-          "$ref" : "CollectionResponse_Lancamento"
+          "$ref" : "CollectionResponse_DeviceInfo"
         }
       },
-      "com.ctm.eadvogado.endpoints.LancamentoEndpoint.getByID" : {
+      "com.ctm.eadvogado.endpoints.DeviceInfoEndpoint.getByID" : {
         "response" : {
-          "$ref" : "Lancamento"
+          "$ref" : "DeviceInfo"
         }
       }
     }

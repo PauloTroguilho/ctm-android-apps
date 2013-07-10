@@ -20,6 +20,7 @@ import org.apache.commons.codec.binary.Hex;
 import br.jus.cnj.pje.v1.TipoDocumento;
 import br.jus.cnj.pje.v1.TipoProcessoJudicial;
 
+import com.ctm.eadvogado.exception.NegocioException;
 import com.ctm.eadvogado.model.Documento;
 import com.ctm.eadvogado.model.Processo;
 import com.ctm.eadvogado.model.ProcessoUsuario;
@@ -206,27 +207,15 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 	 */
 	@ApiMethod(name = "associarProcessoAoUsuario")
 	public void associarProcessoAoUsuario(@Named("email") String email,
-			@Named("idProcesso") Long idProcesso) throws NotFoundException,
+			@Named("idProcesso") Long idProcesso) throws NotFoundException, UnauthorizedException,
 			InternalServerErrorException {
-		Usuario usuario = null;
 		try {
-			usuario = usuarioNegocio.findByEmail(email);
-		} catch (NoResultException e) {
-			throw new NotFoundException("Usuário não encontrado!");
-		}
-		if (usuario != null) {
-			Processo processo = getNegocio().findByID(idProcesso);
-			if (processo != null) {
-				usuario.getProcessos().add(processo.getKey());
-				try {
-					usuarioNegocio.update(usuario);
-				} catch (PersistenceException e) {
-					throw new InternalServerErrorException(
-							"Falha ao associar processo ao usuário!", e);
-				}
-			} else {
-				throw new NotFoundException("Processo não encontrado!");
-			}
+			getNegocio().associarProcessoAoUsuario(idProcesso, email);
+		} catch(NegocioException e) {
+			throw new UnauthorizedException("Desculpe! Você não possui saldo para inclusão de processos!", e);
+		} catch (Exception e) {
+			throw new InternalServerErrorException(
+					"Falha ao associar processo ao usuário!", e);
 		}
 	}
 	

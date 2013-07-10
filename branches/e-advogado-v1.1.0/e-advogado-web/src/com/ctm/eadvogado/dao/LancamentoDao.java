@@ -41,7 +41,8 @@ public class LancamentoDao extends BaseDao<Lancamento> {
 		Query query = entityManager.createNamedQuery("totalLancamentosPorUsuarioETipo");
 		query.setParameter("idUsuario", usuario.getKey());
 		query.setParameter("tipo", TipoLancamento.CREDITO);
-		return (Long) query.getSingleResult();
+		Long result = (Long) query.getSingleResult();
+		return result != null ? result : 0;
 	}
 	
 	/**
@@ -52,7 +53,18 @@ public class LancamentoDao extends BaseDao<Lancamento> {
 		Query query = entityManager.createNamedQuery("totalLancamentosPorUsuarioETipo");
 		query.setParameter("idUsuario", usuario.getKey());
 		query.setParameter("tipo", TipoLancamento.DEBITO);
-		return (Long) query.getSingleResult();
+		Long result = (Long) query.getSingleResult();
+		return result != null ? result : 0;
+	}
+	
+	/**
+	 * @param usuario
+	 * @return
+	 */
+	public Long getSaldoLancamentos(Usuario usuario) {
+		Long sumCreditos = getTotalCreditos(usuario);
+		Long sumDebitos = getTotalDebitos(usuario);
+		return sumCreditos.longValue() - sumDebitos.longValue();
 	}
 	
 }

@@ -1,0 +1,281 @@
+{
+ "kind": "discovery#restDescription",
+ "etag": "\"s1omim4x8ymp9_6H8kBMkfEDqpo/50Po-qtaEoJeVXu4DXTW4x7HjKs\"",
+ "discoveryVersion": "v1",
+ "id": "lancamentoEndpoint:v1",
+ "name": "lancamentoEndpoint",
+ "version": "v1",
+ "description": "This is an API",
+ "ownerDomain": "eadvogado.ctm.com",
+ "ownerName": "eadvogado.ctm.com",
+ "packagePath": "endpoints",
+ "icons": {
+  "x16": "http://www.google.com/images/icons/product/search-16.gif",
+  "x32": "http://www.google.com/images/icons/product/search-32.gif"
+ },
+ "protocol": "rest",
+ "baseUrl": "https://e-advogado-web.appspot.com/_ah/api/lancamentoEndpoint/v1/",
+ "basePath": "/_ah/api/lancamentoEndpoint/v1/",
+ "rootUrl": "https://e-advogado-web.appspot.com/_ah/api/",
+ "servicePath": "lancamentoEndpoint/v1/",
+ "batchPath": "batch",
+ "parameters": {
+  "alt": {
+   "type": "string",
+   "description": "Data format for the response.",
+   "default": "json",
+   "enum": [
+    "json"
+   ],
+   "enumDescriptions": [
+    "Responses with Content-Type of application/json"
+   ],
+   "location": "query"
+  },
+  "fields": {
+   "type": "string",
+   "description": "Selector specifying which fields to include in a partial response.",
+   "location": "query"
+  },
+  "key": {
+   "type": "string",
+   "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+   "location": "query"
+  },
+  "oauth_token": {
+   "type": "string",
+   "description": "OAuth 2.0 token for the current user.",
+   "location": "query"
+  },
+  "prettyPrint": {
+   "type": "boolean",
+   "description": "Returns response with indentations and line breaks.",
+   "default": "true",
+   "location": "query"
+  },
+  "quotaUser": {
+   "type": "string",
+   "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.",
+   "location": "query"
+  },
+  "userIp": {
+   "type": "string",
+   "description": "IP address of the site where the request originates. Use this if you want to enforce per-user limits.",
+   "location": "query"
+  }
+ },
+ "schemas": {
+  "CollectionResponse_Lancamento": {
+   "id": "CollectionResponse_Lancamento",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "Lancamento"
+     }
+    },
+    "nextPageToken": {
+     "type": "string"
+    }
+   }
+  },
+  "Key": {
+   "id": "Key",
+   "type": "object",
+   "properties": {
+    "appId": {
+     "type": "string"
+    },
+    "complete": {
+     "type": "boolean"
+    },
+    "id": {
+     "type": "string",
+     "format": "int64"
+    },
+    "kind": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "namespace": {
+     "type": "string"
+    },
+    "parent": {
+     "$ref": "Key"
+    }
+   }
+  },
+  "Lancamento": {
+   "id": "Lancamento",
+   "type": "object",
+   "properties": {
+    "data": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "key": {
+     "$ref": "Key"
+    },
+    "quantidade": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "tipo": {
+     "$ref": "TipoLancamento"
+    },
+    "usuario": {
+     "$ref": "Key"
+    }
+   }
+  },
+  "TipoLancamento": {
+   "id": "TipoLancamento",
+   "type": "string",
+   "enum": [
+    "CREDITO",
+    "DEBITO"
+   ],
+   "enumDescriptions": [
+    "",
+    ""
+   ]
+  },
+  "WrappedLong": {
+   "id": "WrappedLong",
+   "type": "object",
+   "properties": {
+    "value": {
+     "type": "string",
+     "format": "int64"
+    }
+   }
+  }
+ },
+ "methods": {
+  "getByID": {
+   "id": "lancamentoEndpoint.getByID",
+   "path": "lancamento/{id}",
+   "httpMethod": "GET",
+   "parameters": {
+    "id": {
+     "type": "string",
+     "required": true,
+     "format": "int64",
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "id"
+   ],
+   "response": {
+    "$ref": "Lancamento"
+   }
+  },
+  "insert": {
+   "id": "lancamentoEndpoint.insert",
+   "path": "lancamento",
+   "httpMethod": "POST",
+   "request": {
+    "$ref": "Lancamento",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "Lancamento"
+   }
+  },
+  "listAll": {
+   "id": "lancamentoEndpoint.listAll",
+   "path": "lancamento",
+   "httpMethod": "GET",
+   "parameters": {
+    "firstReault": {
+     "type": "integer",
+     "format": "int32",
+     "location": "query"
+    },
+    "maxResults": {
+     "type": "integer",
+     "format": "int32",
+     "location": "query"
+    },
+    "sortField": {
+     "type": "string",
+     "location": "query"
+    },
+    "sortOrder": {
+     "type": "string",
+     "enum": [
+      "ASC",
+      "DESC"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ],
+     "location": "query"
+    }
+   },
+   "response": {
+    "$ref": "CollectionResponse_Lancamento"
+   }
+  },
+  "remove": {
+   "id": "lancamentoEndpoint.remove",
+   "path": "remove/{id}",
+   "httpMethod": "DELETE",
+   "parameters": {
+    "id": {
+     "type": "string",
+     "required": true,
+     "format": "int64",
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "id"
+   ],
+   "response": {
+    "$ref": "Lancamento"
+   }
+  },
+  "saldoLancamentos": {
+   "id": "lancamentoEndpoint.saldoLancamentos",
+   "path": "saldoLancamentos/{email}/{senha}",
+   "httpMethod": "POST",
+   "parameters": {
+    "email": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "senha": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "email",
+    "senha"
+   ],
+   "response": {
+    "$ref": "WrappedLong"
+   }
+  },
+  "update": {
+   "id": "lancamentoEndpoint.update",
+   "path": "lancamento",
+   "httpMethod": "PUT",
+   "request": {
+    "$ref": "Lancamento",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "Lancamento"
+   }
+  }
+ }
+}
