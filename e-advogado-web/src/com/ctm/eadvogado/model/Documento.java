@@ -3,20 +3,19 @@
  */
 package com.ctm.eadvogado.model;
 
-import javax.persistence.Entity;
-
-import com.google.appengine.api.datastore.Key;
+import java.io.Serializable;
 
 /**
  * @author Cleber
  * 
  */
-@Entity
-public class Documento extends BaseEntity {
+public class Documento implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	private Key processo;
+	private String idDocumento;
+	private String mimeType;
+	private String conteudo;
 
 	/**
 	 * 
@@ -24,6 +23,29 @@ public class Documento extends BaseEntity {
 	public Documento() {
 
 	}
-	
 
+	public String getIdDocumento() {
+		return idDocumento;
+	}
+
+	public void setIdDocumento(String idDocumento) {
+		this.idDocumento = idDocumento;
+	}
+
+	public String getMimeType() {
+		return mimeType;
+	}
+
+	public void setMimeType(String mimeType) {
+		this.mimeType = mimeType;
+	}
+
+	public String getConteudo() {
+		return conteudo;
+	}
+
+	public void setConteudo(String conteudo) {
+		this.conteudo = conteudo;
+	}
+	
 }
