@@ -1,6 +1,7 @@
 package com.ctm.eadvogado.interceptors;
 
 import java.io.Serializable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -38,7 +39,7 @@ public class TransacionalInterceptor implements Serializable{
             return context.proceed();  
   
         } catch (Exception e) {  
-            System.out.println("Chamando transação no método:" + e);  
+        	log.log(Level.SEVERE, "Chamando transação no método: " + context.getMethod(), e);  
             if (transaction != null) {  
                 transaction.rollback();  
             }  

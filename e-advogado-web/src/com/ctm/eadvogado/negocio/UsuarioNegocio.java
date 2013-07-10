@@ -91,5 +91,4 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 		return getDao().findByEmail(email);
 	}
 	
-
 }
