@@ -20,8 +20,8 @@ public class EAdvogadoContract {
 	}
 	public static abstract class LancamentosTable implements BaseColumns {
 	    public static final String TABLE_NAME = "lancamentos";
-	    public static final String COLUMN_NAME_TIPO_LANCAMENTO = "tipo_lancamento";
-	    public static final String COLUMN_NAME_QUANTIDADE = "quantidade";
+	    public static final String COLUMN_NAME_SKU = "sku";
+	    public static final String COLUMN_NAME_ORDER_ID = "order_id";
 	    
 	    public static final String TIPO_LANC_CREDITO = "C";
 	    public static final String TIPO_LANC_DEBITO = "D";
@@ -60,8 +60,8 @@ public class EAdvogadoContract {
 	public static final String SQL_CREATE_LANCAMENTOS =
 	    "CREATE TABLE " + EAdvogadoContract.LancamentosTable.TABLE_NAME + " (" +
 	    EAdvogadoContract.LancamentosTable._ID + " INTEGER PRIMARY KEY" + COMMA_SEP +
-	    EAdvogadoContract.LancamentosTable.COLUMN_NAME_TIPO_LANCAMENTO + TEXT_TYPE + COMMA_SEP +
-	    EAdvogadoContract.LancamentosTable.COLUMN_NAME_QUANTIDADE + INTEGER_TYPE +
+	    EAdvogadoContract.LancamentosTable.COLUMN_NAME_SKU + TEXT_TYPE + COMMA_SEP +
+	    EAdvogadoContract.LancamentosTable.COLUMN_NAME_ORDER_ID + TEXT_TYPE +
 	    " )";
 
 

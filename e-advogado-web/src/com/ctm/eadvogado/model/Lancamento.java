@@ -30,6 +30,8 @@ public class Lancamento extends BaseEntity {
 	private TipoLancamento tipo;
 	private Integer quantidade;
 	private Key usuario;
+	private String sku;
+	private String orderId;
 
 	/**
 	 * 
@@ -69,6 +71,22 @@ public class Lancamento extends BaseEntity {
 
 	public void setUsuario(Key usuario) {
 		this.usuario = usuario;
+	}
+
+	public String getSku() {
+		return sku;
+	}
+
+	public void setSku(String sku) {
+		this.sku = sku;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
 	}
 
 }

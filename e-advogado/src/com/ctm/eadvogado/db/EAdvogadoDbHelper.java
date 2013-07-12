@@ -49,16 +49,16 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
 	
 	/**
 	 * Insere um lançamento
-     * @param tipoLancamento
-     * @param quantidade
+     * @param sku
+     * @param orderId
      * @return
      */
-    public long inserirLancamento(String tipoLancamento, int quantidade) {
+    public long inserirLancamento(String sku, String orderId) {
         ContentValues initialValues = new ContentValues();
-		initialValues.put(EAdvogadoContract.LancamentosTable.COLUMN_NAME_TIPO_LANCAMENTO,
-				tipoLancamento);
-		initialValues.put(EAdvogadoContract.LancamentosTable.COLUMN_NAME_QUANTIDADE,
-				quantidade);
+		initialValues.put(EAdvogadoContract.LancamentosTable.COLUMN_NAME_SKU,
+				sku);
+		initialValues.put(EAdvogadoContract.LancamentosTable.COLUMN_NAME_ORDER_ID,
+				orderId);
         return getWritableDatabase().insert(EAdvogadoContract.LancamentosTable.TABLE_NAME, null, initialValues);
     }
     
@@ -82,7 +82,7 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     	Cursor c = getReadableDatabase().rawQuery(
     			"SELECT SUM("+EAdvogadoContract.LancamentosTable._ID+") FROM " 
     			+ EAdvogadoContract.LancamentosTable.TABLE_NAME + " WHERE " 
-    			+ EAdvogadoContract.LancamentosTable.COLUMN_NAME_TIPO_LANCAMENTO + " = ?", 
+    			+ EAdvogadoContract.LancamentosTable.COLUMN_NAME_SKU + " = ?", 
     			new String[] { EAdvogadoContract.LancamentosTable.TIPO_LANC_CREDITO });
     	long qtdeCredito = 0;
     	if(c.moveToFirst()) {
@@ -91,7 +91,7 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     	c = getReadableDatabase().rawQuery(
     			"SELECT SUM("+EAdvogadoContract.LancamentosTable._ID+") FROM " 
     			+ EAdvogadoContract.LancamentosTable.TABLE_NAME + " WHERE " 
-    			+ EAdvogadoContract.LancamentosTable.COLUMN_NAME_TIPO_LANCAMENTO + " = ?", 
+    			+ EAdvogadoContract.LancamentosTable.COLUMN_NAME_SKU + " = ?", 
     			new String[] { EAdvogadoContract.LancamentosTable.TIPO_LANC_DEBITO });
     	long qtdeDebito = 0;
     	if(c.moveToFirst()) {
@@ -109,7 +109,7 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     	String[] projection = {
     			EAdvogadoContract.LancamentosTable._ID
     	};
-    	String selection = EAdvogadoContract.LancamentosTable.COLUMN_NAME_TIPO_LANCAMENTO + " = ?";
+    	String selection = EAdvogadoContract.LancamentosTable.COLUMN_NAME_SKU + " = ?";
 	   	String[] columnValues = {
 	   			EAdvogadoContract.LancamentosTable.TIPO_LANC_CONTA_PREMIUM
 	   	};

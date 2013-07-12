@@ -303,7 +303,6 @@ public class MainBillingActivity extends Activity {
                 // bought the infinite gas subscription
                 Log.d(TAG, "Fez o upgrade para conta premium.");
                 alert("Obrigado por adquirir a conta premium!");
-                dbHelper.inserirLancamento(EAdvogadoContract.LancamentosTable.TIPO_LANC_CONTA_PREMIUM, 0);
                 mSubscribedToContaPremium = true;
                 updateUi();
                 setWaitScreen(false);
@@ -326,7 +325,6 @@ public class MainBillingActivity extends Activity {
                 	qtde = 100;
                 }
             	if (qtde > 0) {
-            		dbHelper.inserirLancamento(EAdvogadoContract.LancamentosTable.TIPO_LANC_CREDITO, qtde);
             		Log.d(TAG, "Registrou o crédito de "+qtde+" processos.");
                     // successfully consumed, so we apply the effects of the item in our
                     // game world's logic, which in our case means filling the gas tank a bit

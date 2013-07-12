@@ -4,6 +4,7 @@
 package com.ctm.eadvogado.util;
 
 import com.ctm.eadvogado.CloudEndpointUtils;
+import com.ctm.eadvogado.endpoints.lancamentoEndpoint.LancamentoEndpoint;
 import com.ctm.eadvogado.endpoints.processoEndpoint.ProcessoEndpoint;
 import com.ctm.eadvogado.endpoints.tribunalEndpoint.TribunalEndpoint;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.UsuarioEndpoint;
@@ -49,6 +50,19 @@ public class EndpointUtils {
 	 */
 	public static ProcessoEndpoint initProcessoEndpoint() {
 		ProcessoEndpoint.Builder endpointBuilder = new ProcessoEndpoint.Builder(
+		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
+		        new HttpRequestInitializer() {
+		          public void initialize(HttpRequest httpRequest) {
+		          }
+		        });
+		return CloudEndpointUtils.updateBuilder(endpointBuilder).build();
+	}
+	
+	/**
+	 * Inicializa o endpoint {@link LancamentoEndpoint}
+	 */
+	public static LancamentoEndpoint initLancamentoEndpoint() {
+		LancamentoEndpoint.Builder endpointBuilder = new LancamentoEndpoint.Builder(
 		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
 		        new HttpRequestInitializer() {
 		          public void initialize(HttpRequest httpRequest) {
