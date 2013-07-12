@@ -139,6 +139,38 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "lancamentoEndpoint.registrarLancamento" : {
+      "path" : "registrarLancamento/{email}/{senha}/{sku}/{orderId}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.LancamentoEndpoint.registrarLancamento",
+      "request" : {
+        "parameters" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          },
+          "senha" : {
+            "type" : "string",
+            "required" : true
+          },
+          "sku" : {
+            "type" : "string",
+            "required" : true
+          },
+          "orderId" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
     "lancamentoEndpoint.getByID" : {
       "path" : "lancamento/{id}",
       "httpMethod" : "GET",
@@ -191,6 +223,12 @@
           },
           "usuario" : {
             "$ref" : "Key"
+          },
+          "sku" : {
+            "type" : "string"
+          },
+          "orderId" : {
+            "type" : "string"
           }
         }
       },
@@ -225,7 +263,7 @@
       "TipoLancamento" : {
         "id" : "TipoLancamento",
         "type" : "string",
-        "enum" : [ "CREDITO", "DEBITO" ]
+        "enum" : [ "CREDITO", "DEBITO", "CONTA_PREMIUM" ]
       },
       "CollectionResponse_Lancamento" : {
         "id" : "CollectionResponse_Lancamento",
@@ -273,6 +311,11 @@
       "com.ctm.eadvogado.endpoints.LancamentoEndpoint.listAll" : {
         "response" : {
           "$ref" : "CollectionResponse_Lancamento"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.LancamentoEndpoint.registrarLancamento" : {
+        "response" : {
+          "$ref" : "WrappedLong"
         }
       },
       "com.ctm.eadvogado.endpoints.LancamentoEndpoint.getByID" : {

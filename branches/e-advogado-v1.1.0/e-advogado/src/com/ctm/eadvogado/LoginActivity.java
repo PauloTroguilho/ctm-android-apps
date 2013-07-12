@@ -1,6 +1,5 @@
 package com.ctm.eadvogado;
 
-import java.io.IOException;
 import java.util.Locale;
 
 import org.apache.http.HttpStatus;
@@ -26,11 +25,8 @@ import com.actionbarsherlock.view.Window;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.UsuarioEndpoint;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.model.Usuario;
 import com.ctm.eadvogado.util.Consts;
-import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.ctm.eadvogado.util.EndpointUtils;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.json.jackson.JacksonFactory;
 
 public class LoginActivity extends SherlockActivity {
 	
@@ -73,7 +69,8 @@ public class LoginActivity extends SherlockActivity {
 		setContentView(R.layout.activity_login);
 		getSupportActionBar().setTitle(R.string.title_activity_login);
 		
-		initUsuarioEndpoint();
+		usuarioEndpoint = EndpointUtils.initUsuarioEndpoint();
+		
 		/*accountManager = AccountManager.get(getApplicationContext());
         accounts = accountManager.getAccountsByType("com.google");
         if (accounts != null && accounts.length > 0) {
@@ -127,19 +124,6 @@ public class LoginActivity extends SherlockActivity {
 			startActivity(intent);
 			finish();
 		}
-	}
-	
-	/**
-	 * Inicializa o endpoint {@link UsuarioEndpoint}
-	 */
-	private void initUsuarioEndpoint() {
-		UsuarioEndpoint.Builder endpointBuilder = new UsuarioEndpoint.Builder(
-		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
-		        new HttpRequestInitializer() {
-		          public void initialize(HttpRequest httpRequest) {
-		          }
-		        });
-		usuarioEndpoint = CloudEndpointUtils.updateBuilder(endpointBuilder).build();
 	}
 	
 	/**
@@ -206,92 +190,72 @@ public class LoginActivity extends SherlockActivity {
 	 * Represents an asynchronous login/registration task used to authenticate
 	 * the user.
 	 */
-	public class UserLoginTask extends AsyncTask<Void, Void, LoginStatus> {
+	public class UserLoginTask extends AsyncTask<Void, Void, Usuario> {
 		
 		String errorMessage = null;
+		int errorCode = -1;
 		
 		@Override
-		protected LoginStatus doInBackground(Void... params) {
-			LoginStatus status = null;
+		protected Usuario doInBackground(Void... params) {
+			Usuario usuario = null;
 			errorMessage = "";
 			if (!byPassLogin) {
 				try {
-					Usuario usuario = usuarioEndpoint.autenticar(email, password).execute();
-					status = usuario != null ? LoginStatus.LOGIN_OK : LoginStatus.LOGIN_ERROR;
+					usuario = usuarioEndpoint.autenticar(email, password).execute();
 				} catch(GoogleJsonResponseException e) {
 					if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_NOT_FOUND)
 							|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("not found"))) {
-						status = LoginStatus.ACCOUNT_NOT_FOUND;
+						errorCode = HttpStatus.SC_NOT_FOUND;
 					} else if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_UNAUTHORIZED)
 							|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("unauthorized"))) {
-						status = LoginStatus.INVALID_PASSWORD;
+						errorCode = HttpStatus.SC_UNAUTHORIZED;
 					}
 				} catch (Exception e) {
 					Log.e(TAG, "Falha ao realizar login.", e);
-					status = LoginStatus.NETWORK_ERROR;
 				}
-			} else {
-				status = LoginStatus.LOGIN_OK;
 			}
-			if (status == LoginStatus.ACCOUNT_NOT_FOUND) {
+			if (errorCode == HttpStatus.SC_NOT_FOUND) {
 				try {
-					Usuario usuario = new Usuario();
+					usuario = new Usuario();
 					usuario.setEmail(email);
 					usuario.setSenha(password);
-					usuarioEndpoint.insert(usuario).execute();
-					status = LoginStatus.LOGIN_OK;
-				} catch (IOException e) {
-					Log.e(TAG, "Falha comunicação ao realizar cadastro.", e);
-					errorMessage = getString(R.string.error_cadastro_fail);
+					usuario = usuarioEndpoint.insert(usuario).execute();
 				} catch (Exception e) {
-					Log.e(TAG, "Erro ao realizar cadastro.", e);
+					Log.e(TAG, "Erro ao realizar cadastro do usuário", e);
 					errorMessage = getString(R.string.error_cadastro_fail);
+					usuario = null;
 				}
 			}
-			return status;
+			return usuario;
 		}
 
 		@Override
-		protected void onPostExecute(LoginStatus status) {
+		protected void onPostExecute(Usuario usuario) {
 			mAuthTask = null;
 			setSupportProgressBarIndeterminateVisibility(false);
 			setControlsEnabled(true);
-			switch (status) {
-				case LOGIN_OK:
-					Editor editor = preferences.edit();
-					editor.putString(PreferencesActivity.PREFS_KEY_EMAIL, email);
-					editor.putString(PreferencesActivity.PREFS_KEY_SENHA, password);
-					editor.commit();
-					
-					Intent intent = new Intent();
-					intent.setClass(LoginActivity.this, MainActivity.class);
-					startActivity(intent);
-					finish();
-					break;
-				case INVALID_PASSWORD:
+			if (usuario != null) {
+				Editor editor = preferences.edit();
+				editor.putString(PreferencesActivity.PREFS_KEY_EMAIL, email);
+				editor.putString(PreferencesActivity.PREFS_KEY_SENHA, password);
+				editor.putString(PreferencesActivity.PREFS_KEY_TIPO_CONTA, 
+						usuario.getTipoConta());
+				editor.commit();
+				
+				Intent intent = new Intent();
+				intent.setClass(LoginActivity.this, MainActivity.class);
+				startActivity(intent);
+				finish();
+			} else {
+				if (errorCode == HttpStatus.SC_UNAUTHORIZED) {
 					passwordEt.setError(getString(R.string.error_incorrect_password));
 					passwordEt.requestFocus();
-					break;
-				case ACCOUNT_NOT_FOUND:
-					if (errorMessage != null && errorMessage.trim().length() > 0) {
-						Toast.makeText(LoginActivity.this,
-								errorMessage,
-								Toast.LENGTH_LONG).show();
-					} else {
-						Toast.makeText(LoginActivity.this,
-								R.string.error_cadastro_fail,
-								Toast.LENGTH_LONG).show();
-					}
-					break;
-				case LOGIN_ERROR:
-					loginBt.setError(getString(R.string.error_login_fail));
-					loginBt.requestFocus();
-					break;
-				case NETWORK_ERROR:
-					loginBt.setError(getString(R.string.error_communication));
-					loginBt.requestFocus();
+				} else {
+					Toast.makeText(LoginActivity.this,
+							R.string.error_login_fail,
+							Toast.LENGTH_LONG).show();
+				}
 			}
-
 		}
 
 		@Override

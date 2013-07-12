@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"s1omim4x8ymp9_6H8kBMkfEDqpo/50Po-qtaEoJeVXu4DXTW4x7HjKs\"",
+ "etag": "\"s1omim4x8ymp9_6H8kBMkfEDqpo/p3izRkmSb_Wz4rJ6BZ78UKcFDmA\"",
  "discoveryVersion": "v1",
  "id": "lancamentoEndpoint:v1",
  "name": "lancamentoEndpoint",
@@ -117,9 +117,15 @@
     "key": {
      "$ref": "Key"
     },
+    "orderId": {
+     "type": "string"
+    },
     "quantidade": {
      "type": "integer",
      "format": "int32"
+    },
+    "sku": {
+     "type": "string"
     },
     "tipo": {
      "$ref": "TipoLancamento"
@@ -133,10 +139,12 @@
    "id": "TipoLancamento",
    "type": "string",
    "enum": [
+    "CONTA_PREMIUM",
     "CREDITO",
     "DEBITO"
    ],
    "enumDescriptions": [
+    "",
     "",
     ""
    ]
@@ -213,6 +221,36 @@
    },
    "returns": {
     "$ref": "CollectionResponse_Lancamento"
+   }
+  },
+  "lancamentoEndpoint.registrarLancamento": {
+   "id": "lancamentoEndpoint.registrarLancamento",
+   "parameters": {
+    "email": {
+     "type": "string",
+     "required": true
+    },
+    "orderId": {
+     "type": "string",
+     "required": true
+    },
+    "senha": {
+     "type": "string",
+     "required": true
+    },
+    "sku": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "email",
+    "senha",
+    "sku",
+    "orderId"
+   ],
+   "returns": {
+    "$ref": "WrappedLong"
    }
   },
   "lancamentoEndpoint.remove": {
