@@ -52,7 +52,7 @@
     <string name="msg_op_incluir_processo_disponivel_versao_paga">Acompanhamento de processos está disponível somente na versão e-Advogado PRO</string>
     <string name="msg_processo_nao_encontrado">O processo informado não foi encontrado!</string>
     <string name="msg_nenhum_processo_cadastrado">Você ainda não possui processos em acompanhamento!</string>
-    <string name="title_activity_minha_conta">MinhaContaActivity</string>
+    <string name="title_activity_minha_conta">Minha Conta</string>
     <string name="hello_world">Hello world!</string>
     <string name="msg_minha_conta">Aqui você pode verificar as informações sobre sua conta.</string>
     <string name="conta_categoria">Categoria da Conta:</string>

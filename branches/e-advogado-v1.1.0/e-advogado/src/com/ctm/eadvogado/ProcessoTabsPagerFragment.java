@@ -216,7 +216,27 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 		}
 	}
 	
+	/**
+	 * Consulta os Processos
+	 */
+	public void doSalvarProcesso() {
+		if (salvarProcessoTask != null) {
+			return;
+		}
+		setSupportProgressBarIndeterminateVisibility(true);
+		setControlsEnabled(false);
+		salvarProcessoTask = new SalvarProcessoTask();
+		salvarProcessoTask.execute((Void) null);
+	}
+	
+	private void setControlsEnabled(boolean enabled) {
+		menuSalvar.setVisible(enabled);
+		menuAtualizar.setVisible(enabled);
+	}
+	
 	public class SalvarProcessoTask extends AsyncTask<Void, Void, Boolean> {
+		
+		boolean isProcessoSalvo = false;
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
@@ -239,32 +259,31 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 				Toast.makeText(ProcessoTabsPagerFragment.this,
 						R.string.msg_processo_inserido_sucesso,
 						Toast.LENGTH_LONG).show();
-				menuSalvar.setVisible(false);
+				isProcessoSalvo = true;
 			} else {
 				Toast.makeText(ProcessoTabsPagerFragment.this,
 						R.string.msg_processo_inserido_erro,
 						Toast.LENGTH_LONG).show();
 			}
+			setSupportProgressBarIndeterminateVisibility(false);
+			setControlsEnabled(true);
+			menuSalvar.setVisible(!isProcessoSalvo);
 		}
 
 		@Override
 		protected void onCancelled() {
 			salvarProcessoTask = null;
+			setSupportProgressBarIndeterminateVisibility(false);
+			setControlsEnabled(true);
+			menuSalvar.setVisible(!isProcessoSalvo);
 		}
+		
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		/*switch (item.getItemId()) {
-			case android.R.id.home:
-				NavUtils.navigateUpFromSameTask(this);
-				finish();
-				return true;
-		}*/
 		if (item == menuSalvar) {
-			salvarProcessoTask = new SalvarProcessoTask();
-			salvarProcessoTask.execute((Void) null);
-			
+			doSalvarProcesso();
 		} else if (item == menuAtualizar) {
 			
 		}

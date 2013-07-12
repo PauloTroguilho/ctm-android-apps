@@ -47,6 +47,16 @@
 		<url-pattern>/faces/*</url-pattern>
 		<url-pattern>*.jsf</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+        <servlet-name>CarregarProcessoServlet</servlet-name>
+        <servlet-class>com.ctm.eadvogado.servlets.CarregarProcessoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CarregarProcessoServlet</servlet-name>
+        <url-pattern>/carregarProcesso</url-pattern>
+    </servlet-mapping>
+	
 	<listener>
 		<listener-class>com.ctm.eadvogado.listener.ContextListener</listener-class>
 	</listener>

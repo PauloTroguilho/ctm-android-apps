@@ -17,6 +17,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.ctm.eadvogado.adapters.ProcessoUsuarioAdapter;
+import com.ctm.eadvogado.db.EAdvogadoDbHelper;
 import com.ctm.eadvogado.dto.ProcessoDTO;
 import com.ctm.eadvogado.endpoints.processoEndpoint.ProcessoEndpoint;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
@@ -29,6 +30,7 @@ import com.google.api.client.json.jackson.JacksonFactory;
 public class MeusProcessosActivity extends SlidingActivity {
 	
 	private ProcessoEndpoint processoEndpoint;
+	private EAdvogadoDbHelper dbHelper;
 	
 	private ConsultarMeusProcessosTask consultarMeusProcessosTask;
 	private ConsultarMeuProcessoTask consultarProcessoTask;
@@ -42,6 +44,7 @@ public class MeusProcessosActivity extends SlidingActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		dbHelper = new EAdvogadoDbHelper(this);
 		ProcessoEndpoint.Builder procEndpointBuilder = new ProcessoEndpoint.Builder(
 		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
 		        new HttpRequestInitializer() {
@@ -61,9 +64,9 @@ public class MeusProcessosActivity extends SlidingActivity {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
-				ProcessoDTO processoDTO = (ProcessoDTO) 
+				ProcessoUsuario processoUsuario = (ProcessoUsuario) 
 						processosListView.getItemAtPosition(arg2);
-				carregarMeuProcesso(processoDTO);
+				carregarMeuProcesso(processoUsuario);
 			}
 		});
 		
@@ -86,9 +89,9 @@ public class MeusProcessosActivity extends SlidingActivity {
 	}
 	
 	/**
-	 * @param processoDTO
+	 * @param processoUsuario
 	 */
-	public void carregarMeuProcesso(ProcessoDTO processoDTO) {
+	public void carregarMeuProcesso(ProcessoUsuario processoUsuario) {
 		if (consultarProcessoTask != null) {
 			return;
 		}
@@ -97,7 +100,7 @@ public class MeusProcessosActivity extends SlidingActivity {
 		statusMessageView.setText(R.string.msg_carregando_dados);
 		showProgress(true, statusView, listarFormView);
 		consultarProcessoTask = new ConsultarMeuProcessoTask();
-		consultarProcessoTask.execute(processoDTO);
+		consultarProcessoTask.execute(processoUsuario);
 	}
 	
 	@Override
@@ -163,24 +166,25 @@ public class MeusProcessosActivity extends SlidingActivity {
 		}
 	}
 	
-	public class ConsultarMeuProcessoTask extends AsyncTask<ProcessoDTO, Void, ProcessoDTO> {
+	public class ConsultarMeuProcessoTask extends AsyncTask<ProcessoUsuario, Void, ProcessoDTO> {
 
 		@Override
-		protected ProcessoDTO doInBackground(ProcessoDTO... params) {
+		protected ProcessoDTO doInBackground(ProcessoUsuario... params) {
 			ProcessoDTO processoDTO = null;
 			Processo processo = null;
 			try {
 				processo = processoEndpoint.consultarProcesso(
-						params[0].getProcesso().getNpu().replaceAll("[-.]", ""),
-						params[0].getTribunal().getKey().getId(),
-						params[0].getProcesso().getTipoJuizo(), false).execute();
+						params[0].getNpu().replaceAll("[-.]", ""),
+						params[0].getIdTribunal(),
+						params[0].getTipoJuizo(), false).execute();
 			} catch (Exception e) {
 				Log.e(TAG,
 						"Falha ao carregar processo pelo servico", e);
 			}
 			if (processo != null) {
 				processoDTO = new ProcessoDTO();
-				processoDTO.setTribunal(params[0].getTribunal());
+				processoDTO.setTribunal(dbHelper.selectTribunalPorId(
+						params[0].getIdTribunal()));
 				processoDTO.setProcesso(processo);
 			}
 			return processoDTO;

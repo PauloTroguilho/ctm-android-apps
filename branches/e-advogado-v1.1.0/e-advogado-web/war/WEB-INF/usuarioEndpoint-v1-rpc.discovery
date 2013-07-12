@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"s1omim4x8ymp9_6H8kBMkfEDqpo/7DYLnuIrpmjTHzdP5RPqVKWAy1U\"",
+ "etag": "\"s1omim4x8ymp9_6H8kBMkfEDqpo/73Kq214ah3ZTa5ueS4QV6uLSBRA\"",
  "discoveryVersion": "v1",
  "id": "usuarioEndpoint:v1",
  "name": "usuarioEndpoint",
@@ -142,6 +142,10 @@
      "items": {
       "$ref": "Key"
      }
+    },
+    "saldo": {
+     "type": "string",
+     "format": "int64"
     },
     "senha": {
      "type": "string"
