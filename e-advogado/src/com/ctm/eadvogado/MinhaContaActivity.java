@@ -109,8 +109,7 @@ public class MinhaContaActivity extends SlidingActivity {
 				USUARIO = usuario;
 				tvCategoria.setText(usuario.getTipoConta());
 				tvQtdeCadastrados.setText((usuario.getProcessos() != null ? usuario.getProcessos().size() : 0) + "");
-				//tvQtdeDisponivel.setText(usuario.getSaldo());
-				tvQtdeDisponivel.setText("0");
+				tvQtdeDisponivel.setText(usuario.getSaldo().toString());
 			} else {
 				if (errorCode == HttpStatus.SC_UNAUTHORIZED) {
 					Toast.makeText(MinhaContaActivity.this,

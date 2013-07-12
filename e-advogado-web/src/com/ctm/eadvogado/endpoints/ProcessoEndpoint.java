@@ -1,24 +1,16 @@
 package com.ctm.eadvogado.endpoints;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 
 import javax.inject.Named;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
-import net.sf.jsr107cache.Cache;
-import net.sf.jsr107cache.CacheException;
-import net.sf.jsr107cache.CacheFactory;
-import net.sf.jsr107cache.CacheManager;
-
 import org.apache.commons.codec.binary.Hex;
 
 import br.jus.cnj.pje.v1.TipoDocumento;
-import br.jus.cnj.pje.v1.TipoProcessoJudicial;
 
 import com.ctm.eadvogado.exception.NegocioException;
 import com.ctm.eadvogado.model.Documento;
@@ -39,12 +31,9 @@ import com.google.api.server.spi.response.InternalServerErrorException;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.api.server.spi.response.ServiceUnavailableException;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
 
 @Api(name = "processoEndpoint", namespace = @ApiNamespace(ownerDomain = "eadvogado.ctm.com", ownerName = "eadvogado.ctm.com", packagePath = "endpoints"))
 public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
-	
-	private static Cache cache;
 	
 	private TribunalNegocio tribunalNegocio;
 	private UsuarioNegocio usuarioNegocio;
@@ -53,65 +42,6 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 		setNegocio(WeldUtils.getBean(ProcessoNegocio.class));
 		tribunalNegocio = WeldUtils.getBean(TribunalNegocio.class);
 		usuarioNegocio = WeldUtils.getBean(UsuarioNegocio.class);
-	}
-	
-	/**
-	 * @return
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Cache getCache() {
-		if (cache == null) {
-			Map props = new HashMap();
-	        props.put(GCacheFactory.EXPIRATION_DELTA, 60 * 60);
-	        try {
-	            CacheFactory cacheFactory = CacheManager.getInstance().getCacheFactory();
-	            cache = cacheFactory.createCache(props);
-	        } catch (CacheException e) {
-	            e.printStackTrace();
-	        }
-		}
-        return cache;
-	}
-	
-	/**
-	 * @param npu
-	 * @param tipoJuizo
-	 * @param idTribunal
-	 * @return
-	 */
-	private String getProcessoCacheKey(String npu, TipoJuizo tipoJuizo, 
-			Long idTribunal) {
-		return String.format("%s-%s-%s", npu, tipoJuizo.name(), idTribunal);
-	}
-	
-	/**
-	 * @param npu
-	 * @param tipoJuizo
-	 * @param idTribunal
-	 * @return
-	 */
-	private Processo getProcessoFromCache(String npu, TipoJuizo tipoJuizo, 
-			Long idTribunal) {
-		Processo processo = null;
-		String processoCacheKey = getProcessoCacheKey(npu, tipoJuizo, idTribunal);
-		Cache cache = getCache();
-		if (cache != null && cache.containsKey(processoCacheKey)) {
-			processo = (Processo) cache.get(processoCacheKey);
-		}
-		return processo;
-	}
-	
-	/**
-	 * @param npu
-	 * @param tipoJuizo
-	 * @param idTribunal
-	 * @param processo
-	 */
-	private void putProcessoToCache(String npu, TipoJuizo tipoJuizo, 
-			Long idTribunal, Processo processo) {
-		String processoCacheKey = getProcessoCacheKey(npu, tipoJuizo, idTribunal);
-		Cache cache = getCache();
-		cache.put(processoCacheKey, processo);
 	}
 	
 	/**
@@ -126,75 +56,7 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 			@Named("idTribunal") Long idTribunal,
 			@Named("tipoJuizo") TipoJuizo tipoJuizo,
 			@Named("ignorarCache") Boolean ignorarCache) throws NotFoundException, ServiceUnavailableException, UnauthorizedException {
-		boolean falhaNoServico = false;
-		Processo processo = null;
-		if (!ignorarCache) {
-			processo = getProcessoFromCache(npu, tipoJuizo, idTribunal);
-		}
-		if (processo == null) {
-			processo = getNegocio().findByNpuTribunalTipoJuizo(npu, idTribunal, tipoJuizo);
-		}
-		if (processo == null || (processo != null && ignorarCache)) {
-			Tribunal tribunal = tribunalNegocio.findByID(idTribunal);
-			String endpoint = null;
-			switch (tipoJuizo) {
-				case PRIMEIRO_GRAU:
-					endpoint = tribunal.getPje1gEndpoint();
-					break;
-				case SEGUNDO_GRAU:
-					endpoint = tribunal.getPje2gEndpoint();
-					break;
-			}
-			TipoProcessoJudicial processoJudicial = null;
-			if (endpoint != null) {
-				try {
-					processoJudicial = PJeServiceUtil.consultarProcessoJudicial(endpoint, npu);
-				} catch(Exception e) {
-					falhaNoServico = true;
-					logger.log(Level.SEVERE, String.format("Falha ao consultar processo %s, %s, %s no servico", npu, idTribunal, tipoJuizo.name()), e);
-				}
-			} else {
-				throw new NotFoundException("Serviço não disponivel para o Tipo de Juízo informado.");
-			}
-			if (processoJudicial != null) {
-				if (processoJudicial.getDadosBasicos().getNivelSigilo() == 0) {
-					if (processo != null) {
-						processo.setProcessoJudicial(processoJudicial);
-						getNegocio().update(processo);
-					} else {
-						processo = new Processo();
-						processo.setNpu(npu);
-						processo.setTipoJuizo(tipoJuizo);
-						processo.setTribunal(tribunal.getKey());
-						processo.setProcessoJudicial(processoJudicial);
-						getNegocio().insert(processo);
-					}
-				} else {
-					throw new UnauthorizedException("Desculpe! O processo informado não pode ser acessado!");
-				}
-			} else {
-				if (ignorarCache) {
-					processo = getProcessoFromCache(npu, tipoJuizo, idTribunal);
-					if (processo == null) {
-						processo = getNegocio().findByNpuTribunalTipoJuizo(npu, idTribunal, tipoJuizo);
-					}
-				}
-			}
-		}
-		if (processo != null) {
-			try {
-				putProcessoToCache(npu, tipoJuizo, idTribunal, processo);
-			} catch(Exception e) {
-				logger.log(Level.SEVERE, String.format("Falha ao colocar processo %s, %s, %s na cache", npu, idTribunal, tipoJuizo.name()), e);
-			}
-		} else {
-			if (falhaNoServico) {
-				throw new ServiceUnavailableException("Desculpe! Serviço de consulta processual temporáriamente indisponível neste tribunal.");
-			} else {
-				throw new NotFoundException("Desculpe! O Processo informado não foi localizado.");
-			}
-		}
-		return processo;
+		return getNegocio().consultarProcesso(npu, idTribunal, tipoJuizo, ignorarCache, false);
 	}
 
 	
