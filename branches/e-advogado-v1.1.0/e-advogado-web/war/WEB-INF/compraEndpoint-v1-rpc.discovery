@@ -1,9 +1,9 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"s1omim4x8ymp9_6H8kBMkfEDqpo/p3izRkmSb_Wz4rJ6BZ78UKcFDmA\"",
+ "etag": "\"s1omim4x8ymp9_6H8kBMkfEDqpo/xswjfQaMO3xPkLIXMyPCAms-C0c\"",
  "discoveryVersion": "v1",
- "id": "lancamentoEndpoint:v1",
- "name": "lancamentoEndpoint",
+ "id": "compraEndpoint:v1",
+ "name": "compraEndpoint",
  "version": "v1",
  "description": "This is an API",
  "ownerDomain": "eadvogado.ctm.com",
@@ -63,18 +63,28 @@
   }
  },
  "schemas": {
-  "CollectionResponse_Lancamento": {
-   "id": "CollectionResponse_Lancamento",
+  "Compra": {
+   "id": "Compra",
    "type": "object",
    "properties": {
-    "items": {
-     "type": "array",
-     "items": {
-      "$ref": "Lancamento"
-     }
+    "data": {
+     "type": "string",
+     "format": "date-time"
     },
-    "nextPageToken": {
+    "key": {
+     "$ref": "Key"
+    },
+    "payload": {
      "type": "string"
+    },
+    "situacao": {
+     "$ref": "SituacaoCompra"
+    },
+    "sku": {
+     "type": "string"
+    },
+    "usuario": {
+     "$ref": "Key"
     }
    }
   },
@@ -106,131 +116,28 @@
     }
    }
   },
-  "Lancamento": {
-   "id": "Lancamento",
-   "type": "object",
-   "properties": {
-    "data": {
-     "type": "string",
-     "format": "date-time"
-    },
-    "key": {
-     "$ref": "Key"
-    },
-    "orderId": {
-     "type": "string"
-    },
-    "quantidade": {
-     "type": "integer",
-     "format": "int32"
-    },
-    "sku": {
-     "type": "string"
-    },
-    "tipo": {
-     "$ref": "TipoLancamento"
-    },
-    "usuario": {
-     "$ref": "Key"
-    }
-   }
-  },
-  "TipoLancamento": {
-   "id": "TipoLancamento",
+  "SituacaoCompra": {
+   "id": "SituacaoCompra",
    "type": "string",
    "enum": [
-    "CONTA_PREMIUM",
-    "CREDITO",
-    "DEBITO"
+    "CONFIMADA",
+    "PENDENTE"
    ],
    "enumDescriptions": [
     "",
-    "",
     ""
    ]
-  },
-  "WrappedLong": {
-   "id": "WrappedLong",
-   "type": "object",
-   "properties": {
-    "value": {
-     "type": "string",
-     "format": "int64"
-    }
-   }
   }
  },
  "methods": {
-  "lancamentoEndpoint.getByID": {
-   "id": "lancamentoEndpoint.getByID",
-   "allowGet": true,
-   "parameters": {
-    "id": {
-     "type": "string",
-     "required": true,
-     "format": "int64"
-    }
-   },
-   "parameterOrder": [
-    "id"
-   ],
-   "returns": {
-    "$ref": "Lancamento"
-   }
-  },
-  "lancamentoEndpoint.insert": {
-   "id": "lancamentoEndpoint.insert",
-   "parameters": {
-    "resource": {
-     "$ref": "Lancamento"
-    }
-   },
-   "parameterOrder": [
-    "resource"
-   ],
-   "returns": {
-    "$ref": "Lancamento"
-   }
-  },
-  "lancamentoEndpoint.listAll": {
-   "id": "lancamentoEndpoint.listAll",
-   "allowGet": true,
-   "parameters": {
-    "firstReault": {
-     "type": "integer",
-     "format": "int32"
-    },
-    "maxResults": {
-     "type": "integer",
-     "format": "int32"
-    },
-    "sortField": {
-     "type": "string"
-    },
-    "sortOrder": {
-     "type": "string",
-     "enum": [
-      "ASC",
-      "DESC"
-     ],
-     "enumDescriptions": [
-      "",
-      ""
-     ]
-    }
-   },
-   "returns": {
-    "$ref": "CollectionResponse_Lancamento"
-   }
-  },
-  "lancamentoEndpoint.registrarLancamento": {
-   "id": "lancamentoEndpoint.registrarLancamento",
+  "compraEndpoint.confirmarCompraPendente": {
+   "id": "compraEndpoint.confirmarCompraPendente",
    "parameters": {
     "email": {
      "type": "string",
      "required": true
     },
-    "orderId": {
+    "payload": {
      "type": "string",
      "required": true
     },
@@ -247,30 +154,14 @@
     "email",
     "senha",
     "sku",
-    "orderId"
+    "payload"
    ],
    "returns": {
-    "$ref": "WrappedLong"
+    "$ref": "Compra"
    }
   },
-  "lancamentoEndpoint.remove": {
-   "id": "lancamentoEndpoint.remove",
-   "parameters": {
-    "id": {
-     "type": "string",
-     "required": true,
-     "format": "int64"
-    }
-   },
-   "parameterOrder": [
-    "id"
-   ],
-   "returns": {
-    "$ref": "Lancamento"
-   }
-  },
-  "lancamentoEndpoint.saldoLancamentos": {
-   "id": "lancamentoEndpoint.saldoLancamentos",
+  "compraEndpoint.gerarCompraPendente": {
+   "id": "compraEndpoint.gerarCompraPendente",
    "parameters": {
     "email": {
      "type": "string",
@@ -279,28 +170,19 @@
     "senha": {
      "type": "string",
      "required": true
+    },
+    "sku": {
+     "type": "string",
+     "required": true
     }
    },
    "parameterOrder": [
     "email",
-    "senha"
+    "senha",
+    "sku"
    ],
    "returns": {
-    "$ref": "WrappedLong"
-   }
-  },
-  "lancamentoEndpoint.update": {
-   "id": "lancamentoEndpoint.update",
-   "parameters": {
-    "resource": {
-     "$ref": "Lancamento"
-    }
-   },
-   "parameterOrder": [
-    "resource"
-   ],
-   "returns": {
-    "$ref": "Lancamento"
+    "$ref": "Compra"
    }
   }
  }

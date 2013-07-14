@@ -8,5 +8,5 @@ package com.ctm.eadvogado.model;
  *
  */
 public enum TipoLancamento {
-	CREDITO, DEBITO, CONTA_PREMIUM;
+	CREDITO, DEBITO;
 }

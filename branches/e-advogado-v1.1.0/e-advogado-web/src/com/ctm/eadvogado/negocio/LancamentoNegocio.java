@@ -16,8 +16,6 @@ import com.ctm.eadvogado.dao.UsuarioDao;
 import com.ctm.eadvogado.exception.DAOException;
 import com.ctm.eadvogado.interceptors.Transacional;
 import com.ctm.eadvogado.model.Lancamento;
-import com.ctm.eadvogado.model.TipoConta;
-import com.ctm.eadvogado.model.TipoLancamento;
 import com.ctm.eadvogado.model.Usuario;
 
 /**
@@ -81,47 +79,4 @@ public class LancamentoNegocio extends BaseNegocio<Lancamento, LancamentoDao> {
 		return sumCreditos.longValue() - sumDebitos.longValue();
 	}
 	
-	// SKUs for our products: the premium upgrade (non-consumable) and gas (consumable)
-    static final String SKU_PROCESSOS_10 = "processos_10";
-    static final String SKU_PROCESSOS_25 = "processos_25";
-    static final String SKU_PROCESSOS_100 = "processos_100";
-    // SKU for our subscription (conta premium)
-    static final String SKU_CONTA_PREMIUM = "conta_premium";
-	
-    /**
-     * Registra uma compra no banco.
-     * 
-     * @param usuario
-     * @param sku
-     * @param orderId
-     * @throws PersistenceException
-     */
-    @Transacional
-	public void registrarCompra(Usuario usuario, String sku,
-			@Named("orderId") String orderId) throws PersistenceException{
-		Lancamento lancamento = new Lancamento();
-		lancamento.setUsuario(usuario.getKey());
-		if (sku.equals(SKU_PROCESSOS_10)) {
-			lancamento.setTipo(TipoLancamento.CREDITO);
-			lancamento.setQuantidade(10);
-		} else if (sku.equals(SKU_PROCESSOS_25)) {
-			lancamento.setTipo(TipoLancamento.CREDITO);
-			lancamento.setQuantidade(25);
-		} else if (sku.equals(SKU_PROCESSOS_100)) {
-			lancamento.setTipo(TipoLancamento.CREDITO);
-			lancamento.setQuantidade(100);
-		} else if (sku.equals(SKU_CONTA_PREMIUM)) {
-			lancamento.setTipo(TipoLancamento.CONTA_PREMIUM);
-			lancamento.setQuantidade(0);
-		}
-		lancamento.setSku(sku);
-		lancamento.setOrderId(orderId);
-		lancamento.setData(new Date());
-		getDao().insert(lancamento);
-		if (sku.equals(SKU_CONTA_PREMIUM)) {
-			usuario = usuarioDao.findByID(usuario.getKey().getId());
-			usuario.setTipoConta(TipoConta.PREMIUM);
-			usuarioDao.update(usuario);
-		}
-	}
 }
