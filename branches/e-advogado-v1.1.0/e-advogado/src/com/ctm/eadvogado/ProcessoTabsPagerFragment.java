@@ -41,10 +41,7 @@ import com.ctm.eadvogado.fragment.TabProcessoDadosFragment;
 import com.ctm.eadvogado.fragment.TabProcessoMovimentoFragment;
 import com.ctm.eadvogado.fragment.TabProcessoPolosFragment;
 import com.ctm.eadvogado.util.Consts;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.json.jackson.JacksonFactory;
+import com.ctm.eadvogado.util.EndpointUtils;
 
 /**
  * Demonstrates combining a TabHost with a ViewPager to implement a tab UI that
@@ -69,13 +66,7 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 		dbHelper = new EAdvogadoDbHelper(this);
 		setContentView(R.layout.processo_tabs_pager_fragment);
 		
-		ProcessoEndpoint.Builder procEndpointBuilder = new ProcessoEndpoint.Builder(
-		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
-		        new HttpRequestInitializer() {
-		          public void initialize(HttpRequest httpRequest) {
-		          }
-		        });
-		processoEndpoint = CloudEndpointUtils.updateBuilder(procEndpointBuilder).build();
+		processoEndpoint = EndpointUtils.initProcessoEndpoint();
 		
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup();
@@ -279,6 +270,45 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 		}
 		
 	}
+	
+	
+	
+	public class AtualizarProcessoTask extends AsyncTask<ProcessoDTO, Void, Processo> {
+		
+		@Override
+		protected Processo doInBackground(ProcessoDTO... params) {
+			Processo processo = null;
+			try {
+				processo = processoEndpoint.consultarProcesso(
+						params[0].getProcesso().getNpu(),
+						params[0].getProcesso().getTribunal().getId(),
+						params[0].getProcesso().getTipoJuizo(), true)
+						.execute();
+			} catch(Exception e) {
+				Log.e(TAG, "Falha ao inserir processo no BD.", e);
+			}
+			return processo;
+		}
+
+		@Override
+		protected void onPostExecute(Processo processo) {
+			if (processo != null) {
+				processoResult.setProcesso(processo);
+			} else {
+				
+			}
+			setSupportProgressBarIndeterminateVisibility(false);
+			setControlsEnabled(true);
+		}
+
+		@Override
+		protected void onCancelled() {
+			setSupportProgressBarIndeterminateVisibility(false);
+			setControlsEnabled(true);
+		}
+		
+	}
+	
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

@@ -10,7 +10,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,8 +21,8 @@ import com.ctm.eadvogado.billingutils.IabResult;
 import com.ctm.eadvogado.billingutils.Inventory;
 import com.ctm.eadvogado.billingutils.Purchase;
 import com.ctm.eadvogado.db.EAdvogadoDbHelper;
-import com.ctm.eadvogado.endpoints.lancamentoEndpoint.LancamentoEndpoint;
-import com.ctm.eadvogado.endpoints.lancamentoEndpoint.model.WrappedLong;
+import com.ctm.eadvogado.endpoints.compraEndpoint.CompraEndpoint;
+import com.ctm.eadvogado.endpoints.compraEndpoint.model.Compra;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.UsuarioEndpoint;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.model.Usuario;
 import com.ctm.eadvogado.util.Consts;
@@ -32,7 +34,7 @@ public class MinhaContaActivity extends SlidingActivity {
 	
 	private static Usuario USUARIO;
 	private UsuarioEndpoint usuarioEndpoint;
-	private LancamentoEndpoint lancamentoEndpoint;
+	private CompraEndpoint compraEndpoint;
 	private CarregarMinhaContaTask minhaContaTask = null;
 	
 	private EAdvogadoDbHelper dbHelper;
@@ -57,6 +59,8 @@ public class MinhaContaActivity extends SlidingActivity {
 	private TextView tvQtdeDisponivel;
 	private TextView tvCategoria;
 	
+	private Spinner spinnerPacotes;
+	
 	private boolean isContaPremium = false;
 	
 	@Override
@@ -67,14 +71,47 @@ public class MinhaContaActivity extends SlidingActivity {
 		dbHelper = new EAdvogadoDbHelper(this);
 		
 		usuarioEndpoint = EndpointUtils.initUsuarioEndpoint();
-		lancamentoEndpoint = EndpointUtils.initLancamentoEndpoint();
+		compraEndpoint = EndpointUtils.initCompraEndpoint();
 		
+		
+		spinnerPacotes = (Spinner) findViewById(R.id.spinnerPacotes);
 		btContaPremium = (Button) findViewById(R.id.buttonContaPremium);
+		btContaPremium.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onBuyProcessosButtonClicked(SKU_CONTA_PREMIUM);
+			}
+		});
 		btCompraPacote = (Button) findViewById(R.id.buttonCompraPacote);
+		btCompraPacote.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				int position = spinnerPacotes.getSelectedItemPosition();
+				String sku = null;
+				switch (position) {
+					case 1:
+						sku = SKU_PROCESSOS_10;
+						break;
+					case 2:
+						sku = SKU_PROCESSOS_25;
+						break;
+					case 3:
+						sku = SKU_PROCESSOS_100;
+						break;
+				}
+				if (sku != null) {
+					onBuyProcessosButtonClicked(sku);
+				} else {
+					alert("Selecione um dos pacotes!");
+				}
+			}
+		});
 		
 		tvQtdeCadastrados = (TextView) findViewById(R.id.textViewQtdeCadastrada);
 		tvQtdeDisponivel = (TextView) findViewById(R.id.textViewQtdeDisponivel);
 		tvCategoria = (TextView) findViewById(R.id.textViewCategoriaConta);
+		
+		setUpInAppBilling();
 		
 		doCarregarMinhaConta(true);
 	}
@@ -132,10 +169,10 @@ public class MinhaContaActivity extends SlidingActivity {
 			if (isContaPremium
 					&& tipoConta.equals(Consts.TIPO_CONTA_BASICA)) {
             	try {
-					lancamentoEndpoint.registrarLancamento(
+					compraEndpoint.confirmarCompraPendente(
 							preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, ""),
 							preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, ""), 
-							premiumPurchase.getSku(), premiumPurchase.getOrderId()).execute();
+							premiumPurchase.getSku(), premiumPurchase.getDeveloperPayload()).execute();
 					USUARIO = usuarioEndpoint.autenticar(preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, ""),
 							preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, "")).execute();
 					preferences.edit().putString(
@@ -177,19 +214,18 @@ public class MinhaContaActivity extends SlidingActivity {
             // so we don't check which sku was consumed. If you have more than one
             // sku, you probably should check...
             if (result.isSuccess()) {
-            	WrappedLong saldo = null;
             	try {
-					saldo = lancamentoEndpoint.registrarLancamento(
+            		USUARIO = usuarioEndpoint.autenticar(
 							preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, ""),
-							preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, ""), 
-							purchase.getSku(), purchase.getOrderId()).execute();
+							preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, "")).execute();
 				} catch (IOException e) {
 					dbHelper.inserirLancamento(purchase.getSku(), purchase.getOrderId());
 					Log.d(TAG, "Erro registrando a compra. Purchase: " + purchase + ", result: " + result);
 				}
-            	if (saldo != null && saldo.getValue() != null) {
-            		tvQtdeDisponivel.setText(saldo.getValue().toString());
-            		alert(String.format("Obrigado pela compra! Seu novo saldo é: %s", saldo.getValue()));
+            	Long saldo = USUARIO.getSaldo();
+            	if (saldo != null) {
+            		tvQtdeDisponivel.setText(saldo.toString());
+            		alert(String.format("Obrigado pela compra! Seu novo saldo é: %s", saldo));
             	} else {
             		complain("Houve um erro registrando a compra! Favor reiniciar o aplicativo.");
             	}
@@ -213,48 +249,49 @@ public class MinhaContaActivity extends SlidingActivity {
         		setControlsEnabled(true);
                 return;
             }
-            if (!verifyDeveloperPayload(purchase)) {
-                complain("Erro realizando a compra. Falhou na verificação de autenticidade.");
-                setSupportProgressBarIndeterminateVisibility(false);
-        		setControlsEnabled(true);
-                return;
+            Compra compra = null;
+            try {
+            	compra = compraEndpoint.confirmarCompraPendente(
+                		preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, ""), 
+                		preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, ""), 
+                		purchase.getSku(), purchase.getDeveloperPayload()).execute();
+            } catch(IOException e) {
+            	Log.d(TAG, "Erro ao registrar compra, purchase: " + purchase, e);
+            	alert("Não foi possivel confirmar a compra no momento. Favor reiniciar o aplicativo.");
             }
+            if (compra != null) {
+            	if (purchase.getSku().equals(SKU_PROCESSOS_10)
+    					|| purchase.getSku().equals(SKU_PROCESSOS_25)
+    					|| purchase.getSku().equals(SKU_PROCESSOS_100)) {
+                	// bought the premium upgrade!
+                	Log.d(TAG, String.format("Comprou o produto %s. Registrando compra", purchase.getSku()));
+                	alert("Obrigado pela realização da compra!");
+                	mHelper.consumeAsync(purchase, mConsumeFinishedListener);
+                } else if (purchase.getSku().equals(SKU_CONTA_PREMIUM)) {
+                    // bought the infinite gas subscription
+                    Log.d(TAG, "Fez o upgrade para conta premium.");
+                    alert("Obrigado por adquirir a conta premium!");
+                    try {
+    					USUARIO = usuarioEndpoint.autenticar(
+    							preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, ""),
+    							preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, "")).execute();
+    					preferences.edit().putString(
+    						PreferencesActivity.PREFS_KEY_TIPO_CONTA, USUARIO.getTipoConta()).commit();
+    					isContaPremium = true;
+    				} catch (IOException e) {
+    					Log.d(TAG, "Erro registrando upgrade de compra. Purchase: " + purchase);
+    				}
+                }
+            }
+            updateUi();
+            setSupportProgressBarIndeterminateVisibility(false);
+    		setControlsEnabled(true);
+    		
             Log.d(TAG, "Compra realizada com sucesso.");
-
-			if (purchase.getSku().equals(SKU_PROCESSOS_10)
-					|| purchase.getSku().equals(SKU_PROCESSOS_25)
-					|| purchase.getSku().equals(SKU_PROCESSOS_100)) {
-            	// bought the premium upgrade!
-            	Log.d(TAG, String.format("Comprou o produto %s. Registrando compra", purchase.getSku()));
-            	alert("Obrigado pela realização da compra!");
-            	mHelper.consumeAsync(purchase, mConsumeFinishedListener);
-            } else if (purchase.getSku().equals(SKU_CONTA_PREMIUM)) {
-                // bought the infinite gas subscription
-                Log.d(TAG, "Fez o upgrade para conta premium.");
-                alert("Obrigado por adquirir a conta premium!");
-                try {
-					lancamentoEndpoint.registrarLancamento(
-							preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, ""),
-							preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, ""), 
-							purchase.getSku(), purchase.getOrderId()).execute();
-					USUARIO = usuarioEndpoint.autenticar(preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, ""),
-							preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, "")).execute();
-					preferences.edit().putString(
-						PreferencesActivity.PREFS_KEY_TIPO_CONTA, USUARIO.getTipoConta()).commit();
-					isContaPremium = true;
-				} catch (IOException e) {
-					Log.d(TAG, "Erro registrando upgrade de compra. Purchase: " + purchase);
-				}
-                
-                updateUi();
-                setSupportProgressBarIndeterminateVisibility(false);
-        		setControlsEnabled(true);
-            }
         }
     };
 	
-    // User clicked the "Buy Gas" button
-    public void onBuyProcessosButtonClicked(View arg0, String sku) {
+    public void onBuyProcessosButtonClicked(String sku) {
         Log.d(TAG, "Buy gas button clicked.");
 
         if (isContaPremium) {
