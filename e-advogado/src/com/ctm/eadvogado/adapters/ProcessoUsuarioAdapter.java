@@ -73,7 +73,9 @@ public class ProcessoUsuarioAdapter extends ArrayAdapter<ProcessoUsuario> {
 			tribunal = dbHelper.selectTribunalPorId(item.getIdTribunal());
 			tribunaisMap.put(item.getIdTribunal(), tribunal);
 		}
-		tvTribunal.setText(tribunal.getSigla());
+		if (tribunal != null) {
+			tvTribunal.setText(tribunal.getSigla());
+		}
 		if (item.getTipoJuizo().equals(TipoJuizo.PRIMEIRO_GRAU.name())) {
 			tvTipoJuizo.setText(R.string.processo_tipoJuizo_1g);
 		} else {

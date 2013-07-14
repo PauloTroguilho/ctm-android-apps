@@ -56,12 +56,19 @@
     <string name="hello_world">Hello world!</string>
     <string name="msg_minha_conta">Aqui você pode verificar as informações sobre sua conta.</string>
     <string name="conta_categoria">Categoria da Conta:</string>
-    <string name="conta_saldo_processos">Saldo de Processos:</string>
+    <string name="conta_saldo_processos">Processos</string>
     <string name="conta_qtde_cadastrada">"Qtde. Cadastrada: "</string>
-    <string name="conta_qtde_disponivel">Qtde. Disponível</string>
+    <string name="conta_qtde_disponivel">Qtde. Disponível:</string>
     <string name="conta_btn_conta_premium">Conta Premium</string>
     <string name="conta_btn_comprar_pacote">Comprar Pacote</string>
     <string name="conta_erro_carregando_dados">Não foi possível carregar os dados da conta! Verifique o acesso a internet.</string>
     <string name="conta_erro_carregando_dados_nao_autorizado">Não foi possível autenticar seu usuário! Verifique suas credenciais de acesso.</string>
+    <string name="conta_compra_de_pacotes">Compra de pacotes:</string>
+    <string-array name="conta_pacotes">
+        <item >Selecione um pacote.</item>
+        <item >10 processos</item>
+        <item >25 Processos</item>
+        <item >100 Processos</item>
+    </string-array>
 
 </resources>

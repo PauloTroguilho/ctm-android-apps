@@ -18,11 +18,59 @@
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/conta_saldo_processos"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="15dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/conta_qtde_cadastrada"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/textViewQtdeCadastrada"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="15dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/conta_qtde_disponivel"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/textViewQtdeDisponivel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+    <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingTop="15dp"
         android:text="@string/conta_categoria"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textViewCategoriaConta"
@@ -46,62 +94,31 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:text="@string/conta_btn_conta_premium" />
-
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/conta_saldo_processos"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:paddingTop="15dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/conta_qtde_cadastrada"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/textViewQtdeCadastrada"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="3"
-            android:gravity="right"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-    
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:paddingTop="15dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/conta_qtde_disponivel"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/textViewQtdeDisponivel"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="3"
-            android:gravity="right"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-    
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingBottom="5dp"
-        android:paddingTop="5dp" >
+        android:paddingTop="10dp" >
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/conta_compra_de_pacotes"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spinnerPacotes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/conta_pacotes"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            tools:listitem="@android:layout/simple_spinner_dropdown_item" />
 
         <Button
             android:id="@+id/buttonCompraPacote"
@@ -109,7 +126,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:text="@string/conta_btn_comprar_pacote" />
-
     </LinearLayout>
 
 </LinearLayout>
