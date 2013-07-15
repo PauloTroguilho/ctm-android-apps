@@ -10,6 +10,9 @@ public class Consts {
 	
 	public static final String TIPO_CONTA_BASICA = "BASICA";
 	public static final String TIPO_CONTA_PREMIUM = "PREMIUM";
+	
+	public static final String SITUACAO_COMPRA_CONFIMADA = "CONFIMADA";
+	public static final String SITUACAO_COMPRA_PENDENTE = "PENDENTE";
 
 	public Consts() {
 		// TODO Auto-generated constructor stub

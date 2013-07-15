@@ -38,6 +38,7 @@ public class MinhaContaActivity extends SlidingActivity {
 	private CompraEndpoint compraEndpoint;
 	private CarregarMinhaContaTask minhaContaTask = null;
 	private EfetuarCompraTask efetuarCompraTask = null;
+	private ConfirmarCompraTask confirmarCompraTask = null;
 	
 	private EAdvogadoDbHelper dbHelper;
 	
@@ -64,6 +65,8 @@ public class MinhaContaActivity extends SlidingActivity {
 	private Spinner spinnerPacotes;
 	
 	private boolean isContaPremium = false;
+	
+	private boolean isOnPurchase = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +104,6 @@ public class MinhaContaActivity extends SlidingActivity {
 				}
 				if (sku != null) {
 					doEfetuarCompra(sku);
-					//onBuyProcessosButtonClicked(sku);
 				} else {
 					alert("Selecione um dos pacotes!");
 				}
@@ -123,7 +125,6 @@ public class MinhaContaActivity extends SlidingActivity {
 	private String getSenha() {
 		return preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, "");
 	}
-	
 	
 	private void setUpInAppBilling() {
 		String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo4oE0XJZUc2OrTAFXswN13u/TjEKLUewEmAyP/Mnq8F9QYNQwKK5vUXlC5a3zQJ/HBPO25cIcfEX2rwMiQKCkBdPUKLx3LRP+M85xrYgFWcOP1GK8HNFyMF2MJZpblxhW2Yx6D36FYFhfzfkpY9eUDNY7rH26p/5xcVsuRwFG0iogvM91WT/YiOe4voj3uw3g9cSmFpGzZ85GT4RG4FcmhhlKyXIVgmaqnks1np/9ijJ/v970HW+iz5e1r2cj6cox0N7ZFSLGZ7G0ZDGREe2xh8K9VaQiJ4JRhYIAOcakQL4rd1OF08LH7wJ5dR0qMAZuW6GbCdxlqb5FCP1Ls9x7wIDAQAB";
@@ -256,6 +257,7 @@ public class MinhaContaActivity extends SlidingActivity {
     // Callback for when a purchase is finished
     IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
         public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
+        	isOnPurchase = false;
             Log.d(TAG, "Compra finalizada: " + result + ", purchase: " + purchase);
             if (result.isFailure()) {
                 complain("Erro realizando a compra: " + result);
@@ -263,34 +265,8 @@ public class MinhaContaActivity extends SlidingActivity {
         		setControlsEnabled(true);
                 return;
             }
-            Compra compra = null;
-            try {
-				compra = compraEndpoint.confirmarCompraPendente(getEmail(),
-						getSenha(), purchase.getSku(),
-						purchase.getDeveloperPayload()).execute();
-            } catch(IOException e) {
-            	Log.d(TAG, "Erro ao registrar compra, purchase: " + purchase, e);
-            }
-            if (compra != null) {
-            	if (purchase.getSku().equals(SKU_PROCESSOS_10)
-    					|| purchase.getSku().equals(SKU_PROCESSOS_25)
-    					|| purchase.getSku().equals(SKU_PROCESSOS_100)) {
-                	// bought the premium upgrade!
-                	Log.d(TAG, String.format("Comprou o produto %s. Registrando compra", purchase.getSku()));
-                	alert("Obrigado pela realização da compra!");
-                	mHelper.consumeAsync(purchase, mConsumeFinishedListener);
-                } else if (purchase.getSku().equals(SKU_CONTA_PREMIUM)) {
-                    // bought the infinite gas subscription
-                    Log.d(TAG, "Fez o upgrade para conta premium.");
-                    preferences.edit().putString(
-    						PreferencesActivity.PREFS_KEY_TIPO_CONTA, USUARIO.getTipoConta()).commit();
-    				isContaPremium = true;
-                    alert("Obrigado por adquirir a conta premium!");
-                }
-            } else {
-            	alert("Não foi possivel confirmar a compra no momento. Favor reiniciar o aplicativo.");
-            }
-            doCarregarMinhaConta();
+            // Faz a confirmação e consume o item.
+            doConfirmarCompra(purchase);
             Log.d(TAG, "Compra realizada com sucesso.");
         }
     };
@@ -351,6 +327,7 @@ public class MinhaContaActivity extends SlidingActivity {
 				mHelper.launchPurchaseFlow(MinhaContaActivity.this, sku,
 						RC_REQUEST, mPurchaseFinishedListener,
 						compra.getPayload());
+				isOnPurchase = true;
 	        } else {
 	        	String msg = null;
 	        	switch (errorCode) {
@@ -377,6 +354,109 @@ public class MinhaContaActivity extends SlidingActivity {
 		@Override
 		protected void onCancelled(Compra result) {
 			efetuarCompraTask = null;
+			setSupportProgressBarIndeterminateVisibility(false);
+			setControlsEnabled(true);
+		}
+    	
+    }
+    
+    /**
+     * @param purchase
+     */
+    private void doConfirmarCompra(Purchase purchase) {
+    	if (confirmarCompraTask != null){
+    		complain("Desculpe! Já existe um processo de confirmação de compra em andamento. Aguarde alguns instantes.");
+    		return;
+    	}
+    	setSupportProgressBarIndeterminateVisibility(true);
+		setControlsEnabled(false);
+		confirmarCompraTask = new ConfirmarCompraTask();
+		confirmarCompraTask.execute(purchase);
+    }
+    
+    
+    /**
+     * @author Cleber
+     *
+     */
+    public class ConfirmarCompraTask extends AsyncTask<Purchase, Void, Compra> {
+    	
+    	int errorCode = -1;
+    	Purchase purchase = null;
+    	
+		@Override
+		protected Compra doInBackground(Purchase... params) {
+			purchase = params[0];
+			Compra compra = null;
+	        try {
+				compra = compraEndpoint.confirmarCompraPendente(getEmail(),
+						getSenha(), purchase.getSku(),
+						purchase.getDeveloperPayload()).execute();
+			} catch(GoogleJsonResponseException e) {
+				if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_NOT_FOUND)
+						|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("not found"))) {
+					errorCode = HttpStatus.SC_NOT_FOUND;
+				} else if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_UNAUTHORIZED)
+						|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("unauthorized"))) {
+					errorCode = HttpStatus.SC_UNAUTHORIZED;
+				} else if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_BAD_REQUEST)
+						|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("bad request"))) {
+					errorCode = HttpStatus.SC_BAD_REQUEST;
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "Falha ao realizar login.", e);
+			}
+			return compra;
+		}
+		
+		@Override
+		protected void onPostExecute(Compra compra) {
+			if (compra != null) {
+				if (compra.getSituacao().equals(Consts.SITUACAO_COMPRA_CONFIMADA)) {
+					if (purchase.getSku().equals(SKU_PROCESSOS_10)
+	    					|| purchase.getSku().equals(SKU_PROCESSOS_25)
+	    					|| purchase.getSku().equals(SKU_PROCESSOS_100)) {
+	                	Log.d(TAG, String.format("Comprou o produto %s. Registrando compra", purchase.getSku()));
+	                	alert("Obrigado pela realização da compra!");
+	                	mHelper.consumeAsync(purchase, mConsumeFinishedListener);
+	                } else if (purchase.getSku().equals(SKU_CONTA_PREMIUM)) {
+	                    // bought the infinite gas subscription
+	                    Log.d(TAG, "Fez o upgrade para conta premium.");
+	                    preferences.edit().putString(
+	    						PreferencesActivity.PREFS_KEY_TIPO_CONTA, USUARIO.getTipoConta()).commit();
+	    				isContaPremium = true;
+	                    alert("Obrigado por adquirir a conta premium!");
+	                }
+					doCarregarMinhaConta();
+				} else {
+					alert("Desculpe! Não foi possível confirmar a compra. Tente novamente em alguns minutos.");
+				}
+            } else {
+            	String msg = null;
+	        	switch (errorCode) {
+					case HttpStatus.SC_NOT_FOUND:
+						msg = "Desculpe! OS dados informados não foram encontrados no servidor.";
+						break;
+					case HttpStatus.SC_UNAUTHORIZED:
+						msg = "Usuário e/ou senha inválidos.";
+						break;
+					case HttpStatus.SC_BAD_REQUEST:
+						msg = "O SKU informado é válido.";
+						break;
+					default:
+						msg = "Desculpe! Não foi possível realizar a compra neste momento. Tente novamente em alguns minutos.";
+						break;
+				}
+	        	alert(msg);
+            }
+			confirmarCompraTask = null;
+			setSupportProgressBarIndeterminateVisibility(false);
+			setControlsEnabled(true);
+		}
+		
+		@Override
+		protected void onCancelled(Compra result) {
+			confirmarCompraTask = null;
 			setSupportProgressBarIndeterminateVisibility(false);
 			setControlsEnabled(true);
 		}
@@ -418,7 +498,6 @@ public class MinhaContaActivity extends SlidingActivity {
 	}
 	
 	/**
-	 * Represents an asynchronous login/registration task used to authenticate
 	 * the user.
 	 */
 	public class CarregarMinhaContaTask extends AsyncTask<Void, Void, Usuario> {
