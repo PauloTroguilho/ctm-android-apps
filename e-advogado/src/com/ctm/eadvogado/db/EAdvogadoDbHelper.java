@@ -17,7 +17,7 @@ import com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Tribunal;
 public class EAdvogadoDbHelper extends SQLiteOpenHelper {
 	// If you change the database schema, you must increment the database
 	// version.
-	public static final int DATABASE_VERSION = 4;
+	public static final int DATABASE_VERSION = 5;
 	public static final String DATABASE_NAME = "EAdvogado.db";
 	
 	protected final Context mHelperContext;
@@ -30,105 +30,21 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(EAdvogadoContract.SQL_CREATE_TRIBUNAIS);
 		db.execSQL(EAdvogadoContract.SQL_CREATE_PROCESSOS);
-		db.execSQL(EAdvogadoContract.SQL_CREATE_LANCAMENTOS);
 	}
 
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// This database is only a cache for online data, so its upgrade policy
 		// is to simply to discard the data and start over
 		
-		//db.execSQL(EAdvogadoContract.SQL_DELETE_PROCESSOS);
-		//db.execSQL(EAdvogadoContract.SQL_DELETE_TRIBUNAIS);
+		db.execSQL(EAdvogadoContract.SQL_DELETE_PROCESSOS);
+		db.execSQL(EAdvogadoContract.SQL_DELETE_TRIBUNAIS);
+		db.execSQL(EAdvogadoContract.SQL_DELETE_LANCAMENTOS);
 		onCreate(db);
 	}
 
 	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		//onUpgrade(db, oldVersion, newVersion);
-		db.execSQL(EAdvogadoContract.SQL_DELETE_LANCAMENTOS);
+		onUpgrade(db, oldVersion, newVersion);
 	}
-	
-	/**
-	 * Insere um lançamento
-     * @param sku
-     * @param orderId
-     * @return
-     */
-    public long inserirLancamento(String sku, String orderId) {
-        ContentValues initialValues = new ContentValues();
-		initialValues.put(EAdvogadoContract.LancamentosTable.COLUMN_NAME_SKU,
-				sku);
-		initialValues.put(EAdvogadoContract.LancamentosTable.COLUMN_NAME_ORDER_ID,
-				orderId);
-        return getWritableDatabase().insert(EAdvogadoContract.LancamentosTable.TABLE_NAME, null, initialValues);
-    }
-    
-    /**
-     * @param id
-     * @return
-     */
-    public long removerLancamento(Long id) {
-		String whereClause = EAdvogadoContract.LancamentosTable._ID + " = ?";
-		String[] whereArgs = new String[] {id.toString()};
-
-        return getWritableDatabase().delete(EAdvogadoContract.LancamentosTable.TABLE_NAME, whereClause, 
-        		whereArgs);
-    }
-    
-    
-    /**
-     * @return
-     */
-    public long selectQtdeProcessosDisponiveis() {
-    	Cursor c = getReadableDatabase().rawQuery(
-    			"SELECT SUM("+EAdvogadoContract.LancamentosTable._ID+") FROM " 
-    			+ EAdvogadoContract.LancamentosTable.TABLE_NAME + " WHERE " 
-    			+ EAdvogadoContract.LancamentosTable.COLUMN_NAME_SKU + " = ?", 
-    			new String[] { EAdvogadoContract.LancamentosTable.TIPO_LANC_CREDITO });
-    	long qtdeCredito = 0;
-    	if(c.moveToFirst()) {
-    	    qtdeCredito = c.getInt(0);
-    	}
-    	c = getReadableDatabase().rawQuery(
-    			"SELECT SUM("+EAdvogadoContract.LancamentosTable._ID+") FROM " 
-    			+ EAdvogadoContract.LancamentosTable.TABLE_NAME + " WHERE " 
-    			+ EAdvogadoContract.LancamentosTable.COLUMN_NAME_SKU + " = ?", 
-    			new String[] { EAdvogadoContract.LancamentosTable.TIPO_LANC_DEBITO });
-    	long qtdeDebito = 0;
-    	if(c.moveToFirst()) {
-    	    qtdeCredito = c.getInt(0);
-    	}
-    	return qtdeCredito - qtdeDebito;
-    }
-    
-    /**
-     * @return
-     */
-    public boolean possuiContaPremium() {
-    	// Define a projection that specifies which columns from the database
-    	// you will actually use after this query.
-    	String[] projection = {
-    			EAdvogadoContract.LancamentosTable._ID
-    	};
-    	String selection = EAdvogadoContract.LancamentosTable.COLUMN_NAME_SKU + " = ?";
-	   	String[] columnValues = {
-	   			EAdvogadoContract.LancamentosTable.TIPO_LANC_CONTA_PREMIUM
-	   	};
-
-    	Cursor c = getReadableDatabase().query(
-    			EAdvogadoContract.ProcessoTable.TABLE_NAME,	// The table to query
-    	    projection,										// The columns to return
-    	    selection,										// The columns for the WHERE clause
-    	    columnValues,									// The values for the WHERE clause
-    	    null,											// don't group the rows
-    	    null,											// don't filter by row groups
-    	    null											// The sort order
-    	    );
-    	long count = c.getCount();
-    	c.close();
-        return count > 0;
-    }
-	
-	
     /**
      * Insere um {@link Processo} no banco de dados
      * @param processo
@@ -189,8 +105,6 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
         		Tribunal exTrib = selectTribunalPorId(tribunal.getKey().getId());
         		if (exTrib == null) {
         			inserirTribunal(tribunal);
-        		} else {
-        			
         		}
     		}
     	}
