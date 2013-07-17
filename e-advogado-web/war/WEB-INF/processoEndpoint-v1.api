@@ -1,0 +1,974 @@
+{
+  "extends" : "thirdParty.api",
+  "abstract" : false,
+  "root" : "https://e-advogado-web.appspot.com/_ah/api",
+  "name" : "processoEndpoint",
+  "version" : "v1",
+  "defaultVersion" : false,
+  "adapter" : {
+    "bns" : "https://e-advogado-web.appspot.com/_ah/spi",
+    "deadline" : 10.0,
+    "type" : "lily"
+  },
+  "auth" : {
+    "allowCookieAuth" : false
+  },
+  "frontendLimits" : {
+    "unregisteredUserQps" : -1,
+    "unregisteredQps" : -1,
+    "unregisteredDaily" : -1,
+    "rules" : [ ]
+  },
+  "cacheControl" : {
+    "type" : "no-cache",
+    "maxAge" : 0
+  },
+  "ownerDomain" : "eadvogado.ctm.com",
+  "ownerName" : "eadvogado.ctm.com",
+  "packagePath" : "endpoints",
+  "methods" : {
+    "processoEndpoint.consultarProcesso" : {
+      "path" : "consultarProcesso/{npu}/{idTribunal}/{tipoJuizo}/{ignorarCache}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.consultarProcesso",
+      "request" : {
+        "parameters" : {
+          "npu" : {
+            "type" : "string",
+            "required" : true
+          },
+          "idTribunal" : {
+            "type" : "int64",
+            "required" : true
+          },
+          "tipoJuizo" : {
+            "enum" : {
+              "PRIMEIRO_GRAU" : {
+              },
+              "SEGUNDO_GRAU" : {
+              }
+            },
+            "type" : "string",
+            "required" : true
+          },
+          "ignorarCache" : {
+            "type" : "boolean",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "processoEndpoint.update" : {
+      "path" : "processo",
+      "httpMethod" : "PUT",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.update",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "processoEndpoint.consultarProcessosDoUsuario" : {
+      "path" : "consultarProcessosDoUsuario/{email}/{senha}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.consultarProcessosDoUsuario",
+      "request" : {
+        "parameters" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          },
+          "senha" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "processoEndpoint.consultarDocumento" : {
+      "path" : "consultarDocumento/{npu}/{idTribunal}/{tipoJuizo}/{idDocumento}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.consultarDocumento",
+      "request" : {
+        "parameters" : {
+          "npu" : {
+            "type" : "string",
+            "required" : true
+          },
+          "idTribunal" : {
+            "type" : "int64",
+            "required" : true
+          },
+          "tipoJuizo" : {
+            "enum" : {
+              "PRIMEIRO_GRAU" : {
+              },
+              "SEGUNDO_GRAU" : {
+              }
+            },
+            "type" : "string",
+            "required" : true
+          },
+          "idDocumento" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "processoEndpoint.insert" : {
+      "path" : "processo",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.insert",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "processoEndpoint.remove" : {
+      "path" : "remove/{id}",
+      "httpMethod" : "DELETE",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.remove",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "processoEndpoint.associarProcessoAoUsuario" : {
+      "path" : "associarProcessoAoUsuario/{email}/{idProcesso}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.associarProcessoAoUsuario",
+      "request" : {
+        "parameters" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          },
+          "idProcesso" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
+    "processoEndpoint.listAll" : {
+      "path" : "processo",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.listAll",
+      "request" : {
+        "parameters" : {
+          "firstReault" : {
+            "type" : "int32",
+            "required" : false
+          },
+          "maxResults" : {
+            "type" : "int32",
+            "required" : false
+          },
+          "sortField" : {
+            "type" : "string",
+            "required" : false
+          },
+          "sortOrder" : {
+            "enum" : {
+              "ASC" : {
+              },
+              "DESC" : {
+              }
+            },
+            "type" : "string",
+            "required" : false
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "processoEndpoint.getByID" : {
+      "path" : "processo/{id}",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.getByID",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "processoEndpoint.removerProcessoDoUsuario" : {
+      "path" : "rprocessodousuario/{email}/{idProcesso}",
+      "httpMethod" : "DELETE",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.removerProcessoDoUsuario",
+      "request" : {
+        "parameters" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          },
+          "idProcesso" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    }
+  },
+  "descriptor" : {
+    "schemas" : {
+      "Processo" : {
+        "id" : "Processo",
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "$ref" : "Key"
+          },
+          "npu" : {
+            "type" : "string"
+          },
+          "tipoJuizo" : {
+            "$ref" : "TipoJuizo"
+          },
+          "tribunal" : {
+            "$ref" : "Key"
+          },
+          "processoJudicial" : {
+            "$ref" : "TipoProcessoJudicial"
+          }
+        }
+      },
+      "Key" : {
+        "id" : "Key",
+        "type" : "object",
+        "properties" : {
+          "kind" : {
+            "type" : "string"
+          },
+          "appId" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "int64"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "parent" : {
+            "$ref" : "Key"
+          },
+          "complete" : {
+            "type" : "boolean"
+          },
+          "namespace" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TipoJuizo" : {
+        "id" : "TipoJuizo",
+        "type" : "string",
+        "enum" : [ "PRIMEIRO_GRAU", "SEGUNDO_GRAU" ]
+      },
+      "TipoProcessoJudicial" : {
+        "id" : "TipoProcessoJudicial",
+        "type" : "object",
+        "properties" : {
+          "dadosBasicos" : {
+            "$ref" : "TipoCabecalhoProcesso"
+          },
+          "movimento" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoMovimentoProcessual"
+            }
+          },
+          "documento" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoDocumento"
+            }
+          }
+        }
+      },
+      "TipoCabecalhoProcesso" : {
+        "id" : "TipoCabecalhoProcesso",
+        "type" : "object",
+        "properties" : {
+          "polo" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoPoloProcessual"
+            }
+          },
+          "assunto" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoAssuntoProcessual"
+            }
+          },
+          "magistradoAtuante" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "processoVinculado" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoVinculacaoProcessual"
+            }
+          },
+          "prioridade" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "outroParametro" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoParametro"
+            }
+          },
+          "valorCausa" : {
+            "type" : "number"
+          },
+          "numero" : {
+            "type" : "string"
+          },
+          "competencia" : {
+            "type" : "integer"
+          },
+          "classeProcessual" : {
+            "type" : "integer"
+          },
+          "codigoLocalidade" : {
+            "type" : "string"
+          },
+          "codigoOrgaoJulgador" : {
+            "type" : "string"
+          },
+          "nivelSigilo" : {
+            "type" : "integer"
+          },
+          "intervencaoMP" : {
+            "type" : "boolean"
+          },
+          "tamanhoProcesso" : {
+            "type" : "integer"
+          }
+        }
+      },
+      "TipoPoloProcessual" : {
+        "id" : "TipoPoloProcessual",
+        "type" : "object",
+        "properties" : {
+          "parte" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoParte"
+            }
+          },
+          "polo" : {
+            "$ref" : "ModalidadePoloProcessual"
+          }
+        }
+      },
+      "TipoParte" : {
+        "id" : "TipoParte",
+        "type" : "object",
+        "properties" : {
+          "pessoa" : {
+            "$ref" : "TipoPessoa"
+          },
+          "interessePublico" : {
+            "type" : "string"
+          },
+          "advogado" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoRepresentanteProcessual"
+            }
+          },
+          "pessoaProcessualRelacionada" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoParte"
+            }
+          },
+          "assistenciaJudiciaria" : {
+            "type" : "boolean"
+          },
+          "intimacaoPendente" : {
+            "type" : "integer"
+          },
+          "relacionamentoProcessual" : {
+            "$ref" : "ModalidadeRelacionamentoProcessual"
+          }
+        }
+      },
+      "TipoPessoa" : {
+        "id" : "TipoPessoa",
+        "type" : "object",
+        "properties" : {
+          "outroNome" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "documento" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoDocumentoIdentificacao"
+            }
+          },
+          "endereco" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoEndereco"
+            }
+          },
+          "pessoaRelacionada" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoRelacionamentoPessoal"
+            }
+          },
+          "pessoaVinculada" : {
+            "$ref" : "TipoPessoa"
+          },
+          "nome" : {
+            "type" : "string"
+          },
+          "sexo" : {
+            "$ref" : "ModalidadeGeneroPessoa"
+          },
+          "nomeGenitor" : {
+            "type" : "string"
+          },
+          "nomeGenitora" : {
+            "type" : "string"
+          },
+          "dataNascimento" : {
+            "type" : "string"
+          },
+          "dataObito" : {
+            "type" : "string"
+          },
+          "numeroDocumentoPrincipal" : {
+            "type" : "string"
+          },
+          "tipoPessoa" : {
+            "$ref" : "TipoQualificacaoPessoa"
+          },
+          "cidadeNatural" : {
+            "type" : "string"
+          },
+          "estadoNatural" : {
+            "type" : "string"
+          },
+          "nacionalidade" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TipoDocumentoIdentificacao" : {
+        "id" : "TipoDocumentoIdentificacao",
+        "type" : "object",
+        "properties" : {
+          "codigoDocumento" : {
+            "type" : "string"
+          },
+          "emissorDocumento" : {
+            "type" : "string"
+          },
+          "tipoDocumento" : {
+            "$ref" : "ModalidadeDocumentoIdentificador"
+          },
+          "nome" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ModalidadeDocumentoIdentificador" : {
+        "id" : "ModalidadeDocumentoIdentificador",
+        "type" : "string",
+        "enum" : [ "CI", "CNH", "TE", "CN", "CC", "PAS", "CT", "RIC", "CMF", "PIS_PASEP", "CEI", "NIT", "CP", "IF", "OAB", "RJC", "RGE" ]
+      },
+      "TipoEndereco" : {
+        "id" : "TipoEndereco",
+        "type" : "object",
+        "properties" : {
+          "logradouro" : {
+            "type" : "string"
+          },
+          "numero" : {
+            "type" : "string"
+          },
+          "complemento" : {
+            "type" : "string"
+          },
+          "bairro" : {
+            "type" : "string"
+          },
+          "cidade" : {
+            "type" : "string"
+          },
+          "estado" : {
+            "type" : "string"
+          },
+          "pais" : {
+            "type" : "string"
+          },
+          "cep" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TipoRelacionamentoPessoal" : {
+        "id" : "TipoRelacionamentoPessoal",
+        "type" : "object",
+        "properties" : {
+          "pessoa" : {
+            "$ref" : "TipoPessoa"
+          },
+          "modalidadeRelacionamento" : {
+            "$ref" : "ModalidadesRelacionamentoPessoal"
+          }
+        }
+      },
+      "ModalidadesRelacionamentoPessoal" : {
+        "id" : "ModalidadesRelacionamentoPessoal",
+        "type" : "string",
+        "enum" : [ "P", "AP", "SP", "T", "C" ]
+      },
+      "ModalidadeGeneroPessoa" : {
+        "id" : "ModalidadeGeneroPessoa",
+        "type" : "string",
+        "enum" : [ "M", "F", "D" ]
+      },
+      "TipoQualificacaoPessoa" : {
+        "id" : "TipoQualificacaoPessoa",
+        "type" : "string",
+        "enum" : [ "FISICA", "JURIDICA", "AUTORIDADE", "ORGAOREPRESENTACAO" ]
+      },
+      "TipoRepresentanteProcessual" : {
+        "id" : "TipoRepresentanteProcessual",
+        "type" : "object",
+        "properties" : {
+          "endereco" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoEndereco"
+            }
+          },
+          "nome" : {
+            "type" : "string"
+          },
+          "inscricao" : {
+            "type" : "string"
+          },
+          "numeroDocumentoPrincipal" : {
+            "type" : "string"
+          },
+          "intimacao" : {
+            "type" : "boolean"
+          },
+          "tipoRepresentante" : {
+            "$ref" : "ModalidadeRepresentanteProcessual"
+          }
+        }
+      },
+      "ModalidadeRepresentanteProcessual" : {
+        "id" : "ModalidadeRepresentanteProcessual",
+        "type" : "string",
+        "enum" : [ "A", "E", "M", "D", "P" ]
+      },
+      "ModalidadeRelacionamentoProcessual" : {
+        "id" : "ModalidadeRelacionamentoProcessual",
+        "type" : "string",
+        "enum" : [ "CP", "RP", "TF", "AT", "AS" ]
+      },
+      "ModalidadePoloProcessual" : {
+        "id" : "ModalidadePoloProcessual",
+        "type" : "string",
+        "enum" : [ "AT", "PA", "TC", "FL", "TJ", "AD", "VI" ]
+      },
+      "TipoAssuntoProcessual" : {
+        "id" : "TipoAssuntoProcessual",
+        "type" : "object",
+        "properties" : {
+          "codigoNacional" : {
+            "type" : "integer"
+          },
+          "assuntoLocal" : {
+            "$ref" : "TipoAssuntoLocal"
+          },
+          "principal" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "TipoAssuntoLocal" : {
+        "id" : "TipoAssuntoLocal",
+        "type" : "object",
+        "properties" : {
+          "assuntoLocalPai" : {
+            "$ref" : "TipoAssuntoLocal"
+          },
+          "codigoAssunto" : {
+            "type" : "integer"
+          },
+          "codigoPaiNacional" : {
+            "type" : "integer"
+          },
+          "descricao" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TipoVinculacaoProcessual" : {
+        "id" : "TipoVinculacaoProcessual",
+        "type" : "object",
+        "properties" : {
+          "numeroProcesso" : {
+            "type" : "string"
+          },
+          "vinculo" : {
+            "$ref" : "ModalidadeVinculacaoProcesso"
+          }
+        }
+      },
+      "ModalidadeVinculacaoProcesso" : {
+        "id" : "ModalidadeVinculacaoProcesso",
+        "type" : "string",
+        "enum" : [ "CX", "CT", "DP", "OR" ]
+      },
+      "TipoParametro" : {
+        "id" : "TipoParametro",
+        "type" : "object",
+        "properties" : {
+          "nome" : {
+            "type" : "string"
+          },
+          "valor" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TipoMovimentoProcessual" : {
+        "id" : "TipoMovimentoProcessual",
+        "type" : "object",
+        "properties" : {
+          "complemento" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "movimentoNacional" : {
+            "$ref" : "TipoMovimentoNacional"
+          },
+          "movimentoLocal" : {
+            "type" : "string"
+          },
+          "idDocumentoVinculado" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "dataHora" : {
+            "type" : "string"
+          },
+          "nivelSigilo" : {
+            "type" : "integer"
+          },
+          "identificadorMovimento" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TipoMovimentoNacional" : {
+        "id" : "TipoMovimentoNacional",
+        "type" : "object",
+        "properties" : {
+          "complemento" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "codigoNacional" : {
+            "type" : "integer"
+          }
+        }
+      },
+      "TipoDocumento" : {
+        "id" : "TipoDocumento",
+        "type" : "object",
+        "properties" : {
+          "conteudo" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "assinatura" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoAssinatura"
+            }
+          },
+          "outroParametro" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoParametro"
+            }
+          },
+          "any" : {
+            "$ref" : "_any"
+          },
+          "documentoVinculado" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "TipoDocumento"
+            }
+          },
+          "idDocumento" : {
+            "type" : "string"
+          },
+          "idDocumentoVinculado" : {
+            "type" : "string"
+          },
+          "tipoDocumento" : {
+            "type" : "string"
+          },
+          "dataHora" : {
+            "type" : "string"
+          },
+          "mimetype" : {
+            "type" : "string"
+          },
+          "nivelSigilo" : {
+            "type" : "integer"
+          },
+          "movimento" : {
+            "type" : "integer"
+          },
+          "hash" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TipoAssinatura" : {
+        "id" : "TipoAssinatura",
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          },
+          "assinatura" : {
+            "type" : "string"
+          },
+          "dataAssinatura" : {
+            "type" : "string"
+          },
+          "cadeiaCertificado" : {
+            "type" : "string"
+          },
+          "algoritmoHash" : {
+            "type" : "string"
+          }
+        }
+      },
+      "_any" : {
+        "id" : "_any",
+        "type" : "any"
+      },
+      "ProcessoUsuario" : {
+        "id" : "ProcessoUsuario",
+        "type" : "object",
+        "properties" : {
+          "npu" : {
+            "type" : "string"
+          },
+          "idTribunal" : {
+            "type" : "string",
+            "format" : "int64"
+          },
+          "tipoJuizo" : {
+            "$ref" : "TipoJuizo"
+          }
+        }
+      },
+      "ProcessoUsuarioCollection" : {
+        "id" : "ProcessoUsuarioCollection",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "ProcessoUsuario"
+            }
+          }
+        }
+      },
+      "Documento" : {
+        "id" : "Documento",
+        "type" : "object",
+        "properties" : {
+          "idDocumento" : {
+            "type" : "string"
+          },
+          "mimeType" : {
+            "type" : "string"
+          },
+          "conteudo" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CollectionResponse_Processo" : {
+        "id" : "CollectionResponse_Processo",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "Processo"
+            }
+          },
+          "nextPageToken" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "methods" : {
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.consultarProcesso" : {
+        "response" : {
+          "$ref" : "Processo"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.update" : {
+        "request" : {
+          "$ref" : "Processo"
+        },
+        "response" : {
+          "$ref" : "Processo"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.consultarProcessosDoUsuario" : {
+        "response" : {
+          "$ref" : "ProcessoUsuarioCollection"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.consultarDocumento" : {
+        "response" : {
+          "$ref" : "Documento"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.insert" : {
+        "request" : {
+          "$ref" : "Processo"
+        },
+        "response" : {
+          "$ref" : "Processo"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.remove" : {
+        "response" : {
+          "$ref" : "Processo"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.associarProcessoAoUsuario" : {
+      },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.listAll" : {
+        "response" : {
+          "$ref" : "CollectionResponse_Processo"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.getByID" : {
+        "response" : {
+          "$ref" : "Processo"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.removerProcessoDoUsuario" : {
+      }
+    }
+  }
+}
