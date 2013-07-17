@@ -9,8 +9,10 @@ import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
@@ -92,7 +94,7 @@ public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public View getGroupView(int groupPosition, boolean isExpanded,
+	public View getGroupView(final int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
 		TipoMovimentoProcessual movimento = (TipoMovimentoProcessual) getGroup(groupPosition);
 		if (convertView == null) {
@@ -101,6 +103,14 @@ public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
 			convertView = infalInflater.inflate(R.layout.movimento_group_item,
 					null);
 		}
+		convertView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Log.d("e-Advogado", "click no group view");
+				onGroupExpanded(groupPosition);
+			}
+		});
 		TextView tvDataHora = (TextView) convertView
 				.findViewById(R.id.tvTabMov_DataHora);
 
