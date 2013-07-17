@@ -261,7 +261,12 @@ public class MinhaContaActivity extends SlidingActivity {
         	isOnPurchase = false;
             Log.d(TAG, "Compra finalizada: " + result + ", purchase: " + purchase);
             if (result.isFailure()) {
-                complain("Erro realizando a compra: " + result);
+            	Log.e(TAG, "Falha na realização da compra: " + result);
+            	if (result.getResponse() == IabHelper.BILLING_RESPONSE_RESULT_USER_CANCELED) {
+            		alert("O processo de compra foi cancelado!");
+            	} else {
+            		alert("Desculpe! Não foi possível realizar a compra neste momento!");
+            	}
                 setSupportProgressBarIndeterminateVisibility(false);
         		setControlsEnabled(true);
                 return;
@@ -523,9 +528,6 @@ public class MinhaContaActivity extends SlidingActivity {
 
 		@Override
 		protected void onPostExecute(Usuario usuario) {
-			minhaContaTask = null;
-			setSupportProgressBarIndeterminateVisibility(false);
-			setControlsEnabled(true);
 			if (usuario != null) {
 				USUARIO = usuario;
 				tvCategoria.setText(usuario.getTipoConta());
@@ -538,6 +540,9 @@ public class MinhaContaActivity extends SlidingActivity {
 					alert(getString(R.string.conta_erro_carregando_dados));
 				}
 			}
+			minhaContaTask = null;
+			setSupportProgressBarIndeterminateVisibility(false);
+			setControlsEnabled(true);
 		}
 
 		@Override
@@ -547,13 +552,6 @@ public class MinhaContaActivity extends SlidingActivity {
 			setControlsEnabled(true);
 		}
 	}
-	
-	/** Verifies the developer payload of a purchase. */
-    boolean verifyDeveloperPayload(Purchase p) {
-        String payload = p.getDeveloperPayload();
-        String validatingPayload = UserEmailFetcher.getEmail(this) + "_" + p.getSku();
-        return payload.equals(validatingPayload);
-    }
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

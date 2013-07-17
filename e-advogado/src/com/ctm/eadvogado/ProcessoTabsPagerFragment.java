@@ -15,6 +15,7 @@
  */
 package com.ctm.eadvogado;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import android.content.Context;
@@ -57,6 +58,7 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 	private ProcessoEndpoint processoEndpoint;
 	private EAdvogadoDbHelper dbHelper;
 	private SalvarProcessoTask salvarProcessoTask;
+	private AtualizarProcessoTask atualizarProcessoTask;
 	
 	public static ProcessoDTO processoResult;
 
@@ -220,6 +222,18 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 		salvarProcessoTask.execute((Void) null);
 	}
 	
+	public void doAtualizarProcesso() {
+		if (atualizarProcessoTask != null) {
+			return;
+		}
+		setSupportProgressBarIndeterminateVisibility(true);
+		setControlsEnabled(false);
+		if (processoResult != null) {
+			atualizarProcessoTask = new AtualizarProcessoTask();
+			atualizarProcessoTask.execute(processoResult);
+		}
+	}
+	
 	private void setControlsEnabled(boolean enabled) {
 		menuSalvar.setVisible(enabled);
 		menuAtualizar.setVisible(enabled);
@@ -237,6 +251,7 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 						preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, ""), 
 						processoResult.getProcesso().getKey().getId()).execute();
 				result = Boolean.TRUE;
+				dbHelper.insertProcessoSeNaoExiste(processoResult.getProcesso());
 			} catch(Exception e) {
 				result = Boolean.FALSE;
 				Log.e(TAG, "Falha ao inserir processo no BD.", e);
@@ -275,6 +290,8 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 	
 	public class AtualizarProcessoTask extends AsyncTask<ProcessoDTO, Void, Processo> {
 		
+		private boolean erroComm = false;
+		
 		@Override
 		protected Processo doInBackground(ProcessoDTO... params) {
 			Processo processo = null;
@@ -284,6 +301,9 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 						params[0].getProcesso().getTribunal().getId(),
 						params[0].getProcesso().getTipoJuizo(), true)
 						.execute();
+			} catch(IOException e) {
+				Log.e(TAG, "Falha ao consultar processo.", e);
+				erroComm = true;
 			} catch(Exception e) {
 				Log.e(TAG, "Falha ao inserir processo no BD.", e);
 			}
@@ -294,8 +314,19 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 		protected void onPostExecute(Processo processo) {
 			if (processo != null) {
 				processoResult.setProcesso(processo);
+				Toast.makeText(ProcessoTabsPagerFragment.this,
+						R.string.msg_nao_foi_possivel_carregar_dados,
+						Toast.LENGTH_LONG).show();
 			} else {
-				
+				if (erroComm) {
+					Toast.makeText(ProcessoTabsPagerFragment.this,
+							R.string.msg_nao_foi_possivel_carregar_dados,
+							Toast.LENGTH_LONG).show();
+				} else{
+					Toast.makeText(ProcessoTabsPagerFragment.this,
+							R.string.msg_processo_nao_encontrado,
+							Toast.LENGTH_LONG).show();
+				}
 			}
 			setSupportProgressBarIndeterminateVisibility(false);
 			setControlsEnabled(true);
@@ -315,7 +346,7 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 		if (item == menuSalvar) {
 			doSalvarProcesso();
 		} else if (item == menuAtualizar) {
-			
+			doAtualizarProcesso();
 		}
 		return super.onOptionsItemSelected(item);
 	}

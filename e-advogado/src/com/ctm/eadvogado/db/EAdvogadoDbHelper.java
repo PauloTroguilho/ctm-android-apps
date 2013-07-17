@@ -197,6 +197,18 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     }
     
     /**
+     * @param processo
+     */
+    public void insertProcessoSeNaoExiste(Processo processo) {
+    	Processo eProcesso = selectProcesso(processo.getNpu(),
+				processo.getTribunal().getId(),
+				processo.getTipoJuizo());
+		if (eProcesso == null) {
+			inserirProcesso(processo);
+		}
+    }
+    
+    /**
      * @param npu
      * @param idTribunal
      * @param tipoJuizo
