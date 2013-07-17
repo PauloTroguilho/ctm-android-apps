@@ -3,6 +3,7 @@
  */
 package com.ctm.eadvogado.model;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ public class Usuario extends BaseEntity {
 	private String email;
 	private String senha;
 	private TipoConta tipoConta;
+	private Date dataExpiracao;
 	private Set<Key> papeis = new HashSet<Key>();
 	private Set<Key> processos = new HashSet<Key>();
 	private Key advogado;
@@ -102,6 +104,14 @@ public class Usuario extends BaseEntity {
 
 	public void setSaldo(Long saldo) {
 		this.saldo = saldo;
+	}
+
+	public Date getDataExpiracao() {
+		return dataExpiracao;
+	}
+
+	public void setDataExpiracao(Date dataExpiracao) {
+		this.dataExpiracao = dataExpiracao;
 	}
 
 }

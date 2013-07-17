@@ -83,4 +83,26 @@ public class CompraDao extends BaseDao<Compra> {
 		return compra;
 	}
 	
+	/**
+	 * @param usuario
+	 * @param sku
+	 * @param payload
+	 * @param token
+	 * @return
+	 */
+	public Compra findByUsuarioSkuPayload(Usuario usuario, String sku, String payload, String token) {
+		Query query = entityManager.createNamedQuery("compraPorUsuarioSkuTokenPayload");
+		query.setParameter("idUsuario", usuario.getKey());
+		query.setParameter("sku", sku);
+		query.setParameter("payload", payload);
+		query.setParameter("token", token);
+		Compra compra = null;
+		try {
+			compra = (Compra) query.getSingleResult();
+		}catch (NoResultException e) { }
+		
+		return compra;
+	}
+	
+	
 }
