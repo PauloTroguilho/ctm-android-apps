@@ -70,5 +70,5 @@
         <item >25 Processos</item>
         <item >100 Processos</item>
     </string-array>
-
+    <string name="mov_documento_vinculado">Documento Vinculado:</string>
 </resources>

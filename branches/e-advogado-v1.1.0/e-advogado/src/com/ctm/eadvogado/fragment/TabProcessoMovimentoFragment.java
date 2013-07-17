@@ -6,12 +6,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.ctm.eadvogado.ProcessoTabsPagerFragment;
 import com.ctm.eadvogado.R;
-import com.ctm.eadvogado.adapters.MovimentoAdapter;
+import com.ctm.eadvogado.adapters.MovimentoExpandableAdapter;
 import com.ctm.eadvogado.dto.ProcessoDTO;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoMovimentoProcessual;
 import com.ctm.eadvogado.util.Consts;
@@ -57,10 +58,15 @@ public class TabProcessoMovimentoFragment extends SherlockFragment {
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.processo_tab_movimento, container, false);
 		initAdmobBanner(R.id.adView, v);
-		ListView lvMovimentos = (ListView) v.findViewById(R.id.lvTabMov_movimentos);
+		//ListView lvMovimentos = (ListView) v.findViewById(R.id.lvTabMov_movimentos);
 		List<TipoMovimentoProcessual> movimentos = processoDTO.getProcesso().getProcessoJudicial().getMovimento();
-		MovimentoAdapter movAdapter = new MovimentoAdapter(getActivity(), R.layout.movimento_list_item, movimentos);
-		lvMovimentos.setAdapter(movAdapter);
+		/*MovimentoAdapter movAdapter = new MovimentoAdapter(getActivity(), R.layout.movimento_list_item, movimentos);
+		lvMovimentos.setAdapter(movAdapter);*/
+		
+		ExpandableListView expListView = (ExpandableListView) v.findViewById(R.id.expandableListViewMovimentos);
+        ExpandableListAdapter expListAdapter = new MovimentoExpandableAdapter(this.getActivity(), movimentos);
+        expListView.setAdapter(expListAdapter);
+		
 		return v;
 	}
 	

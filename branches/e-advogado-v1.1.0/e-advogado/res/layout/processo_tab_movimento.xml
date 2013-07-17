@@ -16,20 +16,11 @@
         ads:loadAdOnCreate="true"
         android:visibility="gone" />
 
-    <LinearLayout
-        android:id="@+id/tab_movimentos_form"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp" >
-
-        <ListView
-            android:id="@+id/lvTabMov_movimentos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:listitem="@layout/movimento_list_item" >
-        </ListView>
-        
-    </LinearLayout>
+    <ExpandableListView
+        android:id="@+id/expandableListViewMovimentos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/movimento_group_item" >
+    </ExpandableListView>
 
 </LinearLayout>
