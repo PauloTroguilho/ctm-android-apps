@@ -75,6 +75,9 @@ public class CompraNegocio extends BaseNegocio<Compra, CompraDao> {
 		}
 	}
 	
+	public static final int UM_DIA = 60000 * 60 * 24;
+	public static final int SETE_DIAS = UM_DIA * 7;
+	
 	/**
 	 * @param usuario
 	 * @param sku
@@ -82,14 +85,16 @@ public class CompraNegocio extends BaseNegocio<Compra, CompraDao> {
 	 * @return
 	 */
 	@Transacional
-	public Compra confirmarCompraPendente(Usuario usuario, String sku, String payload) {
+	public Compra confirmarCompraPendente(Usuario usuario, String sku, String payload, String token) {
 		Compra compra = getDao().findByUsuarioSkuPayload(usuario, sku, payload);
 		if (compra != null && compra.getSituacao().equals(SituacaoCompra.PENDENTE)) {
 			compra.setSituacao(SituacaoCompra.CONFIMADA);
+			compra.setToken(token);
 			compra = getDao().update(compra);
 			if (sku.equals(SKU_CONTA_PREMIUM)) {
 				usuario = usuarioDao.findByID(usuario.getKey().getId());
 				usuario.setTipoConta(TipoConta.PREMIUM);
+				usuario.setDataExpiracao(new Date(System.currentTimeMillis() + SETE_DIAS));
 				usuarioDao.update(usuario);
 			} else {
 				Lancamento lancamento = new Lancamento();

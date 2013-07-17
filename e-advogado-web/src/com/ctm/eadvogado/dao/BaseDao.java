@@ -111,13 +111,41 @@ public abstract class BaseDao<E extends BaseEntity> implements Serializable {
 	 * @return
 	 * @throws PersistenceException
 	 */
-	@SuppressWarnings("unchecked")
 	public List<E> findAll(String sortField, SortOrder sortOrder) throws PersistenceException {
+		return findAll(sortField, sortOrder, -1, -1);
+	}
+	
+	/**
+	 * @param sortField
+	 * @param sortOrder
+	 * @param firstResult
+	 * @param maxResults
+	 * @return
+	 */
+	protected Query createFindAllQuery(String sortField, SortOrder sortOrder, int firstResult, int maxResults) {
 		String strQuery = "select e from " + entityClass.getSimpleName() + " as e ";
 		if (sortField != null && sortOrder != null) {
 			strQuery+= "order by e." + sortField + " " + sortOrder.name();
 		}
 		Query query = entityManager.createQuery(strQuery);
+		if (firstResult > -1 && maxResults > 0) {
+			query.setFirstResult(firstResult);
+			query.setMaxResults(maxResults);
+		}
+		return query;
+	}
+	
+	/**
+	 * @param sortField
+	 * @param sortOrder
+	 * @param firstResult
+	 * @param maxResults
+	 * @return
+	 * @throws PersistenceException
+	 */
+	@SuppressWarnings("unchecked")
+	public List<E> findAll(String sortField, SortOrder sortOrder, int firstResult, int maxResults) throws PersistenceException {
+		Query query = createFindAllQuery(sortField, sortOrder, firstResult, maxResults);
 		return query.getResultList();
 	}
 

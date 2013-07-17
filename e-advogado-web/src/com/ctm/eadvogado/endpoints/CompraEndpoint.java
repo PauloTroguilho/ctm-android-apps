@@ -52,7 +52,7 @@ public class CompraEndpoint {
 	@ApiMethod(name = "confirmarCompraPendente")
 	public Compra confirmarCompraPendente(@Named("email") String email,
 			@Named("senha") String senha, @Named("sku") String sku,
-			@Named("payload") String payload) throws NotFoundException,
+			@Named("payload") String payload, @Named("token") String token) throws NotFoundException,
 			UnauthorizedException, BadRequestException {
 		Usuario usuario = null;
 		try {
@@ -63,7 +63,7 @@ public class CompraEndpoint {
 			throw new UnauthorizedException("Usuário e/ou senha inválidos!");
 		}
 		try {
-			return compraNegocio.confirmarCompraPendente(usuario, sku, payload);
+			return compraNegocio.confirmarCompraPendente(usuario, sku, payload, token);
 		} catch(NegocioException e) {
 			throw new BadRequestException(e.getMessage());
 		}

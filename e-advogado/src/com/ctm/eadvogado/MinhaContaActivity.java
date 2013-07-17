@@ -29,7 +29,6 @@ import com.ctm.eadvogado.endpoints.usuarioEndpoint.UsuarioEndpoint;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.model.Usuario;
 import com.ctm.eadvogado.util.Consts;
 import com.ctm.eadvogado.util.EndpointUtils;
-import com.ctm.eadvogado.util.UserEmailFetcher;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
 public class MinhaContaActivity extends SlidingActivity {

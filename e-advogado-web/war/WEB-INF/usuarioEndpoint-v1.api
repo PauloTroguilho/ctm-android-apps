@@ -178,6 +178,10 @@
           "tipoConta" : {
             "$ref" : "TipoConta"
           },
+          "dataExpiracao" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
           "papeis" : {
             "type" : "array",
             "items" : {

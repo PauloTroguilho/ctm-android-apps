@@ -97,6 +97,11 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 		Long saldoLancamentos = lancamentoDao.getSaldoLancamentos(usuario);
 		if (saldoLancamentos.longValue() > 0 || 
 					usuario.getTipoConta().equals(TipoConta.PREMIUM)) {
+			if (usuario.getTipoConta().equals(TipoConta.PREMIUM)) {
+				if (usuario.getDataExpiracao() != null && usuario.getDataExpiracao().before(new Date())) {
+					//TODO validar com o google
+				}
+			}
 			Lancamento lancamento = new Lancamento();
 			lancamento.setData(new Date());
 			lancamento.setQuantidade(1);

@@ -56,7 +56,7 @@
       }
     },
     "compraEndpoint.confirmarCompraPendente" : {
-      "path" : "confirmarCompraPendente/{email}/{senha}/{sku}/{payload}",
+      "path" : "confirmarCompraPendente/{email}/{senha}/{sku}/{payload}/{token}",
       "httpMethod" : "POST",
       "scopes" : [ ],
       "audiences" : [ ],
@@ -77,6 +77,10 @@
             "required" : true
           },
           "payload" : {
+            "type" : "string",
+            "required" : true
+          },
+          "token" : {
             "type" : "string",
             "required" : true
           }
@@ -108,6 +112,9 @@
             "type" : "string"
           },
           "payload" : {
+            "type" : "string"
+          },
+          "token" : {
             "type" : "string"
           },
           "situacao" : {
