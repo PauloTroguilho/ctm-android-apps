@@ -20,7 +20,7 @@
         android:id="@+id/expandableListViewMovimentos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:listitem="@layout/movimento_group_item" >
+        tools:listitem="@android:layout/simple_expandable_list_item_2" >
     </ExpandableListView>
 
 </LinearLayout>
