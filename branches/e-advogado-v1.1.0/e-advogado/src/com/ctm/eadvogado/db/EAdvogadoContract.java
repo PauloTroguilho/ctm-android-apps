@@ -47,7 +47,7 @@ public class EAdvogadoContract {
 	    "DROP TABLE IF EXISTS " + EAdvogadoContract.TribunalTable.TABLE_NAME;
 	
 	public static final String SQL_DELETE_LANCAMENTOS =
-		    "DROP TABLE IF EXISTS " + EAdvogadoContract.LancamentosTable.TABLE_NAME;
+		"DROP TABLE IF EXISTS " + EAdvogadoContract.LancamentosTable.TABLE_NAME;
 	
 	public static final String SQL_CREATE_TRIBUNAIS =
 	    "CREATE TABLE " + EAdvogadoContract.TribunalTable.TABLE_NAME + " (" +
