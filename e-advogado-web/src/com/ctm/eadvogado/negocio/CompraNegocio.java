@@ -95,6 +95,7 @@ public class CompraNegocio extends BaseNegocio<Compra, CompraDao> {
 				usuario = usuarioDao.findByID(usuario.getKey().getId());
 				usuario.setTipoConta(TipoConta.PREMIUM);
 				usuario.setDataExpiracao(new Date(System.currentTimeMillis() + SETE_DIAS));
+				usuario.setTokenContaPremium(token);
 				usuarioDao.update(usuario);
 			} else {
 				Lancamento lancamento = new Lancamento();

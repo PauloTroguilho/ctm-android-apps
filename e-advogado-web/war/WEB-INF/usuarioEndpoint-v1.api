@@ -200,6 +200,9 @@
           "saldo" : {
             "type" : "string",
             "format" : "int64"
+          },
+          "tokenContaPremium" : {
+            "type" : "string"
           }
         }
       },

@@ -23,5 +23,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/transaction-api-1.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/xpp3-1.1.4c.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gson-2.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-services-androidpublisher-v1.1-rev3-1.15.0-rc.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
