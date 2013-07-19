@@ -35,6 +35,7 @@ public class Usuario extends BaseEntity {
 	private Set<Key> processos = new HashSet<Key>();
 	private Key advogado;
 	private Long saldo;
+	private String tokenContaPremium;
 
 	/**
 	 * 
@@ -112,6 +113,14 @@ public class Usuario extends BaseEntity {
 
 	public void setDataExpiracao(Date dataExpiracao) {
 		this.dataExpiracao = dataExpiracao;
+	}
+
+	public String getTokenContaPremium() {
+		return tokenContaPremium;
+	}
+
+	public void setTokenContaPremium(String tokenContaPremium) {
+		this.tokenContaPremium = tokenContaPremium;
 	}
 
 }

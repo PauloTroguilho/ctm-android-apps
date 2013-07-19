@@ -177,30 +177,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "processoEndpoint.associarProcessoAoUsuario" : {
-      "path" : "associarProcessoAoUsuario/{email}/{idProcesso}",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.associarProcessoAoUsuario",
-      "request" : {
-        "parameters" : {
-          "email" : {
-            "type" : "string",
-            "required" : true
-          },
-          "idProcesso" : {
-            "type" : "int64",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "empty"
-      }
-    },
     "processoEndpoint.listAll" : {
       "path" : "processo",
       "httpMethod" : "GET",
@@ -239,16 +215,20 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "processoEndpoint.getByID" : {
-      "path" : "processo/{id}",
-      "httpMethod" : "GET",
+    "processoEndpoint.associarProcessoAoUsuario" : {
+      "path" : "associarProcessoAoUsuario/{email}/{idProcesso}",
+      "httpMethod" : "POST",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.getByID",
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.associarProcessoAoUsuario",
       "request" : {
         "parameters" : {
-          "id" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          },
+          "idProcesso" : {
             "type" : "int64",
             "required" : true
           }
@@ -256,7 +236,7 @@
         "body" : "empty"
       },
       "response" : {
-        "body" : "autoTemplate(backendResponse)"
+        "body" : "empty"
       }
     },
     "processoEndpoint.removerProcessoDoUsuario" : {
@@ -281,6 +261,26 @@
       },
       "response" : {
         "body" : "empty"
+      }
+    },
+    "processoEndpoint.getByID" : {
+      "path" : "processo/{id}",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.getByID",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
       }
     }
   },
@@ -955,19 +955,19 @@
           "$ref" : "Processo"
         }
       },
-      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.associarProcessoAoUsuario" : {
-      },
       "com.ctm.eadvogado.endpoints.ProcessoEndpoint.listAll" : {
         "response" : {
           "$ref" : "CollectionResponse_Processo"
         }
       },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.associarProcessoAoUsuario" : {
+      },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.removerProcessoDoUsuario" : {
+      },
       "com.ctm.eadvogado.endpoints.ProcessoEndpoint.getByID" : {
         "response" : {
           "$ref" : "Processo"
         }
-      },
-      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.removerProcessoDoUsuario" : {
       }
     }
   }
