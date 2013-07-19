@@ -2,6 +2,7 @@ package com.ctm.eadvogado.endpoints;
 
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.persistence.NoResultException;
 
@@ -52,7 +53,7 @@ public class CompraEndpoint {
 	@ApiMethod(name = "confirmarCompraPendente")
 	public Compra confirmarCompraPendente(@Named("email") String email,
 			@Named("senha") String senha, @Named("sku") String sku,
-			@Named("payload") String payload, @Named("token") String token) throws NotFoundException,
+			@Named("payload") String payload, @Nullable	@Named("token") String token) throws NotFoundException,
 			UnauthorizedException, BadRequestException {
 		Usuario usuario = null;
 		try {
