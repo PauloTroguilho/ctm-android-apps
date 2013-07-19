@@ -56,7 +56,7 @@
       }
     },
     "compraEndpoint.confirmarCompraPendente" : {
-      "path" : "confirmarCompraPendente/{email}/{senha}/{sku}/{payload}/{token}",
+      "path" : "confirmarCompraPendente/{email}/{senha}/{sku}/{payload}",
       "httpMethod" : "POST",
       "scopes" : [ ],
       "audiences" : [ ],
@@ -82,7 +82,7 @@
           },
           "token" : {
             "type" : "string",
-            "required" : true
+            "required" : false
           }
         },
         "body" : "empty"

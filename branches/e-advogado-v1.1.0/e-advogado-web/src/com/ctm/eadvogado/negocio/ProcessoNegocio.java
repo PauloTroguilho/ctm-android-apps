@@ -15,6 +15,7 @@ import javax.persistence.PersistenceException;
 
 import br.jus.cnj.pje.v1.TipoProcessoJudicial;
 
+import com.ctm.eadvogado.androidpublisher.Utils;
 import com.ctm.eadvogado.dao.LancamentoDao;
 import com.ctm.eadvogado.dao.ProcessoDao;
 import com.ctm.eadvogado.dao.TribunalDao;
@@ -35,7 +36,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson.JacksonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.api.server.spi.response.ServiceUnavailableException;
 import com.google.api.server.spi.response.UnauthorizedException;
@@ -289,4 +290,15 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 		return processoJudicial;
 	}
 
+	
+	public static void main(String[] args) {
+		try {
+			AndroidPublisher androidPublisher = Utils.loadAndroidPublisherClient();
+			SubscriptionPurchase execute = androidPublisher.purchases().get("com.ctm.eadvogado", "conta_premium", null).execute();
+			System.out.println(execute);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

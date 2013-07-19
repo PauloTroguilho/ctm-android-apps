@@ -1,4 +1,8 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list><!-- ***** Designate client-side state saving. ***** -->
@@ -47,16 +51,16 @@
 		<url-pattern>/faces/*</url-pattern>
 		<url-pattern>*.jsf</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
-        <servlet-name>CarregarProcessoServlet</servlet-name>
-        <servlet-class>com.ctm.eadvogado.servlets.CarregarProcessoServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>CarregarProcessoServlet</servlet-name>
-        <url-pattern>/carregarProcesso</url-pattern>
-    </servlet-mapping>
-	
+		<servlet-name>CarregarProcessoServlet</servlet-name>
+		<servlet-class>com.ctm.eadvogado.servlets.CarregarProcessoServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CarregarProcessoServlet</servlet-name>
+		<url-pattern>/carregarProcesso</url-pattern>
+	</servlet-mapping>
+
 	<listener>
 		<listener-class>com.ctm.eadvogado.listener.ContextListener</listener-class>
 	</listener>
@@ -70,16 +74,48 @@
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>welcome.xhtml</welcome-file>
 	</welcome-file-list>
- <servlet>
-  <servlet-name>SystemServiceServlet</servlet-name>
-  <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
-  <init-param>
-   <param-name>services</param-name>
-   <param-value>com.ctm.eadvogado.endpoints.CompraEndpoint,com.ctm.eadvogado.endpoints.DeviceInfoEndpoint,com.ctm.eadvogado.endpoints.ProcessoEndpoint,com.ctm.eadvogado.endpoints.TribunalEndpoint,com.ctm.eadvogado.endpoints.UsuarioEndpoint</param-value>
-  </init-param>
- </servlet>
- <servlet-mapping>
-  <servlet-name>SystemServiceServlet</servlet-name>
-  <url-pattern>/_ah/spi/*</url-pattern>
- </servlet-mapping>
+	<servlet>
+		<servlet-name>SystemServiceServlet</servlet-name>
+		<servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
+		<init-param>
+			<param-name>services</param-name>
+			<param-value>com.ctm.eadvogado.endpoints.CompraEndpoint,com.ctm.eadvogado.endpoints.DeviceInfoEndpoint,com.ctm.eadvogado.endpoints.ProcessoEndpoint,com.ctm.eadvogado.endpoints.TribunalEndpoint,com.ctm.eadvogado.endpoints.UsuarioEndpoint</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SystemServiceServlet</servlet-name>
+		<url-pattern>/_ah/spi/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>oauth2Callback</servlet-name>
+		<servlet-class>com.ctm.eadvogado.servlets.OAuth2Callback</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>oauth2Callback</servlet-name>
+		<url-pattern>/oauth2callback/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- 
+	<servlet>
+		<servlet-name>sample</servlet-name>
+		<servlet-class>com.ctm.eadvogado.androidpublisher.AndroidPublisherService</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>sample</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>any</web-resource-name>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>*</role-name>
+		</auth-constraint>
+	</security-constraint> -->
+	
 </web-app>
