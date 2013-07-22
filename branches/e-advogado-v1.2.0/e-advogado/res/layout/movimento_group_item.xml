@@ -34,7 +34,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:paddingLeft="5dp" >
 
             <TextView
                 android:id="@+id/textView3"
@@ -58,7 +59,7 @@
                     android:id="@+id/imageViewDocVinc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="2dp"
+                    android:paddingLeft="5dp"
                     android:src="@drawable/ic_content_attachment_inverse" />
 
             </LinearLayout>
