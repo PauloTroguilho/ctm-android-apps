@@ -1,0 +1,232 @@
+{
+  "extends" : "thirdParty.api",
+  "abstract" : false,
+  "root" : "https://e-advogado.appspot.com/_ah/api",
+  "name" : "tribunalendpoint",
+  "version" : "v1",
+  "defaultVersion" : false,
+  "adapter" : {
+    "bns" : "https://e-advogado.appspot.com/_ah/spi",
+    "deadline" : 10.0,
+    "type" : "lily"
+  },
+  "auth" : {
+    "allowCookieAuth" : false
+  },
+  "frontendLimits" : {
+    "unregisteredUserQps" : -1,
+    "unregisteredQps" : -1,
+    "unregisteredDaily" : -1,
+    "rules" : [ ]
+  },
+  "cacheControl" : {
+    "type" : "no-cache",
+    "maxAge" : 0
+  },
+  "ownerDomain" : "ctm.com",
+  "ownerName" : "ctm.com",
+  "packagePath" : "eadvogado",
+  "methods" : {
+    "tribunalendpoint.updateTribunal" : {
+      "path" : "tribunal",
+      "httpMethod" : "PUT",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.TribunalEndpoint.updateTribunal",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "tribunalendpoint.getTribunal" : {
+      "path" : "tribunal/{id}",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.TribunalEndpoint.getTribunal",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "tribunalendpoint.insertTribunal" : {
+      "path" : "tribunal",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.TribunalEndpoint.insertTribunal",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "tribunalendpoint.removeTribunal" : {
+      "path" : "tribunal/{id}",
+      "httpMethod" : "DELETE",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.TribunalEndpoint.removeTribunal",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "tribunalendpoint.listTribunal" : {
+      "path" : "tribunal",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.TribunalEndpoint.listTribunal",
+      "request" : {
+        "parameters" : {
+          "cursor" : {
+            "type" : "string",
+            "required" : false
+          },
+          "limit" : {
+            "type" : "int32",
+            "required" : false
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    }
+  },
+  "descriptor" : {
+    "schemas" : {
+      "Tribunal" : {
+        "id" : "Tribunal",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "Key"
+          },
+          "nome" : {
+            "type" : "string"
+          },
+          "sigla" : {
+            "type" : "string"
+          },
+          "pje1gEndpoint" : {
+            "type" : "string"
+          },
+          "pje2gEndpoint" : {
+            "type" : "string"
+          },
+          "processos" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "Key"
+            }
+          }
+        }
+      },
+      "Key" : {
+        "id" : "Key",
+        "type" : "object",
+        "properties" : {
+          "kind" : {
+            "type" : "string"
+          },
+          "appId" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "int64"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "parent" : {
+            "$ref" : "Key"
+          },
+          "complete" : {
+            "type" : "boolean"
+          },
+          "namespace" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CollectionResponse_Tribunal" : {
+        "id" : "CollectionResponse_Tribunal",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "Tribunal"
+            }
+          },
+          "nextPageToken" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "methods" : {
+      "com.ctm.eadvogado.TribunalEndpoint.updateTribunal" : {
+        "request" : {
+          "$ref" : "Tribunal"
+        },
+        "response" : {
+          "$ref" : "Tribunal"
+        }
+      },
+      "com.ctm.eadvogado.TribunalEndpoint.getTribunal" : {
+        "response" : {
+          "$ref" : "Tribunal"
+        }
+      },
+      "com.ctm.eadvogado.TribunalEndpoint.insertTribunal" : {
+        "request" : {
+          "$ref" : "Tribunal"
+        },
+        "response" : {
+          "$ref" : "Tribunal"
+        }
+      },
+      "com.ctm.eadvogado.TribunalEndpoint.removeTribunal" : {
+        "response" : {
+          "$ref" : "Tribunal"
+        }
+      },
+      "com.ctm.eadvogado.TribunalEndpoint.listTribunal" : {
+        "response" : {
+          "$ref" : "CollectionResponse_Tribunal"
+        }
+      }
+    }
+  }
+}
