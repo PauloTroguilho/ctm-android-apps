@@ -2,21 +2,17 @@ package com.ctm.eadvogado.adapters;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ctm.eadvogado.R;
@@ -103,14 +99,6 @@ public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
 			convertView = infalInflater.inflate(R.layout.movimento_group_item,
 					null);
 		}
-		convertView.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Log.d("e-Advogado", "click no group view");
-				onGroupExpanded(groupPosition);
-			}
-		});
 		TextView tvDataHora = (TextView) convertView
 				.findViewById(R.id.tvTabMov_DataHora);
 
@@ -122,25 +110,28 @@ public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
 			e.printStackTrace();
 		}
 		tvDataHora.setText(dataHoraStr);
-		ListView lvComplementos = (ListView) convertView
-				.findViewById(R.id.listViewComplementos);
-		List<String> complementos = new ArrayList<String>();
+		TextView tvComp = (TextView) convertView.findViewById(R.id.textViewComplementos);
+		String complementos = "";
 		if (movimento.getMovimentoNacional() != null) {
 			TipoMovimentoNacional movNac = movimento.getMovimentoNacional();
 			if (movNac.getComplemento() != null
 					&& !movNac.getComplemento().isEmpty()) {
-				String codNac = movNac.getCodigoNacional() != null ? movNac
-						.getCodigoNacional().toString() : "";
-				for (String compl : movNac.getComplemento()) {
-					complementos.add(codNac + " : " + compl);
+				for (int i = 0; i < movNac.getComplemento().size(); i++) {
+					complementos += movNac.getComplemento().get(i);
+					if (i < movNac.getComplemento().size() -1) {
+						complementos+= "; ";
+					}
 				}
 			}
+		} else if (movimento.getMovimentoLocal() != null) {
+			complementos += movimento.getMovimentoLocal();
 		}
-		if (movimento.getMovimentoLocal() != null) {
-			complementos.add(movimento.getMovimentoLocal());
-		}
-		lvComplementos.setAdapter(new ArrayAdapter<String>(context,
-				android.R.layout.simple_list_item_1, complementos));
+		tvComp.setText(complementos);
+		
+		ImageView ivDocVinc = (ImageView) convertView.findViewById(R.id.imageViewDocVinc);
+		boolean possuiDoc = movimento.getIdDocumentoVinculado() != null && !movimento.getIdDocumentoVinculado().isEmpty();
+		ivDocVinc.setVisibility(possuiDoc ? View.VISIBLE : View.GONE);
+		
 		return convertView;
 	}
 
@@ -151,7 +142,8 @@ public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public boolean isChildSelectable(int groupPosition, int childPosition) {
-		return true;
+		List<String> list = ((TipoMovimentoProcessual)getGroup(groupPosition)).getIdDocumentoVinculado();
+		return list != null && list.size() > 0;
 	}
 
 }

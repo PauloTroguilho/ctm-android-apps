@@ -6,7 +6,7 @@
     android:gravity="center_horizontal|center"
     android:orientation="vertical"
     tools:context=".ConsultarProcessoActivity" >
-    
+
     <com.google.ads.AdView
         android:id="@+id/adView"
         android:layout_width="fill_parent"
@@ -22,7 +22,7 @@
         android:layout_height="fill_parent"
         android:layout_gravity="center"
         android:gravity="center_horizontal|center"
-        android:orientation="vertical" 
+        android:orientation="vertical"
         android:visibility="gone" >
 
         <ProgressBar
@@ -40,71 +40,83 @@
             android:text="@string/login_progress_signing_in"
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
-    
+
     <LinearLayout
         android:id="@+id/consultar_processo_form"
-        android:padding="16dp"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:scrollbars="vertical" >
 
-        <TextView
-            android:id="@+id/textViewCriarConta"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/processo_tribunal"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <Spinner
-            android:id="@+id/spinnerTribunal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:listitem="@android:layout/simple_spinner_dropdown_item" />
-
-        <TextView
-            android:id="@+id/tvTabDados_NPU"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/processo_tipoJuizo"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <Spinner
-            android:id="@+id/spinnerTipoJuizo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:listitem="@android:layout/simple_spinner_dropdown_item" />
-
-        <TextView
-            android:id="@+id/tvTabPolos_ParteAdvogado"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/processo_numero_npu"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <EditText
-            android:id="@+id/editTextNPU"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="number"
-            android:singleLine="true" >
-
-            <requestFocus />
-        </EditText>
-
-        <LinearLayout
+        <ScrollView
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="10dp" >
+            android:layout_height="match_parent" >
 
-            <Button
-                android:id="@+id/buttonConsultarProcesso"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/btn_consultar" />
-        </LinearLayout>
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/textViewCriarConta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/processo_tribunal"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <Spinner
+                    android:id="@+id/spinnerTribunal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@android:layout/simple_spinner_dropdown_item" />
+
+                <TextView
+                    android:id="@+id/tvTabDados_NPU"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/processo_tipoJuizo"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <Spinner
+                    android:id="@+id/spinnerTipoJuizo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@android:layout/simple_spinner_dropdown_item" />
+
+                <TextView
+                    android:id="@+id/tvTabPolos_ParteAdvogado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/processo_numero_npu"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <EditText
+                    android:id="@+id/editTextNPU"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:singleLine="true" >
+
+                    <requestFocus />
+                </EditText>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="10dp" >
+
+                    <Button
+                        android:id="@+id/buttonConsultarProcesso"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btn_consultar" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 
 </LinearLayout>
