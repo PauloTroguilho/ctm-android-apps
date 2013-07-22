@@ -137,7 +137,7 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 		protected List<Tribunal> doInBackground(Void... params) {
 			List<Tribunal> tribunais = new ArrayList<Tribunal>();
 			try {
-				tribunais = tribunalEndpoint.listAll().execute().getItems();
+				tribunais = tribunalEndpoint.listAll().set("sortField", "sigla").set("sortOrder", "ASC").execute().getItems();
 				dbHelper.inserirTribunais(tribunais);
 			} catch (Exception e) {
 				Log.e("E-Advogado",
