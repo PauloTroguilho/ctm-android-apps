@@ -88,13 +88,13 @@
 	</servlet-mapping>
 	
 	<servlet>
-		<servlet-name>oauth2Callback</servlet-name>
+		<servlet-name>OAuth2Callback</servlet-name>
 		<servlet-class>com.ctm.eadvogado.servlets.OAuth2Callback</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>oauth2Callback</servlet-name>
-		<url-pattern>/oauth2callback/*</url-pattern>
+		<servlet-name>OAuth2Callback</servlet-name>
+		<url-pattern>/oauth2callback</url-pattern>
 	</servlet-mapping>
 
 	<!-- 
