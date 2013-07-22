@@ -1,5 +1,6 @@
 package com.ctm.eadvogado.endpoints;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Named;
@@ -11,6 +12,7 @@ import com.ctm.eadvogado.model.Usuario;
 import com.ctm.eadvogado.negocio.CompraNegocio;
 import com.ctm.eadvogado.negocio.UsuarioNegocio;
 import com.ctm.eadvogado.util.WeldUtils;
+import com.ctm.eadvogado.wrapped.WrappedBoolean;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -54,6 +56,14 @@ public class CompraEndpoint {
 			@Named("senha") String senha, @Named("sku") String sku,
 			@Named("payload") String payload) throws NotFoundException,
 			UnauthorizedException, BadRequestException {
+		return confirmarCompra(email, senha, sku, payload, null, null);
+	}
+	
+	@ApiMethod(name = "confirmarCompra")
+	public Compra confirmarCompra(@Named("email") String email,
+			@Named("senha") String senha, @Named("sku") String sku,
+			@Named("payload") String payload, @Named("token") String token, @Named("orderId") String orderId) throws NotFoundException,
+			UnauthorizedException, BadRequestException {
 		Usuario usuario = null;
 		try {
 			usuario = usuarioNegocio.autenticar(email, senha);
@@ -63,10 +73,26 @@ public class CompraEndpoint {
 			throw new UnauthorizedException("Usuário e/ou senha inválidos!");
 		}
 		try {
-			return compraNegocio.confirmarCompraPendente(usuario, sku, payload);
+			return compraNegocio.confirmarCompraPendente(usuario, sku, payload, token, orderId);
 		} catch(NegocioException e) {
+			logger.log(Level.SEVERE, "Erro ao confirmar compra", e);
 			throw new BadRequestException(e.getMessage());
 		}
+	}
+	
+	@ApiMethod(name = "cancelarContaPremium")
+	public WrappedBoolean cancelarContaPremium(@Named("email") String email,
+			@Named("senha") String senha) throws NotFoundException, UnauthorizedException {
+		Usuario usuario = null;
+		try {
+			usuario = usuarioNegocio.autenticar(email, senha);
+		} catch(NoResultException e) {
+			throw new NotFoundException("Usuário não encontrado!");
+		} catch (SecurityException e) {
+			throw new UnauthorizedException("Usuário e/ou senha inválidos!");
+		}
+		compraNegocio.cancelarCompraContaPremium(usuario);
+		return new WrappedBoolean(Boolean.TRUE);
 	}
 
 }
