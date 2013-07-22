@@ -17,6 +17,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.api.client.util.Preconditions;
 import com.google.api.services.androidpublisher.AndroidPublisher;
+import com.google.appengine.api.users.UserServiceFactory;
 
 /**
  * Utility class for JDO persistence, OAuth flow helpers, and others.
@@ -70,10 +71,10 @@ public class Utils {
 	}
 
 	public static AndroidPublisher loadAndroidPublisherClient() throws IOException {
-		//Credential credential = newFlow().loadCredential("935757146253-pnbgeaheo98i23724s2d6dlvvo192a2c.apps.googleusercontent.com");
-		Credential credential = newFlow().loadCredential("935757146253-m7o5a0ltmje9hmaoj8frg50hr6b2l52r.apps.googleusercontent.com");
-		
-		return new AndroidPublisher.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).build();
+		String userId = UserServiceFactory.getUserService()
+                .getCurrentUser().getUserId();
+		Credential credential = newFlow().loadCredential(userId);
+		return new AndroidPublisher.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName("e-advogado-web").build();
 	}
 
 	/**

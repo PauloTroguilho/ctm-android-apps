@@ -45,6 +45,7 @@ public class OAuth2Callback extends
 	@Override
 	protected String getRedirectUri(HttpServletRequest req)
 			throws ServletException, IOException {
+		UserServiceFactory.getUserService().getCurrentUser();
 		return Utils.getRedirectUri(req);
 	}
 

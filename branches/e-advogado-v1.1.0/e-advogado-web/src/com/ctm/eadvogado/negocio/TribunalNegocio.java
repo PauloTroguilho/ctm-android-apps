@@ -9,8 +9,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.PersistenceException;
 
-import com.ctm.eadvogado.dao.TribunalDao;
 import com.ctm.eadvogado.dao.BaseDao.SortOrder;
+import com.ctm.eadvogado.dao.TribunalDao;
 import com.ctm.eadvogado.model.Tribunal;
 
 /**
