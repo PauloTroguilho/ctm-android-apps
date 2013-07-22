@@ -1,0 +1,165 @@
+{
+  "extends" : "thirdParty.api",
+  "abstract" : false,
+  "root" : "https://e-advogado-web.appspot.com/_ah/api",
+  "name" : "compraEndpoint",
+  "version" : "v1",
+  "defaultVersion" : false,
+  "adapter" : {
+    "bns" : "https://e-advogado-web.appspot.com/_ah/spi",
+    "deadline" : 10.0,
+    "type" : "lily"
+  },
+  "auth" : {
+    "allowCookieAuth" : false
+  },
+  "frontendLimits" : {
+    "unregisteredUserQps" : -1,
+    "unregisteredQps" : -1,
+    "unregisteredDaily" : -1,
+    "rules" : [ ]
+  },
+  "cacheControl" : {
+    "type" : "no-cache",
+    "maxAge" : 0
+  },
+  "ownerDomain" : "eadvogado.ctm.com",
+  "ownerName" : "eadvogado.ctm.com",
+  "packagePath" : "endpoints",
+  "methods" : {
+    "compraEndpoint.gerarCompraPendente" : {
+      "path" : "gerarCompraPendente/{email}/{senha}/{sku}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.CompraEndpoint.gerarCompraPendente",
+      "request" : {
+        "parameters" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          },
+          "senha" : {
+            "type" : "string",
+            "required" : true
+          },
+          "sku" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "compraEndpoint.confirmarCompraPendente" : {
+      "path" : "confirmarCompraPendente/{email}/{senha}/{sku}/{payload}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.CompraEndpoint.confirmarCompraPendente",
+      "request" : {
+        "parameters" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          },
+          "senha" : {
+            "type" : "string",
+            "required" : true
+          },
+          "sku" : {
+            "type" : "string",
+            "required" : true
+          },
+          "payload" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    }
+  },
+  "descriptor" : {
+    "schemas" : {
+      "Compra" : {
+        "id" : "Compra",
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "$ref" : "Key"
+          },
+          "data" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "usuario" : {
+            "$ref" : "Key"
+          },
+          "sku" : {
+            "type" : "string"
+          },
+          "payload" : {
+            "type" : "string"
+          },
+          "situacao" : {
+            "$ref" : "SituacaoCompra"
+          }
+        }
+      },
+      "Key" : {
+        "id" : "Key",
+        "type" : "object",
+        "properties" : {
+          "kind" : {
+            "type" : "string"
+          },
+          "appId" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "int64"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "parent" : {
+            "$ref" : "Key"
+          },
+          "complete" : {
+            "type" : "boolean"
+          },
+          "namespace" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SituacaoCompra" : {
+        "id" : "SituacaoCompra",
+        "type" : "string",
+        "enum" : [ "PENDENTE", "CONFIMADA" ]
+      }
+    },
+    "methods" : {
+      "com.ctm.eadvogado.endpoints.CompraEndpoint.gerarCompraPendente" : {
+        "response" : {
+          "$ref" : "Compra"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.CompraEndpoint.confirmarCompraPendente" : {
+        "response" : {
+          "$ref" : "Compra"
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,0 @@
-
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/ajuda" android:menuCategory="system"
-		android:title="@string/menu_ajuda" android:icon="@drawable/icon_help"></item>
-	<item android:id="@+id/sair" android:menuCategory="system"
-		android:title="@string/menu_sair" android:icon="@drawable/icon_sair"></item>
-</menu>
