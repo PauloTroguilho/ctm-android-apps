@@ -3,6 +3,9 @@
  */
 package com.ctm.eadvogado.dao;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.NoResultException;
@@ -81,6 +84,63 @@ public class CompraDao extends BaseDao<Compra> {
 		}catch (NoResultException e) { }
 		
 		return compra;
+	}
+	
+	/**
+	 * @param usuario
+	 * @param sku
+	 * @param payload
+	 * @param token
+	 * @return
+	 */
+	public Compra findByUsuarioSkuPayload(Usuario usuario, String sku, String payload, String token) {
+		Query query = entityManager.createNamedQuery("compraPorUsuarioSkuTokenPayload");
+		query.setParameter("idUsuario", usuario.getKey());
+		query.setParameter("sku", sku);
+		query.setParameter("payload", payload);
+		query.setParameter("token", token);
+		Compra compra = null;
+		try {
+			compra = (Compra) query.getSingleResult();
+		}catch (NoResultException e) { }
+		
+		return compra;
+	}
+	
+	/**
+	 * @param usuario
+	 * @param sku
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Compra> findByUsuarioSku(Usuario usuario, String sku) {
+		Query query = entityManager.createNamedQuery("compraPorUsuarioSku");
+		query.setParameter("idUsuario", usuario.getKey());
+		query.setParameter("sku", sku);
+		List<Compra> resultList = new ArrayList<Compra>();
+		try {
+			resultList = query.getResultList();
+		}catch (NoResultException e) { }
+		return resultList;
+	}
+	
+	/**
+	 * @param usuario
+	 * @param sku
+	 * @param situacao
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Compra> findByUsuarioSkuSituacao(Usuario usuario, String sku, SituacaoCompra situacao) {
+		Query query = entityManager.createNamedQuery("compraPorUsuarioSkuSituacao");
+		query.setParameter("idUsuario", usuario.getKey());
+		query.setParameter("sku", sku);
+		query.setParameter("situacao", situacao);
+		List<Compra> resultList = new ArrayList<Compra>();
+		try {
+			resultList = query.getResultList();
+		}catch (NoResultException e) { }
+		return resultList;
 	}
 	
 }

@@ -27,6 +27,70 @@
   "ownerName" : "eadvogado.ctm.com",
   "packagePath" : "endpoints",
   "methods" : {
+    "compraEndpoint.cancelarContaPremium" : {
+      "path" : "cancelarContaPremium/{email}/{senha}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.CompraEndpoint.cancelarContaPremium",
+      "request" : {
+        "parameters" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          },
+          "senha" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "compraEndpoint.confirmarCompra" : {
+      "path" : "confirmarCompra/{email}/{senha}/{sku}/{payload}/{token}/{orderId}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.CompraEndpoint.confirmarCompra",
+      "request" : {
+        "parameters" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          },
+          "senha" : {
+            "type" : "string",
+            "required" : true
+          },
+          "sku" : {
+            "type" : "string",
+            "required" : true
+          },
+          "payload" : {
+            "type" : "string",
+            "required" : true
+          },
+          "token" : {
+            "type" : "string",
+            "required" : true
+          },
+          "orderId" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
     "compraEndpoint.gerarCompraPendente" : {
       "path" : "gerarCompraPendente/{email}/{senha}/{sku}",
       "httpMethod" : "POST",
@@ -90,6 +154,15 @@
   },
   "descriptor" : {
     "schemas" : {
+      "WrappedBoolean" : {
+        "id" : "WrappedBoolean",
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "boolean"
+          }
+        }
+      },
       "Compra" : {
         "id" : "Compra",
         "type" : "object",
@@ -108,6 +181,12 @@
             "type" : "string"
           },
           "payload" : {
+            "type" : "string"
+          },
+          "token" : {
+            "type" : "string"
+          },
+          "orderId" : {
             "type" : "string"
           },
           "situacao" : {
@@ -150,6 +229,16 @@
       }
     },
     "methods" : {
+      "com.ctm.eadvogado.endpoints.CompraEndpoint.cancelarContaPremium" : {
+        "response" : {
+          "$ref" : "WrappedBoolean"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.CompraEndpoint.confirmarCompra" : {
+        "response" : {
+          "$ref" : "Compra"
+        }
+      },
       "com.ctm.eadvogado.endpoints.CompraEndpoint.gerarCompraPendente" : {
         "response" : {
           "$ref" : "Compra"

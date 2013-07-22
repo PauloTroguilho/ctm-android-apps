@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"s1omim4x8ymp9_6H8kBMkfEDqpo/xswjfQaMO3xPkLIXMyPCAms-C0c\"",
+ "etag": "\"s1omim4x8ymp9_6H8kBMkfEDqpo/xGZRbdt2r7HXCz-addKTQif78Pg\"",
  "discoveryVersion": "v1",
  "id": "compraEndpoint:v1",
  "name": "compraEndpoint",
@@ -76,6 +76,9 @@
     "key": {
      "$ref": "Key"
     },
+    "orderId": {
+     "type": "string"
+    },
     "payload": {
      "type": "string"
     },
@@ -83,6 +86,9 @@
      "$ref": "SituacaoCompra"
     },
     "sku": {
+     "type": "string"
+    },
+    "token": {
      "type": "string"
     },
     "usuario": {
@@ -129,9 +135,90 @@
     "",
     ""
    ]
+  },
+  "WrappedBoolean": {
+   "id": "WrappedBoolean",
+   "type": "object",
+   "properties": {
+    "value": {
+     "type": "boolean"
+    }
+   }
   }
  },
  "methods": {
+  "cancelarContaPremium": {
+   "id": "compraEndpoint.cancelarContaPremium",
+   "path": "cancelarContaPremium/{email}/{senha}",
+   "httpMethod": "POST",
+   "parameters": {
+    "email": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "senha": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "email",
+    "senha"
+   ],
+   "response": {
+    "$ref": "WrappedBoolean"
+   }
+  },
+  "confirmarCompra": {
+   "id": "compraEndpoint.confirmarCompra",
+   "path": "confirmarCompra/{email}/{senha}/{sku}/{payload}/{token}/{orderId}",
+   "httpMethod": "POST",
+   "parameters": {
+    "email": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "orderId": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "payload": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "senha": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "sku": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "token": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "email",
+    "senha",
+    "sku",
+    "payload",
+    "token",
+    "orderId"
+   ],
+   "response": {
+    "$ref": "Compra"
+   }
+  },
   "confirmarCompraPendente": {
    "id": "compraEndpoint.confirmarCompraPendente",
    "path": "confirmarCompraPendente/{email}/{senha}/{sku}/{payload}",

@@ -24,7 +24,17 @@ import com.google.appengine.api.datastore.Key;
 			query = "select c from Compra as c where c.usuario = :idUsuario AND c.sku = :sku AND c.payload = :payload AND c.situacao = :situacao"),
 		@NamedQuery(
 			name = "compraPorUsuarioSkuPayload", 
-			query = "select c from Compra as c where c.usuario = :idUsuario AND c.sku = :sku AND c.payload = :payload")
+			query = "select c from Compra as c where c.usuario = :idUsuario AND c.sku = :sku AND c.payload = :payload"),
+		@NamedQuery(
+			name = "compraPorUsuarioSkuTokenPayload", 
+			query = "select c from Compra as c where c.usuario = :idUsuario AND c.sku = :sku AND c.payload = :payload AND c.token = :token"),
+		@NamedQuery(
+			name = "compraPorUsuarioSku", 
+			query = "select c from Compra as c where c.usuario = :idUsuario AND c.sku = :sku"),
+		@NamedQuery(
+			name = "compraPorUsuarioSkuSituacao", 
+			query = "select c from Compra as c where c.usuario = :idUsuario AND c.sku = :sku AND c.situacao = :situacao")
+
 })
 public class Compra extends BaseEntity {
 
@@ -34,6 +44,8 @@ public class Compra extends BaseEntity {
 	private Key usuario;
 	private String sku;
 	private String payload;
+	private String token;
+	private String orderId;
 	private SituacaoCompra situacao;
 	/**
 	 * 
@@ -80,6 +92,22 @@ public class Compra extends BaseEntity {
 
 	public void setSku(String sku) {
 		this.sku = sku;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
 	}
 
 }

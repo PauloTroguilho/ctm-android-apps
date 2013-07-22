@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"s1omim4x8ymp9_6H8kBMkfEDqpo/xswjfQaMO3xPkLIXMyPCAms-C0c\"",
+ "etag": "\"s1omim4x8ymp9_6H8kBMkfEDqpo/xGZRbdt2r7HXCz-addKTQif78Pg\"",
  "discoveryVersion": "v1",
  "id": "compraEndpoint:v1",
  "name": "compraEndpoint",
@@ -74,6 +74,9 @@
     "key": {
      "$ref": "Key"
     },
+    "orderId": {
+     "type": "string"
+    },
     "payload": {
      "type": "string"
     },
@@ -81,6 +84,9 @@
      "$ref": "SituacaoCompra"
     },
     "sku": {
+     "type": "string"
+    },
+    "token": {
      "type": "string"
     },
     "usuario": {
@@ -127,9 +133,78 @@
     "",
     ""
    ]
+  },
+  "WrappedBoolean": {
+   "id": "WrappedBoolean",
+   "type": "object",
+   "properties": {
+    "value": {
+     "type": "boolean"
+    }
+   }
   }
  },
  "methods": {
+  "compraEndpoint.cancelarContaPremium": {
+   "id": "compraEndpoint.cancelarContaPremium",
+   "parameters": {
+    "email": {
+     "type": "string",
+     "required": true
+    },
+    "senha": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "email",
+    "senha"
+   ],
+   "returns": {
+    "$ref": "WrappedBoolean"
+   }
+  },
+  "compraEndpoint.confirmarCompra": {
+   "id": "compraEndpoint.confirmarCompra",
+   "parameters": {
+    "email": {
+     "type": "string",
+     "required": true
+    },
+    "orderId": {
+     "type": "string",
+     "required": true
+    },
+    "payload": {
+     "type": "string",
+     "required": true
+    },
+    "senha": {
+     "type": "string",
+     "required": true
+    },
+    "sku": {
+     "type": "string",
+     "required": true
+    },
+    "token": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "email",
+    "senha",
+    "sku",
+    "payload",
+    "token",
+    "orderId"
+   ],
+   "returns": {
+    "$ref": "Compra"
+   }
+  },
   "compraEndpoint.confirmarCompraPendente": {
    "id": "compraEndpoint.confirmarCompraPendente",
    "parameters": {

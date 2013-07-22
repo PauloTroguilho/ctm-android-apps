@@ -169,6 +169,10 @@
           "key" : {
             "$ref" : "Key"
           },
+          "dataCadastro" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
           "email" : {
             "type" : "string"
           },
@@ -177,6 +181,10 @@
           },
           "tipoConta" : {
             "$ref" : "TipoConta"
+          },
+          "dataExpiracao" : {
+            "type" : "string",
+            "format" : "date-time"
           },
           "papeis" : {
             "type" : "array",

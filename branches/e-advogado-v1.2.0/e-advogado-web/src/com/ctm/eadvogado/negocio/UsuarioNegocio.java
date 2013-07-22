@@ -65,6 +65,7 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 	@Transacional
 	public Usuario insert(Usuario entity) throws PersistenceException {
 		entity.setTipoConta(TipoConta.BASICA);
+		entity.setDataCadastro(new Date());
 		entity.setEmail(entity.getEmail().toLowerCase());
 		entity.setSenha(DigestUtils.sha256Hex(entity.getSenha()));
 		Usuario usuario = super.insert(entity);
@@ -72,7 +73,7 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 			Lancamento lancamento = new Lancamento();
 			lancamento.setTipo(TipoLancamento.CREDITO);
 			lancamento.setData(new Date());
-			lancamento.setQuantidade(3);
+			lancamento.setQuantidade(2);
 			lancamento.setUsuario(usuario.getKey());
 			lancamentoDao.insert(lancamento);
 		} catch (PersistenceException e) {

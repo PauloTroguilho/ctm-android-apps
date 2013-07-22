@@ -4,6 +4,7 @@
 package com.ctm.eadvogado.negocio;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -62,18 +63,28 @@ public class CompraNegocio extends BaseNegocio<Compra, CompraDao> {
 		if (sku.equals(SKU_CONTA_PREMIUM) || sku.equals(SKU_PROCESSOS_10)
 				|| sku.equals(SKU_PROCESSOS_25)
 				|| sku.equals(SKU_PROCESSOS_100)) {
-			Compra compra = new Compra();
-			compra.setSituacao(SituacaoCompra.PENDENTE);
-			compra.setData(new Date());
-			compra.setUsuario(usuario.getKey());
-			compra.setSku(sku);
-			compra.setPayload(UUID.randomUUID().toString());
-			
-			return getDao().insert(compra);
+			List<Compra> comprasPendentes = getDao().findByUsuarioSkuSituacao(
+					usuario, sku, SituacaoCompra.PENDENTE);
+			Compra compra = null;
+			if (!comprasPendentes.isEmpty()) {
+				compra = comprasPendentes.get(0);
+			} else {
+				compra = new Compra();
+				compra.setSituacao(SituacaoCompra.PENDENTE);
+				compra.setUsuario(usuario.getKey());
+				compra.setSku(sku);
+				compra.setPayload(UUID.randomUUID().toString());
+				compra.setData(new Date());
+				compra = getDao().insert(compra);
+			}
+			return compra;
 		} else {
 			throw new NegocioException("O SKU informado é inválido.");
 		}
 	}
+	
+	public static final int UM_DIA = 60000 * 60 * 24;
+	public static final int SETE_DIAS = UM_DIA * 7;
 	
 	/**
 	 * @param usuario
@@ -82,16 +93,23 @@ public class CompraNegocio extends BaseNegocio<Compra, CompraDao> {
 	 * @return
 	 */
 	@Transacional
-	public Compra confirmarCompraPendente(Usuario usuario, String sku, String payload) {
+	public Compra confirmarCompraPendente(Usuario usuario, String sku, String payload, String token, String orderId) {
 		Compra compra = getDao().findByUsuarioSkuPayload(usuario, sku, payload);
 		if (compra != null && compra.getSituacao().equals(SituacaoCompra.PENDENTE)) {
-			compra.setSituacao(SituacaoCompra.CONFIMADA);
-			compra = getDao().update(compra);
 			if (sku.equals(SKU_CONTA_PREMIUM)) {
 				usuario = usuarioDao.findByID(usuario.getKey().getId());
-				usuario.setTipoConta(TipoConta.PREMIUM);
-				usuarioDao.update(usuario);
+				if (usuario.getTipoConta().equals(TipoConta.BASICA)) {
+					usuario.setTipoConta(TipoConta.PREMIUM);
+					usuario.setDataExpiracao(new Date(System.currentTimeMillis() + SETE_DIAS));
+					usuarioDao.update(usuario);
+					logger.info(String.format("Conta do usuario %s atualizada para PREMIUM.", usuario.getEmail()));
+				}
+				if (usuario.getDataExpiracao() != null && usuario.getDataExpiracao().before(new Date())) {
+					logger.info(String.format("A conta do usuario %s foi confirmada como PREMIUM.", usuario.getEmail()));
+					compra.setSituacao(SituacaoCompra.CONFIMADA);
+				}
 			} else {
+				compra.setSituacao(SituacaoCompra.CONFIMADA);
 				Lancamento lancamento = new Lancamento();
 				if (sku.equals(SKU_PROCESSOS_10)) {
 					lancamento.setQuantidade(10);
@@ -107,7 +125,20 @@ public class CompraNegocio extends BaseNegocio<Compra, CompraDao> {
 				lancamento.setData(new Date());
 				lancamentoDao.insert(lancamento);
 			}
+			compra.setToken(token);
+			compra.setOrderId(orderId);
+			compra = getDao().update(compra);
+		} else {
+			throw new NegocioException("erro.compra.naoEncontrada");
 		}
 		return compra;
+	}
+	
+	@Transacional
+	public void cancelarCompraContaPremium(Usuario usuario) {
+		usuario = usuarioDao.findByID(usuario.getKey().getId());
+		usuario.setTipoConta(TipoConta.BASICA);
+		usuario.setDataExpiracao(null);
+		usuarioDao.update(usuario);
 	}
 }
