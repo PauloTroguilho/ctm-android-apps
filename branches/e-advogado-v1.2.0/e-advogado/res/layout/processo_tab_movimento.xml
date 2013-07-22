@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal|center"
     android:orientation="vertical" >
-    
+
     <com.google.ads.AdView
         android:id="@+id/adView"
         android:layout_width="fill_parent"

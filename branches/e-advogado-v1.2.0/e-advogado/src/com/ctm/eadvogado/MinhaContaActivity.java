@@ -1,7 +1,5 @@
 package com.ctm.eadvogado;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,11 +23,11 @@ import com.ctm.eadvogado.billingutils.Purchase;
 import com.ctm.eadvogado.db.EAdvogadoDbHelper;
 import com.ctm.eadvogado.endpoints.compraEndpoint.CompraEndpoint;
 import com.ctm.eadvogado.endpoints.compraEndpoint.model.Compra;
+import com.ctm.eadvogado.endpoints.compraEndpoint.model.WrappedBoolean;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.UsuarioEndpoint;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.model.Usuario;
 import com.ctm.eadvogado.util.Consts;
 import com.ctm.eadvogado.util.EndpointUtils;
-import com.ctm.eadvogado.util.UserEmailFetcher;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
 public class MinhaContaActivity extends SlidingActivity {
@@ -40,6 +38,7 @@ public class MinhaContaActivity extends SlidingActivity {
 	private CarregarMinhaContaTask minhaContaTask = null;
 	private EfetuarCompraTask efetuarCompraTask = null;
 	private ConfirmarCompraTask confirmarCompraTask = null;
+	private CancelarContaPremiumTask cancelarContaPremiumTask = null;
 	
 	private EAdvogadoDbHelper dbHelper;
 	
@@ -160,39 +159,18 @@ public class MinhaContaActivity extends SlidingActivity {
                 return;
             }
             Log.d(TAG, "Consulta de produtos foi realizada com sucesso.");
-            
-			String tipoConta = preferences.getString(
-					PreferencesActivity.PREFS_KEY_TIPO_CONTA,
-					Consts.TIPO_CONTA_BASICA);
-			boolean isContaPremium = false;
 			// Do we have the premium account?
 			Purchase premiumPurchase = inventory.getPurchase(SKU_CONTA_PREMIUM);
-			if (premiumPurchase != null && tipoConta.equals(Consts.TIPO_CONTA_BASICA)) {
+			if (premiumPurchase != null) {
 				// confirmar compra de conta premium
-				Compra compra = null;
-				try {
-					compra = compraEndpoint.confirmarCompraPendente(getEmail(),
-							getSenha(), premiumPurchase.getSku(),
-							premiumPurchase.getDeveloperPayload()).execute();
-				} catch (IOException e) {
-					Log.d(TAG, "Erro na confirmacao da compra. Compra: " + premiumPurchase, e);
+				doConfirmarCompra(premiumPurchase);
+			} else {
+				String tipoConta = preferences.getString(PreferencesActivity.PREFS_KEY_TIPO_CONTA, Consts.TIPO_CONTA_BASICA);
+				if (tipoConta.equals(Consts.TIPO_CONTA_PREMIUM)) {
+					doCancelarContaPremium();
 				}
-				if (compra != null) {
-					preferences.edit().putString(
-							PreferencesActivity.PREFS_KEY_TIPO_CONTA, USUARIO.getTipoConta()).commit();
-					isContaPremium = true;
-				} else {
-					alert("Desculpe! Não foi possível confirmar sua compra. Tente novamente mais tarde.");
-				}
-				
-			} else if (tipoConta.equals(Consts.TIPO_CONTA_PREMIUM)) {
-				isContaPremium = true;
-				
 			}
-			tvCategoria.setText(isContaPremium ? Consts.TIPO_CONTA_PREMIUM : Consts.TIPO_CONTA_BASICA);
-			
 			String[] skus = new String[] {SKU_PROCESSOS_10, SKU_PROCESSOS_25, SKU_PROCESSOS_100};
-			List<Purchase> purchases = new ArrayList<Purchase>();
 			for (String sku : skus) {
 				// Check for gas delivery -- if we own gas, we should fill up the tank immediately
 	            Purchase purchase = inventory.getPurchase(sku);
@@ -200,21 +178,7 @@ public class MinhaContaActivity extends SlidingActivity {
 	            	continue;
 
 	            Log.d(TAG, String.format("O produto %s foi adquirido. Confirmando compra.", sku));
-	            Compra compra = null;
-				try {
-					compra = compraEndpoint.confirmarCompraPendente(getEmail(), getSenha(), 
-							purchase.getSku(), purchase.getDeveloperPayload()).execute();
-				} catch (IOException e) {
-					Log.d(TAG, "Erro na confirmacao da compra. Compra: " + premiumPurchase, e);
-				}
-				if (compra != null) {
-					purchases.add(purchase);
-				} else {
-					alert("Desculpe! Não foi possível confirmar sua compra. Tente novamente mais tarde.");
-				}
-			}
-			if (!purchases.isEmpty()) {
-				mHelper.consumeAsync(purchases, mConsumeMultiFinishedListener);
+	            doConfirmarCompra(purchase);
 			}
             setSupportProgressBarIndeterminateVisibility(false);
     		setControlsEnabled(true);
@@ -380,6 +344,20 @@ public class MinhaContaActivity extends SlidingActivity {
 		confirmarCompraTask.execute(purchase);
     }
     
+    /**
+     * 
+     */
+    private void doCancelarContaPremium() {
+    	if (cancelarContaPremiumTask != null){
+    		complain("Desculpe! Já existe um processo de cancelamento de compra em andamento. Aguarde alguns instantes.");
+    		return;
+    	}
+    	setSupportProgressBarIndeterminateVisibility(true);
+		setControlsEnabled(false);
+		cancelarContaPremiumTask = new CancelarContaPremiumTask();
+		cancelarContaPremiumTask.execute((Void) null);
+    }
+    
     
     /**
      * @author Cleber
@@ -393,11 +371,15 @@ public class MinhaContaActivity extends SlidingActivity {
 		@Override
 		protected Compra doInBackground(Purchase... params) {
 			purchase = params[0];
+			Log.d(TAG, String.format(
+					"Confirmando compra. sku: %s, payload: %s, token: %s",
+					purchase.getSku(), purchase.getDeveloperPayload(),
+					purchase.getToken()));
 			Compra compra = null;
 	        try {
-				compra = compraEndpoint.confirmarCompraPendente(getEmail(),
+				compra = compraEndpoint.confirmarCompra(getEmail(),
 						getSenha(), purchase.getSku(),
-						purchase.getDeveloperPayload()).execute();
+						purchase.getDeveloperPayload(), purchase.getToken(), purchase.getOrderId()).execute();
 			} catch(GoogleJsonResponseException e) {
 				if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_NOT_FOUND)
 						|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("not found"))) {
@@ -441,7 +423,7 @@ public class MinhaContaActivity extends SlidingActivity {
             	String msg = null;
 	        	switch (errorCode) {
 					case HttpStatus.SC_NOT_FOUND:
-						msg = "Desculpe! OS dados informados não foram encontrados no servidor.";
+						msg = "Desculpe! Os dados informados não foram encontrados no servidor.";
 						break;
 					case HttpStatus.SC_UNAUTHORIZED:
 						msg = "Usuário e/ou senha inválidos.";
@@ -468,6 +450,71 @@ public class MinhaContaActivity extends SlidingActivity {
 		}
     	
     }
+    
+    public class CancelarContaPremiumTask extends AsyncTask<Void, Void, Compra> {
+    	
+    	int errorCode = -1;
+    	WrappedBoolean wBool = null;
+    	
+		@Override
+		protected Compra doInBackground(Void... params) {
+			Log.d(TAG, "Cancelando conta premium.");
+			Compra compra = null;
+	        try {
+	        	wBool = compraEndpoint.cancelarContaPremium(getEmail(), getSenha()).execute();
+			} catch(GoogleJsonResponseException e) {
+				Log.e(TAG, "Falha na comunicação com o server.", e);
+				if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_NOT_FOUND)
+						|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("not found"))) {
+					errorCode = HttpStatus.SC_NOT_FOUND;
+				} else if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_UNAUTHORIZED)
+						|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("unauthorized"))) {
+					errorCode = HttpStatus.SC_UNAUTHORIZED;
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "Falha ao realizar login.", e);
+			}
+			return compra;
+		}
+		
+		@Override
+		protected void onPostExecute(Compra compra) {
+			if (wBool != null) {
+				if (wBool.getValue().booleanValue()) {
+					Log.d(TAG, "Conta premium foi cancelada.");
+					doCarregarMinhaConta();
+					alert("Sua assinatura da conta PREMIUM foi cancelada!");
+				}
+            } else {
+            	String msg = null;
+	        	switch (errorCode) {
+					case HttpStatus.SC_NOT_FOUND:
+						msg = "Desculpe! Os dados informados não foram encontrados no servidor.";
+						break;
+					case HttpStatus.SC_UNAUTHORIZED:
+						msg = "Usuário e/ou senha inválidos.";
+						break;
+					default:
+						msg = "Desculpe! Não foi possivel se comunicar com nossos servidores. Verifique seu acesso a internet!";
+						break;
+				}
+	        	alert(msg);
+            }
+			cancelarContaPremiumTask = null;
+			setSupportProgressBarIndeterminateVisibility(false);
+			setControlsEnabled(true);
+		}
+		
+		@Override
+		protected void onCancelled(Compra result) {
+			cancelarContaPremiumTask = null;
+			setSupportProgressBarIndeterminateVisibility(false);
+			setControlsEnabled(true);
+		}
+    	
+    }
+    
+    
     
 	void complain(String message) {
         Log.e(TAG, "**** MinhaConta Error: " + message);
