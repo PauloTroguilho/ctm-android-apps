@@ -61,7 +61,9 @@ public class TabProcessoDadosFragment extends SherlockFragment {
 		TextView tvNPU = (TextView) v.findViewById(R.id.tvTabDados_NPU);
 		tvNPU.setText(dadosBasicos.getNumero());
 		TextView tvTribunal = (TextView) v.findViewById(R.id.tvTabDados_Tribunal);
-		tvTribunal.setText(processoDTO.getTribunal().getNome());
+		if (processoDTO.getTribunal() != null) {
+			tvTribunal.setText(processoDTO.getTribunal().getNome());
+		}
 		TextView tvTipoJuizo = (TextView) v.findViewById(R.id.tvTabDados_TipoJuizo);
 		if (processoDTO.getProcesso().getTipoJuizo().equals(TipoJuizo.PRIMEIRO_GRAU.name())) {
 			tvTipoJuizo.setText(R.string.processo_tipoJuizo_1g);

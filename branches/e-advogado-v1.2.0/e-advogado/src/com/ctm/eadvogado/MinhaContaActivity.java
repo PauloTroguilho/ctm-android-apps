@@ -158,16 +158,19 @@ public class MinhaContaActivity extends SlidingActivity {
                 complain("Ocorreu um problema ao consultar seus produtos: " + result);
                 return;
             }
+            boolean isThreadStarted = false;
             Log.d(TAG, "Consulta de produtos foi realizada com sucesso.");
 			// Do we have the premium account?
 			Purchase premiumPurchase = inventory.getPurchase(SKU_CONTA_PREMIUM);
-			if (premiumPurchase != null) {
+			if (premiumPurchase != null && premiumPurchase.getPurchaseState() == IabHelper.BILLING_RESPONSE_RESULT_OK) {
 				// confirmar compra de conta premium
 				doConfirmarCompra(premiumPurchase);
+				isThreadStarted = true;
 			} else {
 				String tipoConta = preferences.getString(PreferencesActivity.PREFS_KEY_TIPO_CONTA, Consts.TIPO_CONTA_BASICA);
 				if (tipoConta.equals(Consts.TIPO_CONTA_PREMIUM)) {
 					doCancelarContaPremium();
+					isThreadStarted = true;
 				}
 			}
 			String[] skus = new String[] {SKU_PROCESSOS_10, SKU_PROCESSOS_25, SKU_PROCESSOS_100};
@@ -179,9 +182,12 @@ public class MinhaContaActivity extends SlidingActivity {
 
 	            Log.d(TAG, String.format("O produto %s foi adquirido. Confirmando compra.", sku));
 	            doConfirmarCompra(purchase);
+	            isThreadStarted = true;
 			}
-            setSupportProgressBarIndeterminateVisibility(false);
-    		setControlsEnabled(true);
+			if (!isThreadStarted) {
+				setSupportProgressBarIndeterminateVisibility(false);
+	    		setControlsEnabled(true);
+			}
             Log.d(TAG, "Consulta inicial das compras finalizada.");
         }
     };
