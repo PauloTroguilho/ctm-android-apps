@@ -110,6 +110,7 @@ public class IabHelper {
     // Billing response codes
     public static final int BILLING_RESPONSE_RESULT_OK = 0;
     public static final int BILLING_RESPONSE_RESULT_USER_CANCELED = 1;
+    public static final int BILLING_RESPONSE_RESULT_REFUNDED = 2;
     public static final int BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE = 3;
     public static final int BILLING_RESPONSE_RESULT_ITEM_UNAVAILABLE = 4;
     public static final int BILLING_RESPONSE_RESULT_DEVELOPER_ERROR = 5;

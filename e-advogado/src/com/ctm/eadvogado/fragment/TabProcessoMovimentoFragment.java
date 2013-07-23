@@ -1,6 +1,9 @@
 package com.ctm.eadvogado.fragment;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,7 +17,9 @@ import com.ctm.eadvogado.ProcessoTabsPagerFragment;
 import com.ctm.eadvogado.R;
 import com.ctm.eadvogado.adapters.MovimentoExpandableAdapter;
 import com.ctm.eadvogado.dto.ProcessoDTO;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoDocumento;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoMovimentoProcessual;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoProcessoJudicial;
 import com.ctm.eadvogado.util.Consts;
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;
@@ -58,16 +63,42 @@ public class TabProcessoMovimentoFragment extends SherlockFragment {
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.processo_tab_movimento, container, false);
 		initAdmobBanner(R.id.adView, v);
-		//ListView lvMovimentos = (ListView) v.findViewById(R.id.lvTabMov_movimentos);
-		List<TipoMovimentoProcessual> movimentos = processoDTO.getProcesso().getProcessoJudicial().getMovimento();
-		/*MovimentoAdapter movAdapter = new MovimentoAdapter(getActivity(), R.layout.movimento_list_item, movimentos);
-		lvMovimentos.setAdapter(movAdapter);*/
+		TipoProcessoJudicial processoJudicial = processoDTO.getProcesso().getProcessoJudicial();
+		Map<TipoMovimentoProcessual, List<TipoDocumento>> movimentosDocumentosMap = 
+				buildMovimentosDocumentosMap(processoJudicial);
 		
 		ExpandableListView expListView = (ExpandableListView) v.findViewById(R.id.expandableListViewMovimentos);
-        ExpandableListAdapter expListAdapter = new MovimentoExpandableAdapter(this.getActivity(), movimentos);
+		ExpandableListAdapter expListAdapter = new MovimentoExpandableAdapter(
+				this.getActivity(), processoJudicial.getMovimento(),
+				movimentosDocumentosMap);
         expListView.setAdapter(expListAdapter);
 		
 		return v;
+	}
+	
+	/**
+	 * @param processoJudicial
+	 * @return
+	 */
+	private Map<TipoMovimentoProcessual, List<TipoDocumento>> buildMovimentosDocumentosMap(TipoProcessoJudicial processoJudicial) {
+		Map<TipoMovimentoProcessual, List<TipoDocumento>> movimentosDocumentosMap = new HashMap<TipoMovimentoProcessual, List<TipoDocumento>>();
+		if (processoJudicial.getMovimento() != null) {
+			for (TipoMovimentoProcessual movimento : processoJudicial.getMovimento()) {
+				List<TipoDocumento> documentosVinculados = new ArrayList<TipoDocumento>();
+				if (movimento.getIdDocumentoVinculado() != null && processoJudicial.getDocumento() != null) {
+					for (String idDocumentoVinculado : movimento.getIdDocumentoVinculado()) {
+						for (TipoDocumento tipoDocumento : processoJudicial.getDocumento()) {
+							if (tipoDocumento.getIdDocumento().equals(idDocumentoVinculado)) {
+								documentosVinculados.add(tipoDocumento);
+								break;
+							}
+						}
+					}
+				}
+				movimentosDocumentosMap.put(movimento, documentosVinculados);
+			}
+		}
+		return movimentosDocumentosMap;
 	}
 	
 }

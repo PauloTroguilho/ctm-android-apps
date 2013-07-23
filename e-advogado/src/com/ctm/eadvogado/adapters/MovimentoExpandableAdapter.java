@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ctm.eadvogado.R;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoDocumento;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoMovimentoNacional;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoMovimentoProcessual;
 
@@ -23,7 +25,9 @@ public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
 
 	private Activity context;
 	//private Map<TipoMovimentoProcessual, List<String>> documentos;
+	//private List<TipoMovimentoProcessual> movimentos;
 	private List<TipoMovimentoProcessual> movimentos;
+	private Map<TipoMovimentoProcessual, List<TipoDocumento>> documentos;
 
 	private SimpleDateFormat sdfFrom = new SimpleDateFormat("yyyyMMddHHmmss",
 			Locale.getDefault());
@@ -35,43 +39,41 @@ public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
 	 * @param movimentos
 	 * @param documentos
 	 */
-	public MovimentoExpandableAdapter(Activity context,
-			List<TipoMovimentoProcessual> movimentos) {
+	public MovimentoExpandableAdapter(Activity context, List<TipoMovimentoProcessual> movimentos,
+			Map<TipoMovimentoProcessual, List<TipoDocumento>> documentos) {
 		super();
 		this.context = context;
 		this.movimentos = movimentos;
+		this.documentos = documentos;
 	}
 
 	@Override
 	public Object getChild(int groupPosition, int childPosition) {
-		List<String> idDocumentoVinculado = movimentos.get(groupPosition).getIdDocumentoVinculado();
-		return idDocumentoVinculado != null ? idDocumentoVinculado.get(childPosition) : null;
+		return documentos.get(getGroup(groupPosition)).get(childPosition);
 	}
 
 	@Override
 	public long getChildId(int groupPosition, int childPosition) {
-		return childPosition;
+		return ((TipoDocumento)getChild(groupPosition, childPosition)).getIdDocumento().hashCode();
 	}
-
+	
 	@Override
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
-		final String documentoId = (String) getChild(groupPosition,
-				childPosition);
+		final TipoDocumento documento = (TipoDocumento) getChild(groupPosition, childPosition);
 		LayoutInflater inflater = context.getLayoutInflater();
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.documento_child_item, null);
 		}
 		TextView tvDocumentoId = (TextView) convertView
 				.findViewById(R.id.textViewDocumentoId);
-		tvDocumentoId.setText(documentoId);
+		tvDocumentoId.setText(documento.getIdDocumento());
 		return convertView;
 	}
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
-		List<String> idDocumentoVinculado = movimentos.get(groupPosition).getIdDocumentoVinculado();
-		return idDocumentoVinculado != null ? idDocumentoVinculado.size() : 0;
+		return documentos.get(getGroup(groupPosition)).size();
 	}
 
 	@Override
@@ -129,12 +131,11 @@ public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
 		tvComp.setText(complementos);
 		
 		ImageView ivDocVinc = (ImageView) convertView.findViewById(R.id.imageViewDocVinc);
-		boolean possuiDoc = movimento.getIdDocumentoVinculado() != null && !movimento.getIdDocumentoVinculado().isEmpty();
-		ivDocVinc.setVisibility(possuiDoc ? View.VISIBLE : View.GONE);
+		ivDocVinc.setVisibility(getChildrenCount(groupPosition) > 0 ? View.VISIBLE : View.GONE);
 		
 		return convertView;
 	}
-
+	
 	@Override
 	public boolean hasStableIds() {
 		return true;
@@ -142,8 +143,7 @@ public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public boolean isChildSelectable(int groupPosition, int childPosition) {
-		List<String> list = ((TipoMovimentoProcessual)getGroup(groupPosition)).getIdDocumentoVinculado();
-		return list != null && list.size() > 0;
+		return true;
 	}
 
 }
