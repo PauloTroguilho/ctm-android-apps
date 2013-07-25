@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"s1omim4x8ymp9_6H8kBMkfEDqpo/PcGCRF9QnKtKtO3xzMTROa64Q3s\"",
+ "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/PcGCRF9QnKtKtO3xzMTROa64Q3s\"",
  "discoveryVersion": "v1",
  "id": "tribunalEndpoint:v1",
  "name": "tribunalEndpoint",
