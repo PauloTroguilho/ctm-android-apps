@@ -80,14 +80,14 @@ public class CloudEndpointUtils {
   }
 
   /**
-   * Logs the given message and shows an error alert dialog with it.
+   * Logs the given mensagem and shows an error alert dialog with it.
    * 
    * @param activity
    *            activity
    * @param tag
    *            log tag to use
-   * @param message
-   *            message to log and show or {@code null} for none
+   * @param mensagem
+   *            mensagem to log and show or {@code null} for none
    */
   public static void logAndShow(Activity activity, String tag, String message) {
     Log.e(tag, message);
@@ -96,7 +96,7 @@ public class CloudEndpointUtils {
 
   /**
    * Logs the given throwable and shows an error alert dialog with its
-   * message.
+   * mensagem.
    * 
    * @param activity
    *            activity
@@ -121,12 +121,12 @@ public class CloudEndpointUtils {
   }
 
   /**
-   * Shows an error alert dialog with the given message.
+   * Shows an error alert dialog with the given mensagem.
    * 
    * @param activity
    *            activity
-   * @param message
-   *            message to show or {@code null} for none
+   * @param mensagem
+   *            mensagem to show or {@code null} for none
    */
   public static void showError(final Activity activity, String message) {
     final String errorMessage = message == null ? "Error" : "[Error ] "

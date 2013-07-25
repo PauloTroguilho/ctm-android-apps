@@ -1,5 +1,6 @@
 package com.ctm.eadvogado;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -136,12 +137,22 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 		@Override
 		protected List<Tribunal> doInBackground(Void... params) {
 			List<Tribunal> tribunais = new ArrayList<Tribunal>();
-			try {
-				tribunais = tribunalEndpoint.listAll().set("sortField", "sigla").set("sortOrder", "ASC").execute().getItems();
-				dbHelper.inserirTribunais(tribunais);
-			} catch (Exception e) {
-				Log.e("E-Advogado",
-						"Falha ao carregar tribunais pelo servico", e);
+			int maxTries = 3;
+			int attempt = 0;
+			while (attempt < maxTries) {
+				try {
+					tribunais = tribunalEndpoint.listAll()
+							.set("sortField", "sigla")
+							.set("sortOrder", "ASC")
+							.execute().getItems();
+					dbHelper.inserirTribunais(tribunais);
+				} catch (IOException e) {
+					Log.e("E-Advogado", "Falha ao carregar tribunais pelo servico", e);
+				}
+				if (!tribunais.isEmpty()) {
+					break;
+				}
+				attempt++;
 			}
 			return tribunais;
 		}
@@ -181,24 +192,26 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 		@Override
 		protected ProcessoDTO doInBackground(Void... params) {
 			ProcessoDTO processoDTO = null;
-			Tribunal tribunal = (Tribunal) mSpinnerTribunais.getAdapter()
-					.getItem(mSpinnerTribunais.getSelectedItemPosition());
-			TipoJuizo tipoJuizo = (TipoJuizo) mSpinnerTipoJuizo.getSelectedItem();
-			Processo processo = null;
-			try {
-				processo = processoEndpoint.consultarProcesso(
-						mEditTextNPU.getText().toString().replaceAll("[.-]", ""),
-						tribunal.getKey().getId(), tipoJuizo.name(), false)
-						.execute();
-			} catch (Exception e) {
-				erroComm = true;
-				Log.e("E-Advogado",
-						"Falha ao carregar processo pelo servico", e);
-			}
-			if (processo != null && processo.getNpu() != null) {
-				processoDTO = new ProcessoDTO();
-				processoDTO.setTribunal(tribunal);
-				processoDTO.setProcesso(processo);
+			if (!mSpinnerTribunais.getAdapter().isEmpty()) {
+				Tribunal tribunal = (Tribunal) mSpinnerTribunais.getAdapter().getItem(
+						mSpinnerTribunais.getSelectedItemPosition());
+				TipoJuizo tipoJuizo = (TipoJuizo) mSpinnerTipoJuizo.getSelectedItem();
+				Processo processo = null;
+				try {
+					processo = processoEndpoint.consultarProcesso(
+							mEditTextNPU.getText().toString().replaceAll("[.-]", ""),
+							tribunal.getKey().getId(), tipoJuizo.name(), false)
+							.execute();
+				} catch (Exception e) {
+					erroComm = true;
+					Log.e("E-Advogado",
+							"Falha ao carregar processo pelo servico", e);
+				}
+				if (processo != null && processo.getNpu() != null) {
+					processoDTO = new ProcessoDTO();
+					processoDTO.setTribunal(tribunal);
+					processoDTO.setProcesso(processo);
+				}
 			}
 			return processoDTO;
 		}
