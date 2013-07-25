@@ -55,6 +55,10 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 				&& usuario.getSenha().equals(
 						DigestUtils.sha256Hex(senha))) {
 			usuario.setSaldo(lancamentoDao.getSaldoLancamentos(usuario));
+			logger.info(String.format(
+					"Usuário %s autenticado. Tipo Conta: %s. Saldo: %s",
+					usuario.getEmail(), usuario.getTipoConta(),
+					usuario.getSaldo()));
 			return usuario;
 		} else {
 			throw new SecurityException("usuario.autenticacao.senhaInvalida");
