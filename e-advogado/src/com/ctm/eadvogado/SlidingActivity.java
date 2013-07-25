@@ -368,4 +368,11 @@ public class SlidingActivity extends SherlockFragmentActivity implements
 			formView.setVisibility(show ? View.GONE : View.VISIBLE);
 		}
 	}
+	
+	protected String getEmail() {
+		return preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, "");
+	}
+	protected String getSenha() {
+		return preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, "");
+	}
 }

@@ -20,7 +20,7 @@ import com.google.api.client.json.jackson.JacksonFactory;
  * This class is started up as a service of the Android application. It listens
  * for Google Cloud Messaging (GCM) messages directed to this device.
  * 
- * When the device is successfully registered for GCM, a message is sent to the
+ * When the device is successfully registered for GCM, a mensagem is sent to the
  * App Engine backend via Cloud Endpoints, indicating that it wants to receive
  * broadcast messages from the it.
  * 
@@ -86,7 +86,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	 * @param context
 	 *            the Context
 	 * @param errorId
-	 *            an error message
+	 *            an error mensagem
 	 */
 	@Override
 	public void onError(Context context, String errorId) {
@@ -105,14 +105,14 @@ public class GCMIntentService extends GCMBaseIntentService {
 	}
 
 	/**
-	 * Called when a cloud message has been received.
+	 * Called when a cloud mensagem has been received.
 	 */
 	@Override
 	public void onMessage(Context context, Intent intent) {
 		sendNotificationIntent(
 				context,
 				"Message received via Google Cloud Messaging:\n\n"
-						+ intent.getStringExtra("message"), true, false);
+						+ intent.getStringExtra("mensagem"), true, false);
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		try {
 			if (!alreadyRegisteredWithEndpointServer) {
 				/*
-				 * We are not registered as yet. Send an endpoint message
+				 * We are not registered as yet. Send an endpoint mensagem
 				 * containing the GCM registration id and some of the device's
 				 * product information over to the backend. Then, we'll be
 				 * registered.
@@ -195,7 +195,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 						+ "Device registration with Cloud Endpoints Server running at  "
 						+ endpoint.getRootUrl()
 						+ " succeeded!\n\n"
-						+ "To send a message to this device, "
+						+ "To send a mensagem to this device, "
 						+ "open your browser and navigate to the sample application at "
 						+ getWebSampleUrl(endpoint.getRootUrl()), false, true);
 	}
@@ -249,13 +249,13 @@ public class GCMIntentService extends GCMBaseIntentService {
 	 * 
 	 * @param context
 	 *            the application context
-	 * @param message
-	 *            the message to send
+	 * @param mensagem
+	 *            the mensagem to send
 	 * @param isError
-	 *            true if the message is an error-related message; false
+	 *            true if the mensagem is an error-related mensagem; false
 	 *            otherwise
 	 * @param isRegistrationMessage
-	 *            true if this message is related to registration/unregistration
+	 *            true if this mensagem is related to registration/unregistration
 	 */
 	private void sendNotificationIntent(Context context, String message,
 			boolean isError, boolean isRegistrationMessage) {
@@ -264,7 +264,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		notificationIntent.putExtra("registrationMessage",
 				isRegistrationMessage);
 		notificationIntent.putExtra("error", isError);
-		notificationIntent.putExtra("message", message);
+		notificationIntent.putExtra("mensagem", message);
 		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(notificationIntent);
 	}

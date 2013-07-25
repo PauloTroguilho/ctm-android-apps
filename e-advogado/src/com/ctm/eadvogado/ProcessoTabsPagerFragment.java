@@ -43,6 +43,7 @@ import com.ctm.eadvogado.fragment.TabProcessoMovimentoFragment;
 import com.ctm.eadvogado.fragment.TabProcessoPolosFragment;
 import com.ctm.eadvogado.util.Consts;
 import com.ctm.eadvogado.util.EndpointUtils;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
 /**
  * Demonstrates combining a TabHost with a ViewPager to implement a tab UI that
@@ -242,6 +243,7 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 	public class SalvarProcessoTask extends AsyncTask<Void, Void, Boolean> {
 		
 		boolean isProcessoSalvo = false;
+		String mensagem = "";
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
@@ -252,9 +254,16 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 						processoResult.getProcesso().getKey().getId()).execute();
 				result = Boolean.TRUE;
 				dbHelper.insertProcessoSeNaoExiste(processoResult.getProcesso());
+			} catch(GoogleJsonResponseException e) {
+				Log.e(TAG, "Erro ao executar a operação!", e);
+				mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
+						e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
+			} catch (IOException e) {
+				Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
+				mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
 			} catch(Exception e) {
-				result = Boolean.FALSE;
-				Log.e(TAG, "Falha ao inserir processo no BD.", e);
+				Log.e(TAG, "Erro inesperado!", e);
+				mensagem = getString(R.string.msg_erro_inesperado);
 			}
 			return result;
 		}
@@ -268,8 +277,7 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 				isProcessoSalvo = true;
 			} else {
 				Toast.makeText(ProcessoTabsPagerFragment.this,
-						R.string.msg_processo_inserido_erro,
-						Toast.LENGTH_LONG).show();
+						mensagem, Toast.LENGTH_LONG).show();
 			}
 			setSupportProgressBarIndeterminateVisibility(false);
 			setControlsEnabled(true);

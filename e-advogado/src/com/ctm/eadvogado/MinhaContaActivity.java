@@ -119,13 +119,6 @@ public class MinhaContaActivity extends SlidingActivity {
 		doCarregarMinhaConta();
 	}
 	
-	private String getEmail() {
-		return preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, "");
-	}
-	private String getSenha() {
-		return preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, "");
-	}
-	
 	private void setUpInAppBilling() {
 		String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo4oE0XJZUc2OrTAFXswN13u/TjEKLUewEmAyP/Mnq8F9QYNQwKK5vUXlC5a3zQJ/HBPO25cIcfEX2rwMiQKCkBdPUKLx3LRP+M85xrYgFWcOP1GK8HNFyMF2MJZpblxhW2Yx6D36FYFhfzfkpY9eUDNY7rH26p/5xcVsuRwFG0iogvM91WT/YiOe4voj3uw3g9cSmFpGzZ85GT4RG4FcmhhlKyXIVgmaqnks1np/9ijJ/v970HW+iz5e1r2cj6cox0N7ZFSLGZ7G0ZDGREe2xh8K9VaQiJ4JRhYIAOcakQL4rd1OF08LH7wJ5dR0qMAZuW6GbCdxlqb5FCP1Ls9x7wIDAQAB";
 		// Create the helper, passing it our context and the public key to verify signatures with

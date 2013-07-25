@@ -1,5 +1,7 @@
 package com.ctm.eadvogado;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Intent;
@@ -22,14 +24,15 @@ import com.ctm.eadvogado.dto.ProcessoDTO;
 import com.ctm.eadvogado.endpoints.processoEndpoint.ProcessoEndpoint;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.ProcessoUsuario;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.json.jackson.JacksonFactory;
+import com.ctm.eadvogado.endpoints.tribunalEndpoint.TribunalEndpoint;
+import com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Tribunal;
+import com.ctm.eadvogado.util.EndpointUtils;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
 public class MeusProcessosActivity extends SlidingActivity {
 	
 	private ProcessoEndpoint processoEndpoint;
+	private TribunalEndpoint tribunalEndpoint;
 	private EAdvogadoDbHelper dbHelper;
 	
 	private ConsultarMeusProcessosTask consultarMeusProcessosTask;
@@ -45,13 +48,8 @@ public class MeusProcessosActivity extends SlidingActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		dbHelper = new EAdvogadoDbHelper(this);
-		ProcessoEndpoint.Builder procEndpointBuilder = new ProcessoEndpoint.Builder(
-		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
-		        new HttpRequestInitializer() {
-		          public void initialize(HttpRequest httpRequest) {
-		          }
-		        });
-		processoEndpoint = CloudEndpointUtils.updateBuilder(procEndpointBuilder).build();
+		processoEndpoint = EndpointUtils.initProcessoEndpoint();
+		tribunalEndpoint = EndpointUtils.initTribunalEndpoint();
 		
 		setContentView(R.layout.activity_meus_processos);
 		initAdmobBanner(R.id.adView);
@@ -122,23 +120,33 @@ public class MeusProcessosActivity extends SlidingActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	
-	
 	/**
 	 * @author Cleber
 	 *
 	 */
 	public class ConsultarMeusProcessosTask extends AsyncTask<Void, Void, List<ProcessoUsuario>> {
+		
+		String mensagem = "";
+		
 		@Override
 		protected List<ProcessoUsuario> doInBackground(Void... params) {
 			List<ProcessoUsuario> processos = null;
-			try {
-				processos = processoEndpoint.consultarProcessosDoUsuario(
-						preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, ""), 
-						preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, "")).execute().getItems();
-			} catch (Exception e) {
-				Log.e(TAG,
-						"Falha ao carregar processos meus processos", e);
+			int tries = 3;
+			int attempt = 0;
+			while (attempt < tries) {
+				try {
+					processos = processoEndpoint.consultarProcessosDoUsuario(
+							getEmail(), getSenha()).execute().getItems();
+					break;
+				} catch(GoogleJsonResponseException e) {
+					Log.e(TAG, "Erro ao executar a operação!", e);
+					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
+							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
+				} catch (IOException e) {
+					Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
+					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
+				}
+				attempt++;
 			}
 			return processos;
 		}
@@ -153,9 +161,14 @@ public class MeusProcessosActivity extends SlidingActivity {
 						R.layout.processo_list_item, processos);
 				processosListView.setAdapter(processoAdapter);
 			} else {
-				Toast.makeText(MeusProcessosActivity.this,
-						R.string.msg_nenhum_processo_cadastrado,
-						Toast.LENGTH_LONG).show();
+				if (mensagem.length() == 0) {
+					Toast.makeText(MeusProcessosActivity.this,
+							R.string.msg_nenhum_processo_cadastrado,
+							Toast.LENGTH_LONG).show();
+				} else {
+					Toast.makeText(MeusProcessosActivity.this,
+							mensagem, Toast.LENGTH_LONG).show();
+				}
 			}
 		}
 
@@ -182,9 +195,22 @@ public class MeusProcessosActivity extends SlidingActivity {
 						"Falha ao carregar processo pelo servico", e);
 			}
 			if (processo != null) {
+				Tribunal tribunal = dbHelper.selectTribunalPorId(params[0].getIdTribunal());
+				if (tribunal == null) {
+					List<Tribunal> tribunais = new ArrayList<Tribunal>();
+					try {
+						tribunais = tribunalEndpoint.listAll()
+								.set("sortField", "sigla")
+								.set("sortOrder", "ASC")
+								.execute().getItems();
+						dbHelper.inserirTribunais(tribunais);
+					} catch (IOException e) {
+						Log.e("E-Advogado", "Falha ao carregar tribunais pelo servico", e);
+					}
+					tribunal = dbHelper.selectTribunalPorId(params[0].getIdTribunal());
+				}
 				processoDTO = new ProcessoDTO();
-				processoDTO.setTribunal(dbHelper.selectTribunalPorId(
-						params[0].getIdTribunal()));
+				processoDTO.setTribunal(tribunal);
 				processoDTO.setProcesso(processo);
 			}
 			return processoDTO;
