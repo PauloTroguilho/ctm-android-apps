@@ -42,6 +42,40 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "usuarioEndpoint.notificarMovimentacaoProcessual" : {
+      "path" : "notificarMovimentacaoProcessual/{npu}/{idTribunal}/{tipoJuizo}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.notificarMovimentacaoProcessual",
+      "request" : {
+        "parameters" : {
+          "npu" : {
+            "type" : "string",
+            "required" : true
+          },
+          "idTribunal" : {
+            "type" : "int64",
+            "required" : true
+          },
+          "tipoJuizo" : {
+            "enum" : {
+              "PRIMEIRO_GRAU" : {
+              },
+              "SEGUNDO_GRAU" : {
+              }
+            },
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
     "usuarioEndpoint.autenticar" : {
       "path" : "autenticar/{email}/{senha}",
       "httpMethod" : "POST",
@@ -264,6 +298,8 @@
         "response" : {
           "$ref" : "Usuario"
         }
+      },
+      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.notificarMovimentacaoProcessual" : {
       },
       "com.ctm.eadvogado.endpoints.UsuarioEndpoint.autenticar" : {
         "response" : {

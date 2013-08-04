@@ -4,6 +4,7 @@
 package com.ctm.eadvogado.negocio;
 
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.inject.Inject;
@@ -18,6 +19,7 @@ import com.ctm.eadvogado.dao.UsuarioDao;
 import com.ctm.eadvogado.exception.DAOException;
 import com.ctm.eadvogado.interceptors.Transacional;
 import com.ctm.eadvogado.model.Lancamento;
+import com.ctm.eadvogado.model.Processo;
 import com.ctm.eadvogado.model.TipoConta;
 import com.ctm.eadvogado.model.TipoLancamento;
 import com.ctm.eadvogado.model.Usuario;
@@ -95,6 +97,14 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 	 */
 	public Usuario findByEmail(String email) throws PersistenceException, NoResultException {
 		return getDao().findByEmail(email);
+	}
+	
+	/**
+	 * @param processo
+	 * @return
+	 */
+	public List<Usuario> findByProcesso(Processo processo) {
+		return getDao().findByProcesso(processo);
 	}
 	
 }

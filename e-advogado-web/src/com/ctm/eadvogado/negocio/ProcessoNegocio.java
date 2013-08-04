@@ -17,6 +17,7 @@ import com.ctm.eadvogado.dao.LancamentoDao;
 import com.ctm.eadvogado.dao.ProcessoDao;
 import com.ctm.eadvogado.dao.TribunalDao;
 import com.ctm.eadvogado.dao.UsuarioDao;
+import com.ctm.eadvogado.dao.UsuarioProcessoDao;
 import com.ctm.eadvogado.exception.DAOException;
 import com.ctm.eadvogado.exception.NegocioException;
 import com.ctm.eadvogado.interceptors.Transacional;
@@ -27,6 +28,7 @@ import com.ctm.eadvogado.model.TipoJuizo;
 import com.ctm.eadvogado.model.TipoLancamento;
 import com.ctm.eadvogado.model.Tribunal;
 import com.ctm.eadvogado.model.Usuario;
+import com.ctm.eadvogado.model.UsuarioProcesso;
 import com.ctm.eadvogado.util.CacheUtils;
 import com.ctm.eadvogado.util.PJeServiceUtil;
 import com.google.api.server.spi.response.NotFoundException;
@@ -52,6 +54,8 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	private UsuarioDao usuarioDao;
 	@Inject
 	private TribunalDao tribunalDao;
+	@Inject
+	private UsuarioProcessoDao usuarioProcessoDao;
 
 	@Override
 	@Inject
@@ -97,15 +101,26 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 		Long saldoLancamentos = lancamentoDao.getSaldoLancamentos(usuario);
 		if (saldoLancamentos.longValue() > 0 || 
 					usuario.getTipoConta().equals(TipoConta.PREMIUM)) {
-			Lancamento lancamento = new Lancamento();
-			lancamento.setData(new Date());
-			lancamento.setQuantidade(1);
-			lancamento.setTipo(TipoLancamento.DEBITO);
-			lancamento.setUsuario(usuario.getKey());
-			lancamentoDao.insert(lancamento);
 			Processo processo = findByID(idProcesso);
-			usuario.getProcessos().add(processo.getKey());
-			usuarioDao.update(usuario);
+			Long idUsuario = usuario.getKey().getId();
+			UsuarioProcesso usuarioProcesso = usuarioProcessoDao.selectPorUsuarioProcesso(idUsuario, idProcesso);
+			if (usuarioProcesso == null) {
+				Lancamento lancamento = new Lancamento();
+				lancamento.setData(new Date());
+				lancamento.setQuantidade(1);
+				lancamento.setTipo(TipoLancamento.DEBITO);
+				lancamento.setUsuario(usuario.getKey());
+				lancamentoDao.insert(lancamento);
+				
+				usuario.getProcessos().add(processo.getKey());
+				usuarioDao.update(usuario);
+				
+				usuarioProcesso = new UsuarioProcesso();
+				usuarioProcesso.setUsuario(usuario.getKey());
+				usuarioProcesso.setProcesso(processo.getKey());
+				usuarioProcessoDao.insert(usuarioProcesso);
+			}
+			
 		} else {
 			throw new NegocioException("erro.negocio.saldoInsuficiente");
 		}

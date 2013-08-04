@@ -6,15 +6,15 @@ package com.ctm.eadvogado.negocio;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.ctm.eadvogado.dao.DeviceInfoDao;
-import com.ctm.eadvogado.model.DeviceInfo;
+import com.ctm.eadvogado.dao.UsuarioProcessoDao;
+import com.ctm.eadvogado.model.UsuarioProcesso;
 
 /**
  * @author Cleber
- *
+ * 
  */
 @Named
-public class DeviceInfoNegocio extends BaseNegocio<DeviceInfo, DeviceInfoDao> {
+public class UsuarioProcessoNegocio extends BaseNegocio<UsuarioProcesso, UsuarioProcessoDao> {
 
 	/**
 	 * 
@@ -23,7 +23,7 @@ public class DeviceInfoNegocio extends BaseNegocio<DeviceInfo, DeviceInfoDao> {
 	
 	@Override
 	@Inject
-	public void setDao(DeviceInfoDao dao) {
+	public void setDao(UsuarioProcessoDao dao) {
 		super.setDao(dao);
 	}
 
