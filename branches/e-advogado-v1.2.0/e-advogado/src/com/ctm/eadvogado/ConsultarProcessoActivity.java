@@ -19,17 +19,14 @@ import android.widget.Toast;
 import com.ctm.eadvogado.adapters.TipoJuizoAdapter;
 import com.ctm.eadvogado.adapters.TribunalAdapter;
 import com.ctm.eadvogado.db.EAdvogadoDbHelper;
-import com.ctm.eadvogado.dto.ProcessoDTO;
 import com.ctm.eadvogado.dto.TipoJuizo;
 import com.ctm.eadvogado.endpoints.processoEndpoint.ProcessoEndpoint;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
 import com.ctm.eadvogado.endpoints.tribunalEndpoint.TribunalEndpoint;
 import com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Tribunal;
+import com.ctm.eadvogado.util.EndpointUtils;
 import com.ctm.eadvogado.util.Mask;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.json.jackson.JacksonFactory;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
 public class ConsultarProcessoActivity extends SlidingActivity {
 
@@ -44,6 +41,8 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 	private Spinner mSpinnerTribunais;
 	private Spinner mSpinnerTipoJuizo;
 	private EditText mEditTextNPU;
+	
+	private static boolean isTribunaisCarregados = false;
 
 	CarregarDadosConsultaTask carregarTask = null;
 	ConsultarProcessoTask consultarProcessoTask = null;
@@ -52,20 +51,9 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		dbHelper = new EAdvogadoDbHelper(this);
-		ProcessoEndpoint.Builder procEndpointBuilder = new ProcessoEndpoint.Builder(
-		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
-		        new HttpRequestInitializer() {
-		          public void initialize(HttpRequest httpRequest) {
-		          }
-		        });
-		processoEndpoint = CloudEndpointUtils.updateBuilder(procEndpointBuilder).build();
-		TribunalEndpoint.Builder tribEndpointBuilder = new TribunalEndpoint.Builder(
-		        AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
-		        new HttpRequestInitializer() {
-		          public void initialize(HttpRequest httpRequest) {
-		          }
-		        });
-		tribunalEndpoint = CloudEndpointUtils.updateBuilder(tribEndpointBuilder).build();
+		
+		processoEndpoint = EndpointUtils.initProcessoEndpoint();
+		tribunalEndpoint = EndpointUtils.initTribunalEndpoint();
 		
 		setTitle(R.string.activity_consultar_processo_title);
 		setContentView(R.layout.activity_consultar_processo);
@@ -98,6 +86,11 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 	 */
 	public void consultarProcessos() {
 		if (consultarProcessoTask != null) {
+			alert("Por favor, aguarde! Sua consulta está sendo processada.");
+			return;
+		}
+		if (mSpinnerTribunais.getAdapter().isEmpty()) {
+			alert("Não foi possível carregar a lista de tribunais! Por favor, tente novamente.");
 			return;
 		}
 		// Show a progress spinner, and kick off a background task to
@@ -105,7 +98,13 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 		mConsultarStatusMessageView.setText(R.string.msg_consultando_processos);
 		showProgress(true, mConsultarStatusView, mConsultarFormView);
 		consultarProcessoTask = new ConsultarProcessoTask();
-		consultarProcessoTask.execute((Void) null);
+		
+		Tribunal tribunal = (Tribunal) mSpinnerTribunais.getAdapter().getItem(
+				mSpinnerTribunais.getSelectedItemPosition());
+		TipoJuizo tipoJuizo = (TipoJuizo) mSpinnerTipoJuizo.getSelectedItem();
+		String npu = mEditTextNPU.getText().toString();
+		
+		consultarProcessoTask.execute(tribunal.getKey().getId().toString(), tipoJuizo.name(), npu);
 	}
 
 	/**
@@ -137,22 +136,31 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 		@Override
 		protected List<Tribunal> doInBackground(Void... params) {
 			List<Tribunal> tribunais = new ArrayList<Tribunal>();
-			int maxTries = 3;
-			int attempt = 0;
-			while (attempt < maxTries) {
+			if (!isTribunaisCarregados) {
+				int maxTries = 3;
+				int attempt = 0;
+				while (attempt < maxTries) {
+					try {
+						tribunais = tribunalEndpoint.listAll()
+								.set("sortField", "sigla")
+								.set("sortOrder", "ASC")
+								.execute().getItems();
+						dbHelper.inserirTribunais(tribunais);
+						isTribunaisCarregados = true;
+					} catch (IOException e) {
+						Log.e(TAG, "Falha ao carregar tribunais pelo servico", e);
+					}
+					if (!tribunais.isEmpty()) {
+						break;
+					}
+					attempt++;
+				}
+			} else {
 				try {
-					tribunais = tribunalEndpoint.listAll()
-							.set("sortField", "sigla")
-							.set("sortOrder", "ASC")
-							.execute().getItems();
-					dbHelper.inserirTribunais(tribunais);
-				} catch (IOException e) {
-					Log.e("E-Advogado", "Falha ao carregar tribunais pelo servico", e);
+					tribunais = dbHelper.selectTribunais();
+				} catch(Exception e) {
+					Log.e(TAG, "Falha ao carregar tribunais do BD", e);
 				}
-				if (!tribunais.isEmpty()) {
-					break;
-				}
-				attempt++;
 			}
 			return tribunais;
 		}
@@ -185,57 +193,61 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 	 * @author Cleber
 	 *
 	 */
-	public class ConsultarProcessoTask extends AsyncTask<Void, Void, ProcessoDTO> {
+	public class ConsultarProcessoTask extends AsyncTask<String, Void, Processo> {
 		
-		boolean erroComm = false;
+		String mensagem = "";
 
 		@Override
-		protected ProcessoDTO doInBackground(Void... params) {
-			ProcessoDTO processoDTO = null;
-			if (!mSpinnerTribunais.getAdapter().isEmpty()) {
-				Tribunal tribunal = (Tribunal) mSpinnerTribunais.getAdapter().getItem(
-						mSpinnerTribunais.getSelectedItemPosition());
-				TipoJuizo tipoJuizo = (TipoJuizo) mSpinnerTipoJuizo.getSelectedItem();
-				Processo processo = null;
+		protected Processo doInBackground(String... params) {
+			Tribunal tribunal = (Tribunal) mSpinnerTribunais.getAdapter().getItem(
+					mSpinnerTribunais.getSelectedItemPosition());
+			Long idTribunal = params[0] != null ? Long.parseLong(params[0]) : null;
+			String tipoJuizo = params[1];
+			String npu = params[2];
+			Processo processo = null;
+			int tries = 3;
+			int attempt = 0;
+			while (attempt < tries) {
 				try {
 					processo = processoEndpoint.consultarProcesso(
-							mEditTextNPU.getText().toString().replaceAll("[.-]", ""),
-							tribunal.getKey().getId(), tipoJuizo.name(), false)
-							.execute();
-				} catch (Exception e) {
-					erroComm = true;
-					Log.e("E-Advogado",
-							"Falha ao carregar processo pelo servico", e);
+							npu.replaceAll("[.-]", ""), idTribunal, tipoJuizo,
+							false).execute();
+					processo.put("tribunal.nome", tribunal.getNome());
+					processo.put("tribunal.sigla", tribunal.getSigla());
+					break;
+				} catch(GoogleJsonResponseException e) {
+					Log.e(TAG, "Erro ao executar a operação!", e);
+					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
+							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
+				} catch (IOException e) {
+					Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
+					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
 				}
-				if (processo != null && processo.getNpu() != null) {
-					processoDTO = new ProcessoDTO();
-					processoDTO.setTribunal(tribunal);
-					processoDTO.setProcesso(processo);
-				}
+				attempt++;
 			}
-			return processoDTO;
+			
+			return processo;
 		}
 
 		@Override
-		protected void onPostExecute(ProcessoDTO processoDTO) {
+		protected void onPostExecute(Processo processo) {
 			consultarProcessoTask = null;
 			showProgress(false, mConsultarStatusView, mConsultarFormView);
 
-			if (processoDTO != null) {
-				ProcessoTabsPagerFragment.processoResult = processoDTO;
+			if (processo != null) {
+				ProcessoTabsPagerFragment.processoResult = processo;
 				Intent intent = new Intent();
 				intent.setClass(ConsultarProcessoActivity.this,
 						ProcessoTabsPagerFragment.class);
 				startActivity(intent);
 			} else {
-				if (!erroComm) {
+				if (mensagem.length() == 0) {
 					Toast.makeText(ConsultarProcessoActivity.this,
-							R.string.msg_processo_nao_encontrado,
+							R.string.msg_erro_inesperado,
 							Toast.LENGTH_LONG).show();
 				} else {
 					Toast.makeText(ConsultarProcessoActivity.this,
-							R.string.msg_nao_foi_possivel_carregar_dados,
-							Toast.LENGTH_LONG).show();
+							mensagem, Toast.LENGTH_LONG).show();
 				}
 				
 			}
@@ -249,4 +261,12 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 	}
 	
 
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		if (intent.getBooleanExtra("gcmIntentServiceMessage", false)) {
+			
+			
+		}
+	}
 }

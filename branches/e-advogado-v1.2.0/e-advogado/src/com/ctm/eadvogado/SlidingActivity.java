@@ -21,6 +21,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.ctm.eadvogado.util.Consts;
+import com.ctm.eadvogado.util.MessageUtils;
 import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
@@ -375,4 +376,11 @@ public class SlidingActivity extends SherlockFragmentActivity implements
 	protected String getSenha() {
 		return preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, "");
 	}
+	
+	/**
+	 * @param message
+	 */
+	protected void alert(String message) {
+        MessageUtils.alert(message, this);
+    }
 }

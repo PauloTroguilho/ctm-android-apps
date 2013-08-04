@@ -10,15 +10,15 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.ctm.eadvogado.R;
-import com.ctm.eadvogado.dto.ProcessoDTO;
 import com.ctm.eadvogado.dto.TipoJuizo;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
 
-public class ProcessoAdapter extends ArrayAdapter<ProcessoDTO> {
+public class ProcessoAdapter extends ArrayAdapter<Processo> {
 
 	// Your sent context
 	private LayoutInflater inflator;
 	// Your custom values for the spinner (User)
-	private List<ProcessoDTO> values;
+	private List<Processo> values;
 
 	/**
 	 * @param context
@@ -26,7 +26,7 @@ public class ProcessoAdapter extends ArrayAdapter<ProcessoDTO> {
 	 * @param values
 	 */
 	public ProcessoAdapter(Context context, int textViewResourceId,
-			List<ProcessoDTO> values) {
+			List<Processo> values) {
 		super(context, textViewResourceId, values);
 		this.values = values;
 		inflator = (LayoutInflater) context
@@ -37,12 +37,12 @@ public class ProcessoAdapter extends ArrayAdapter<ProcessoDTO> {
 		return values.size();
 	}
 
-	public ProcessoDTO getItem(int position) {
+	public Processo getItem(int position) {
 		return values.get(position);
 	}
 
 	public long getItemId(int position) {
-		return getItem(position).getProcesso().getKey().getId();
+		return getItem(position).getKey().getId();
 	}
 
 	@Override
@@ -54,13 +54,13 @@ public class ProcessoAdapter extends ArrayAdapter<ProcessoDTO> {
 		TextView tvTipoJuizo = (TextView) view
 				.findViewById(R.id.textViewTipoJuizo);
 
-		ProcessoDTO item = getItem(position);
-		String npu = item.getProcesso().getNpu();
+		Processo item = getItem(position);
+		String npu = item.getNpu();
 		tvNPU.setText(String.format("%s-%s.%s.%s.%s.%s", npu.substring(0, 7),
 				npu.substring(7, 9), npu.substring(9, 13), npu.substring(13, 14),
 				npu.substring(14, 16), npu.substring(16)));
-		tvTribunal.setText(item.getTribunal().getSigla());
-		if (item.getProcesso().getTipoJuizo().equals(TipoJuizo.PRIMEIRO_GRAU.name())) {
+		tvTribunal.setText(item.get("tribunal.sigla").toString());
+		if (item.getTipoJuizo().equals(TipoJuizo.PRIMEIRO_GRAU.name())) {
 			tvTipoJuizo.setText(R.string.processo_tipoJuizo_1g);
 		} else {
 			tvTipoJuizo.setText(R.string.processo_tipoJuizo_2g);

@@ -20,8 +20,8 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.ctm.eadvogado.adapters.ProcessoUsuarioAdapter;
 import com.ctm.eadvogado.db.EAdvogadoDbHelper;
-import com.ctm.eadvogado.dto.ProcessoDTO;
 import com.ctm.eadvogado.endpoints.processoEndpoint.ProcessoEndpoint;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.Key;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.ProcessoUsuario;
 import com.ctm.eadvogado.endpoints.tribunalEndpoint.TribunalEndpoint;
@@ -137,6 +137,18 @@ public class MeusProcessosActivity extends SlidingActivity {
 				try {
 					processos = processoEndpoint.consultarProcessosDoUsuario(
 							getEmail(), getSenha()).execute().getItems();
+					for (ProcessoUsuario processoUsuario : processos) {
+						Processo p = new Processo();
+						p.setNpu(processoUsuario.getNpu());
+						p.setTipoJuizo(processoUsuario.getTipoJuizo());
+						p.setTribunal(new Key());
+						p.getTribunal().setId(processoUsuario.getIdTribunal());
+						try {
+							dbHelper.insertProcessoSeNaoExiste(p);
+						} catch (Exception e) {
+							Log.e(TAG, "Falha ao inserir processo do usuario.");
+						}
+					}
 					break;
 				} catch(GoogleJsonResponseException e) {
 					Log.e(TAG, "Erro ao executar a operação!", e);
@@ -179,11 +191,10 @@ public class MeusProcessosActivity extends SlidingActivity {
 		}
 	}
 	
-	public class ConsultarMeuProcessoTask extends AsyncTask<ProcessoUsuario, Void, ProcessoDTO> {
+	public class ConsultarMeuProcessoTask extends AsyncTask<ProcessoUsuario, Void, Processo> {
 
 		@Override
-		protected ProcessoDTO doInBackground(ProcessoUsuario... params) {
-			ProcessoDTO processoDTO = null;
+		protected Processo doInBackground(ProcessoUsuario... params) {
 			Processo processo = null;
 			try {
 				processo = processoEndpoint.consultarProcesso(
@@ -198,31 +209,35 @@ public class MeusProcessosActivity extends SlidingActivity {
 				Tribunal tribunal = dbHelper.selectTribunalPorId(params[0].getIdTribunal());
 				if (tribunal == null) {
 					List<Tribunal> tribunais = new ArrayList<Tribunal>();
-					try {
-						tribunais = tribunalEndpoint.listAll()
-								.set("sortField", "sigla")
-								.set("sortOrder", "ASC")
-								.execute().getItems();
-						dbHelper.inserirTribunais(tribunais);
-					} catch (IOException e) {
-						Log.e("E-Advogado", "Falha ao carregar tribunais pelo servico", e);
+					int tries = 3;
+					int attempt = 0;
+					while (attempt < tries) {
+						try {
+							tribunais = tribunalEndpoint.listAll()
+									.set("sortField", "sigla")
+									.set("sortOrder", "ASC")
+									.execute().getItems();
+							dbHelper.inserirTribunais(tribunais);
+							tribunal = dbHelper.selectTribunalPorId(params[0].getIdTribunal());
+							break;
+						} catch (IOException e) {
+							Log.e("E-Advogado", "Falha ao carregar tribunais pelo servico", e);
+						}
 					}
-					tribunal = dbHelper.selectTribunalPorId(params[0].getIdTribunal());
 				}
-				processoDTO = new ProcessoDTO();
-				processoDTO.setTribunal(tribunal);
-				processoDTO.setProcesso(processo);
+				processo.put("tribunal.sigla", tribunal.getSigla());
+				processo.put("tribunal.nome", tribunal.getSigla());
 			}
-			return processoDTO;
+			return processo;
 		}
 
 		@Override
-		protected void onPostExecute(ProcessoDTO processoDTO) {
+		protected void onPostExecute(Processo processo) {
 			consultarProcessoTask = null;
 			showProgress(false, statusView, listarFormView);
 
-			if (processoDTO != null) {
-				ProcessoTabsPagerFragment.processoResult = processoDTO;
+			if (processo != null) {
+				ProcessoTabsPagerFragment.processoResult = processo;
 				Intent intent = new Intent();
 				intent.setClass(MeusProcessosActivity.this,
 						ProcessoTabsPagerFragment.class);

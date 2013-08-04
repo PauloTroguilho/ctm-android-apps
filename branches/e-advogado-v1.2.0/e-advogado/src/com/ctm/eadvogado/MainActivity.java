@@ -2,6 +2,7 @@ package com.ctm.eadvogado;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -10,6 +11,7 @@ import android.widget.ListView;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.ctm.eadvogado.util.MessageUtils;
 
 public class MainActivity extends SlidingActivity {
 	
@@ -43,6 +45,18 @@ public class MainActivity extends SlidingActivity {
 				
 			}
 		});
+		
+		try {
+			GCMIntentService.register(getApplicationContext());
+		} catch (Exception e) {
+		    Log.e(TAG,
+		        "Exception received when attempting to register for Google Cloud "
+				+ "Messaging. Perhaps you need to set your virtual device's "
+				+ " target to Google APIs? "
+				+ "See https://developers.google.com/eclipse/docs/cloud_endpoints_android"
+				+ " for more information.", e);
+		    MessageUtils.alert("Não foi possivel registrar no GCM", this);
+		}
 	}
 	
 	@Override

@@ -17,9 +17,12 @@ package com.ctm.eadvogado;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -35,9 +38,10 @@ import android.widget.Toast;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.ctm.eadvogado.db.EAdvogadoDbHelper;
-import com.ctm.eadvogado.dto.ProcessoDTO;
 import com.ctm.eadvogado.endpoints.processoEndpoint.ProcessoEndpoint;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
+import com.ctm.eadvogado.endpoints.tribunalEndpoint.TribunalEndpoint;
+import com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Tribunal;
 import com.ctm.eadvogado.fragment.TabProcessoDadosFragment;
 import com.ctm.eadvogado.fragment.TabProcessoMovimentoFragment;
 import com.ctm.eadvogado.fragment.TabProcessoPolosFragment;
@@ -57,11 +61,42 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 	TabsAdapter mTabsAdapter;
 
 	private ProcessoEndpoint processoEndpoint;
+	private TribunalEndpoint tribunalEndpoint;
+	
 	private EAdvogadoDbHelper dbHelper;
 	private SalvarProcessoTask salvarProcessoTask;
 	private AtualizarProcessoTask atualizarProcessoTask;
 	
-	public static ProcessoDTO processoResult;
+	public static Processo processoResult;
+	
+	protected void carregarTelaProcesso() {
+		if (processoResult != null) {
+			if (mTabHost == null) {
+				mTabHost = (TabHost) findViewById(android.R.id.tabhost);
+				mTabHost.setup();
+				mViewPager = (ViewPager) findViewById(R.id.pager);
+
+				mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
+				mTabsAdapter.addTab(
+						mTabHost.newTabSpec("dados").setIndicator(
+								getString(R.string.processo_tab_dados)),
+						TabProcessoDadosFragment.class, null);
+				mTabsAdapter.addTab(
+						mTabHost.newTabSpec("polos").setIndicator(
+								getString(R.string.processo_tab_polos)),
+						TabProcessoPolosFragment.class, null);
+				mTabsAdapter.addTab(
+						mTabHost.newTabSpec("movimento").setIndicator(
+								getString(R.string.processo_tab_movimento)),
+						TabProcessoMovimentoFragment.class, null);
+			} else {
+				processoResult.set("tribunal.sigla", "NOVO VALOR");
+				mTabHost.refreshDrawableState();
+			}
+		}
+		
+		updateButtons();
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,27 +105,21 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 		setContentView(R.layout.processo_tabs_pager_fragment);
 		
 		processoEndpoint = EndpointUtils.initProcessoEndpoint();
+		tribunalEndpoint = EndpointUtils.initTribunalEndpoint();
 		
-		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
-		mTabHost.setup();
-		mViewPager = (ViewPager) findViewById(R.id.pager);
-
-		mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
-		mTabsAdapter.addTab(
-				mTabHost.newTabSpec("dados").setIndicator(
-						getString(R.string.processo_tab_dados)),
-				TabProcessoDadosFragment.class, null);
-		mTabsAdapter.addTab(
-				mTabHost.newTabSpec("polos").setIndicator(
-						getString(R.string.processo_tab_polos)),
-				TabProcessoPolosFragment.class, null);
-		mTabsAdapter.addTab(
-				mTabHost.newTabSpec("movimento").setIndicator(
-						getString(R.string.processo_tab_movimento)),
-				TabProcessoMovimentoFragment.class, null);
-
+		carregarTelaProcesso();
+		
+		Bundle extras = getIntent().getExtras();
+		if (extras != null && extras.getBoolean("gcmIntentServiceMessage", false)) {
+			String npu = extras.getString("npu");
+			String idTribunal = extras.getString("idTribunal");
+			String tipoJuizo = extras.getString("tipoJuizo");
+			doAtualizarProcesso(npu, Long.parseLong(idTribunal), tipoJuizo);
+		}
+		
 		if (savedInstanceState != null) {
-			mTabHost.setCurrentTabByTag(savedInstanceState
+			if (mTabHost != null)
+				mTabHost.setCurrentTabByTag(savedInstanceState
 					.getString("currentTab"));
 		}
 	}
@@ -98,7 +127,9 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putString("currentTab", mTabHost.getCurrentTabTag());
+		if (mTabHost != null) {
+			outState.putString("currentTab", mTabHost.getCurrentTabTag());
+		}
 	}
 
 	/**
@@ -215,6 +246,7 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 	 */
 	public void doSalvarProcesso() {
 		if (salvarProcessoTask != null) {
+			alert("Por favor, aguarde! Já estamos processando sua solicitação.");
 			return;
 		}
 		setSupportProgressBarIndeterminateVisibility(true);
@@ -223,21 +255,22 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 		salvarProcessoTask.execute((Void) null);
 	}
 	
-	public void doAtualizarProcesso() {
+	public void doAtualizarProcesso(String npu, Long idTribunal, String tipoJuizo) {
 		if (atualizarProcessoTask != null) {
+			alert("Por favor, aguarde! Já existe uma atualização em andamento.");
 			return;
 		}
 		setSupportProgressBarIndeterminateVisibility(true);
 		setControlsEnabled(false);
-		if (processoResult != null) {
-			atualizarProcessoTask = new AtualizarProcessoTask();
-			atualizarProcessoTask.execute(processoResult);
-		}
+		atualizarProcessoTask = new AtualizarProcessoTask();
+		atualizarProcessoTask.execute(npu, idTribunal.toString(), tipoJuizo);
 	}
 	
 	private void setControlsEnabled(boolean enabled) {
-		menuSalvar.setVisible(enabled);
-		menuAtualizar.setVisible(enabled);
+		if (menuSalvar != null) 
+			menuSalvar.setVisible(enabled);
+		if (menuAtualizar != null)
+			menuAtualizar.setVisible(enabled);
 	}
 	
 	public class SalvarProcessoTask extends AsyncTask<Void, Void, Boolean> {
@@ -251,9 +284,9 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 			try {
 				processoEndpoint.associarProcessoAoUsuario(
 						preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, ""), 
-						processoResult.getProcesso().getKey().getId()).execute();
+						processoResult.getKey().getId()).execute();
 				result = Boolean.TRUE;
-				dbHelper.insertProcessoSeNaoExiste(processoResult.getProcesso());
+				dbHelper.insertProcessoSeNaoExiste(processoResult);
 			} catch(GoogleJsonResponseException e) {
 				Log.e(TAG, "Erro ao executar a operação!", e);
 				mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
@@ -282,6 +315,7 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 			setSupportProgressBarIndeterminateVisibility(false);
 			setControlsEnabled(true);
 			menuSalvar.setVisible(!isProcessoSalvo);
+			salvarProcessoTask = null;
 		}
 
 		@Override
@@ -295,55 +329,89 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 	}
 	
 	
-	
-	public class AtualizarProcessoTask extends AsyncTask<ProcessoDTO, Void, Processo> {
+	public class AtualizarProcessoTask extends AsyncTask<String, Void, Processo> {
 		
-		private boolean erroComm = false;
+		String mensagem = "";
 		
 		@Override
-		protected Processo doInBackground(ProcessoDTO... params) {
+		protected Processo doInBackground(String... params) {
+			setControlsEnabled(false);
 			Processo processo = null;
-			try {
-				processo = processoEndpoint.consultarProcesso(
-						params[0].getProcesso().getNpu(),
-						params[0].getProcesso().getTribunal().getId(),
-						params[0].getProcesso().getTipoJuizo(), true)
-						.execute();
-			} catch(IOException e) {
-				Log.e(TAG, "Falha ao consultar processo.", e);
-				erroComm = true;
-			} catch(Exception e) {
-				Log.e(TAG, "Falha ao inserir processo no BD.", e);
+			String npu = params[0];
+			Long idTribunal = Long.parseLong(params[1]);
+			String tipoJuizo = params[2];
+			
+			int tries = 3;
+			int attempt = 0;
+			while (attempt < tries) {
+				try {
+					processo = processoEndpoint.consultarProcesso(
+							npu, idTribunal, tipoJuizo, true)
+							.execute();
+					Tribunal tribunal = dbHelper.selectTribunalPorId(idTribunal);
+					if (tribunal == null) {
+						List<Tribunal> tribunais = new ArrayList<Tribunal>();
+						int triesTrib = 3;
+						int attemptTrib = 0;
+						while (attemptTrib < triesTrib) {
+							try {
+								tribunais = tribunalEndpoint.listAll()
+										.set("sortField", "sigla")
+										.set("sortOrder", "ASC")
+										.execute().getItems();
+								dbHelper.inserirTribunais(tribunais);
+								tribunal = dbHelper.selectTribunalPorId(idTribunal);
+								break;
+							} catch (IOException e) {
+								Log.e("E-Advogado", "Falha ao carregar tribunais pelo servico", e);
+							}
+						}
+					}
+					if (tribunal != null) {
+						processo.put("tribunal.sigla", tribunal.getSigla());
+						processo.put("tribunal.nome", tribunal.getSigla());
+					}
+					break;
+				} catch(GoogleJsonResponseException e) {
+					Log.e(TAG, "Erro ao executar a operação!", e);
+					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
+							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
+				} catch (IOException e) {
+					Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
+					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
+				}
+				attempt++;
 			}
 			return processo;
 		}
 
+		@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 		@Override
 		protected void onPostExecute(Processo processo) {
+			setSupportProgressBarIndeterminateVisibility(false);
+			setControlsEnabled(true);
+			atualizarProcessoTask = null;
 			if (processo != null) {
-				processoResult.setProcesso(processo);
-				Toast.makeText(ProcessoTabsPagerFragment.this,
-						R.string.msg_nao_foi_possivel_carregar_dados,
-						Toast.LENGTH_LONG).show();
+				processoResult = processo;
+				carregarTelaProcesso();
+	        	//finish();
 			} else {
-				if (erroComm) {
+				if (mensagem.length() == 0) {
 					Toast.makeText(ProcessoTabsPagerFragment.this,
 							R.string.msg_nao_foi_possivel_carregar_dados,
 							Toast.LENGTH_LONG).show();
-				} else{
+				} else {
 					Toast.makeText(ProcessoTabsPagerFragment.this,
-							R.string.msg_processo_nao_encontrado,
-							Toast.LENGTH_LONG).show();
+							mensagem, Toast.LENGTH_LONG).show();
 				}
 			}
-			setSupportProgressBarIndeterminateVisibility(false);
-			setControlsEnabled(true);
 		}
 
 		@Override
 		protected void onCancelled() {
 			setSupportProgressBarIndeterminateVisibility(false);
 			setControlsEnabled(true);
+			atualizarProcessoTask = null;
 		}
 		
 	}
@@ -354,7 +422,8 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 		if (item == menuSalvar) {
 			doSalvarProcesso();
 		} else if (item == menuAtualizar) {
-			doAtualizarProcesso();
+			doAtualizarProcesso(processoResult.getNpu(), processoResult
+					.getTribunal().getId(), processoResult.getTipoJuizo());
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -370,17 +439,23 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
         menuSalvar = menu.add(R.string.btn_ab_salvar);
         menuSalvar.setIcon(isLight ? R.drawable.ic_content_save_inverse : R.drawable.ic_content_save)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        Processo selectProcesso = dbHelper.selectProcesso(processoResult.getProcesso().getNpu(),
-				processoResult.getTribunal().getKey().getId(), processoResult
-						.getProcesso().getTipoJuizo());
-		if (selectProcesso != null) {
-			menuSalvar.setVisible(false);
-		}
+        
+        updateButtons();
 
         menuAtualizar = menu.add(R.string.btn_ab_atualizar);
 		menuAtualizar.setIcon(isLight ? R.drawable.ic_refresh_inverse : R.drawable.ic_refresh)
 			.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         return true;
+	}
+	
+	private void updateButtons() {
+		if (processoResult != null && menuSalvar != null) {
+        	Processo selectProcesso = dbHelper.selectProcesso(processoResult.getNpu(),
+    				processoResult.getTribunal().getId(), processoResult.getTipoJuizo());
+    		if (selectProcesso != null) {
+    			menuSalvar.setVisible(false);
+    		}
+        }
 	}
 }
