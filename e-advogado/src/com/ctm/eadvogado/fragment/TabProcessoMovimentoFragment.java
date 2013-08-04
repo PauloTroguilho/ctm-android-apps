@@ -16,7 +16,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.ctm.eadvogado.ProcessoTabsPagerFragment;
 import com.ctm.eadvogado.R;
 import com.ctm.eadvogado.adapters.MovimentoExpandableAdapter;
-import com.ctm.eadvogado.dto.ProcessoDTO;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoDocumento;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoMovimentoProcessual;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoProcessoJudicial;
@@ -30,7 +30,7 @@ import com.google.ads.AdView;
  */
 public class TabProcessoMovimentoFragment extends SherlockFragment {
 	
-	ProcessoDTO processoDTO;
+	Processo processo;
 
 	/**
 	 * When creating, retrieve this instance's number from its arguments.
@@ -38,7 +38,7 @@ public class TabProcessoMovimentoFragment extends SherlockFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		processoDTO = ProcessoTabsPagerFragment.processoResult;
+		processo = ProcessoTabsPagerFragment.processoResult;
 	}
 	
 	/**
@@ -63,7 +63,7 @@ public class TabProcessoMovimentoFragment extends SherlockFragment {
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.processo_tab_movimento, container, false);
 		initAdmobBanner(R.id.adView, v);
-		TipoProcessoJudicial processoJudicial = processoDTO.getProcesso().getProcessoJudicial();
+		TipoProcessoJudicial processoJudicial = processo.getProcessoJudicial();
 		Map<TipoMovimentoProcessual, List<TipoDocumento>> movimentosDocumentosMap = 
 				buildMovimentosDocumentosMap(processoJudicial);
 		

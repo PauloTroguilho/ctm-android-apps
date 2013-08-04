@@ -13,7 +13,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.ctm.eadvogado.ProcessoTabsPagerFragment;
 import com.ctm.eadvogado.R;
 import com.ctm.eadvogado.adapters.PoloAdapter;
-import com.ctm.eadvogado.dto.ProcessoDTO;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoPoloProcessual;
 import com.ctm.eadvogado.util.Consts;
 import com.google.ads.AdRequest;
@@ -25,7 +25,7 @@ import com.google.ads.AdView;
  */
 public class TabProcessoPolosFragment extends SherlockFragment {
 
-	ProcessoDTO processoDTO;
+	Processo processo;
 
 	/**
 	 * When creating, retrieve this instance's number from its arguments.
@@ -33,7 +33,7 @@ public class TabProcessoPolosFragment extends SherlockFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		processoDTO = ProcessoTabsPagerFragment.processoResult;
+		processo = ProcessoTabsPagerFragment.processoResult;
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class TabProcessoPolosFragment extends SherlockFragment {
 	 */
 	private void fillPolosLists(List<TipoPoloProcessual> polosAtivos,
 			List<TipoPoloProcessual> polosPassivos) {
-		for (TipoPoloProcessual poloProcessual : processoDTO.getProcesso().getProcessoJudicial()
+		for (TipoPoloProcessual poloProcessual : processo.getProcessoJudicial()
 				.getDadosBasicos().getPolo()) {
 			if (poloProcessual.getPolo().equals("AT")) {
 				polosAtivos.add(poloProcessual);

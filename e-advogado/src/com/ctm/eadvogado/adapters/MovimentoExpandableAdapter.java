@@ -21,8 +21,9 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.BaseExpandableListAdapter;
@@ -40,6 +41,7 @@ import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoDocumento;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoMovimentoNacional;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoMovimentoProcessual;
 import com.ctm.eadvogado.util.EndpointUtils;
+import com.ctm.eadvogado.util.MessageUtils;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
 public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
@@ -90,15 +92,33 @@ public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.documento_child_item, null);
 		}
-		convertView.setOnClickListener(new OnClickListener() {
+		convertView.setOnTouchListener(new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				switch (event.getAction() & MotionEvent.ACTION_MASK) {
+			        case MotionEvent.ACTION_DOWN:
+			        	Processo processo = ProcessoTabsPagerFragment.processoResult;
+						doDownloadDocumento(processo.getNpu(), processo.getTribunal()
+								.getId(), processo.getTipoJuizo(), documento
+								.getIdDocumento());
+			          return true;
+			        case MotionEvent.ACTION_UP:
+			          return true;
+			        default:
+			          return false;
+		        }
+			}
+		});
+		/*convertView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Processo processo = ProcessoTabsPagerFragment.processoResult.getProcesso();
+				Processo processo = ProcessoTabsPagerFragment.processoResult;
 				doDownloadDocumento(processo.getNpu(), processo.getTribunal()
 						.getId(), processo.getTipoJuizo(), documento
 						.getIdDocumento());
 			}
-		});
+		});*/
 		
 		TextView tvDocumentoId = (TextView) convertView
 				.findViewById(R.id.textViewDocumentoId);
@@ -189,6 +209,7 @@ public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
 	 */
 	public void doDownloadDocumento(String npu, Long idTribunal, String tipoJuizo, String idDocumento) {
 		if (downloadDocumentoTask != null) {
+			MessageUtils.alert("Por favor aguarde! O download está em andamento.", context);
 			return;
 		}
 		downloadDocumentoTask = new DownloadDocumentoTask();

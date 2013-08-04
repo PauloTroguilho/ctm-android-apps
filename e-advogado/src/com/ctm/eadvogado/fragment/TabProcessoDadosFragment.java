@@ -11,8 +11,8 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.ctm.eadvogado.ProcessoTabsPagerFragment;
 import com.ctm.eadvogado.R;
-import com.ctm.eadvogado.dto.ProcessoDTO;
 import com.ctm.eadvogado.dto.TipoJuizo;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoCabecalhoProcesso;
 import com.ctm.eadvogado.util.Consts;
 import com.google.ads.AdRequest;
@@ -24,7 +24,7 @@ import com.google.ads.AdView;
  */
 public class TabProcessoDadosFragment extends SherlockFragment {
 	
-	ProcessoDTO processoDTO;
+	Processo processo;
 
 	/**
 	 * When creating, retrieve this instance's number from its arguments.
@@ -32,7 +32,7 @@ public class TabProcessoDadosFragment extends SherlockFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		processoDTO = ProcessoTabsPagerFragment.processoResult;
+		processo = ProcessoTabsPagerFragment.processoResult;
 	}
 	
 	/**
@@ -57,15 +57,15 @@ public class TabProcessoDadosFragment extends SherlockFragment {
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.processo_tab_dados, container, false);
 		initAdmobBanner(R.id.adView, v);
-		TipoCabecalhoProcesso dadosBasicos = processoDTO.getProcesso().getProcessoJudicial().getDadosBasicos();
+		TipoCabecalhoProcesso dadosBasicos = processo.getProcessoJudicial().getDadosBasicos();
 		TextView tvNPU = (TextView) v.findViewById(R.id.tvTabDados_NPU);
 		tvNPU.setText(dadosBasicos.getNumero());
 		TextView tvTribunal = (TextView) v.findViewById(R.id.tvTabDados_Tribunal);
-		if (processoDTO.getTribunal() != null) {
-			tvTribunal.setText(processoDTO.getTribunal().getNome());
+		if (processo.getTribunal() != null) {
+			tvTribunal.setText(processo.get("tribunal.nome").toString());
 		}
 		TextView tvTipoJuizo = (TextView) v.findViewById(R.id.tvTabDados_TipoJuizo);
-		if (processoDTO.getProcesso().getTipoJuizo().equals(TipoJuizo.PRIMEIRO_GRAU.name())) {
+		if (processo.getTipoJuizo().equals(TipoJuizo.PRIMEIRO_GRAU.name())) {
 			tvTipoJuizo.setText(R.string.processo_tipoJuizo_1g);
 		} else {
 			tvTipoJuizo.setText(R.string.processo_tipoJuizo_2g);

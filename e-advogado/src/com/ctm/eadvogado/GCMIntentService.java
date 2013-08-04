@@ -3,18 +3,24 @@ package com.ctm.eadvogado;
 import java.io.IOException;
 import java.net.URLEncoder;
 
+import android.annotation.TargetApi;
+import android.app.Notification;
+import android.app.Notification.Builder;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Build;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.ctm.eadvogado.endpoints.deviceInfoEndpoint.DeviceInfoEndpoint;
-import com.ctm.eadvogado.endpoints.deviceInfoEndpoint.model.DeviceInfo;
+import com.ctm.eadvogado.endpoints.deviceEndpoint.DeviceEndpoint;
+import com.ctm.eadvogado.util.EndpointUtils;
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.json.jackson.JacksonFactory;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
 /**
  * This class is started up as a service of the Android application. It listens
@@ -37,7 +43,9 @@ import com.google.api.client.json.jackson.JacksonFactory;
  */
 public class GCMIntentService extends GCMBaseIntentService {
 
-	private final DeviceInfoEndpoint endpoint;
+	private static final String TAG = "e-Advogado";
+
+	private final DeviceEndpoint endpoint;
 
 	/*
 	 * TODO: Set this to a valid project number. See
@@ -70,13 +78,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 
 	public GCMIntentService() {
 		super(PROJECT_NUMBER);
-		DeviceInfoEndpoint.Builder endpointBuilder = new DeviceInfoEndpoint.Builder(
-				AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
-				new HttpRequestInitializer() {
-					public void initialize(HttpRequest httpRequest) {
-					}
-				});
-		endpoint = CloudEndpointUtils.updateBuilder(endpointBuilder).build();
+		endpoint = EndpointUtils.initDeviceEndpoint();
 	}
 
 	/**
@@ -90,18 +92,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	 */
 	@Override
 	public void onError(Context context, String errorId) {
-
-		sendNotificationIntent(
-				context,
-				"Registration with Google Cloud Messaging...FAILED!\n\n"
-						+ "A Google Cloud Messaging registration error occured (errorid: "
-						+ errorId
-						+ "). "
-						+ "Do you have your project number ("
-						+ ("".equals(PROJECT_NUMBER) ? "<unset>"
-								: PROJECT_NUMBER)
-						+ ")  set correctly, and do you have Google Cloud Messaging enabled for the "
-						+ "project?", true, true);
+		Log.e(TAG, "Erro ao registrar device no servico GCM! " + errorId);
 	}
 
 	/**
@@ -109,11 +100,57 @@ public class GCMIntentService extends GCMBaseIntentService {
 	 */
 	@Override
 	public void onMessage(Context context, Intent intent) {
-		sendNotificationIntent(
-				context,
-				"Message received via Google Cloud Messaging:\n\n"
-						+ intent.getStringExtra("mensagem"), true, false);
+		
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			Intent notificationIntent = new Intent(context, ProcessoTabsPagerFragment.class);
+			Bundle bundle = intent.getExtras();
+			notificationIntent.putExtra("gcmIntentServiceMessage", true);
+			notificationIntent.putExtra("npu", bundle.getString("npu"));
+			notificationIntent.putExtra("idTribunal", bundle.getString("idTribunal"));
+			notificationIntent.putExtra("tipoJuizo", bundle.getString("tipoJuizo"));
+			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			
+			startActivity(notificationIntent);
+		} else {
+			doNotification(context, intent);
+		}
+		
+		/**/
+		
 	}
+	
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	public void doNotification(Context context, Intent intent) {
+		// Prepare intent which is triggered if the
+		// notification is selected
+		Intent notificationIntent = new Intent(context, ProcessoTabsPagerFragment.class);
+		Bundle bundle = intent.getExtras();
+		notificationIntent.putExtra("gcmIntentServiceMessage", true);
+		notificationIntent.putExtra("npu", bundle.getString("npu"));
+		notificationIntent.putExtra("idTribunal", bundle.getString("idTribunal"));
+		notificationIntent.putExtra("tipoJuizo", bundle.getString("tipoJuizo"));
+		
+		String titulo = bundle.getString("titulo");
+		String mensagem = bundle.getString("mensagem");
+		
+		PendingIntent pIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+
+		// Build notification
+		// Actions are just fake
+		Builder builder = new Notification.Builder(context)
+				.setContentTitle(titulo).setContentText(mensagem)
+				.setSmallIcon(R.drawable.ic_content_read)
+				.setContentIntent(pIntent);
+		Notification noti = builder.build();
+
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+		// Hide the notification after its selected
+		noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+		notificationManager.notify(0, noti);
+	}
+	
 
 	/**
 	 * Called back when a registration token has been received from the Google
@@ -123,81 +160,28 @@ public class GCMIntentService extends GCMBaseIntentService {
 	 *            the Context
 	 */
 	@Override
-	public void onRegistered(Context context, String registration) {
-		/*
-		 * This is some special exception-handling code that we're using to work
-		 * around a problem with the DevAppServer and methods that return null
-		 * in App Engine 1.7.5.
-		 */
-		boolean alreadyRegisteredWithEndpointServer = false;
-
-		try {
-
-			/*
-			 * Using cloud endpoints, see if the device has already been
-			 * registered with the backend
-			 */
-			//TODO
-			DeviceInfo existingInfo = endpoint.getByID(null)
-					.execute();
-
-			if (existingInfo != null
-					&& registration.equals(existingInfo
-							.getDeviceRegistrationID())) {
-				alreadyRegisteredWithEndpointServer = true;
+	public void onRegistered(Context context, String registrationId) {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		String email = preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, "");
+		String senha = preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, "");
+		
+		int tries = 3;
+		int attempt = 0;
+		boolean isRegistered = false;
+		while (attempt < tries && !isRegistered) {
+			try {
+				endpoint.registrarDispositivo(email, senha, registrationId,
+						URLEncoder.encode(android.os.Build.MANUFACTURER + " "
+								+ android.os.Build.PRODUCT, "UTF-8")).execute();
+				isRegistered = true;
+			} catch(GoogleJsonResponseException e) {
+				Log.e(TAG, "Falha ao registrar device no endpoint!", e);
+			} catch (IOException e) {
+				Log.e(TAG, "Erro de comunicação ao tentar registrar device no endpoint!", e);
+				break;
 			}
-		} catch (IOException e) {
-			// Ignore
+			attempt++;
 		}
-
-		try {
-			if (!alreadyRegisteredWithEndpointServer) {
-				/*
-				 * We are not registered as yet. Send an endpoint mensagem
-				 * containing the GCM registration id and some of the device's
-				 * product information over to the backend. Then, we'll be
-				 * registered.
-				 */
-				DeviceInfo deviceInfo = new DeviceInfo();
-				endpoint.insert(
-						deviceInfo
-								.setDeviceRegistrationID(registration)
-								.setTimestamp(System.currentTimeMillis())
-								.setDeviceInformation(
-										URLEncoder
-												.encode(android.os.Build.MANUFACTURER
-														+ " "
-														+ android.os.Build.PRODUCT,
-														"UTF-8"))).execute();
-			}
-		} catch (IOException e) {
-			Log.e(GCMIntentService.class.getName(),
-					"Exception received when attempting to register with server at "
-							+ endpoint.getRootUrl(), e);
-
-			sendNotificationIntent(
-					context,
-					"1) Registration with Google Cloud Messaging...SUCCEEDED!\n\n"
-							+ "2) Registration with Endpoints Server...FAILED!\n\n"
-							+ "Unable to register your device with your Cloud Endpoints server running at "
-							+ endpoint.getRootUrl()
-							+ ". Either your Cloud Endpoints server is not deployed to App Engine, or "
-							+ "your settings need to be changed to run against a local instance "
-							+ "by setting LOCAL_ANDROID_RUN to 'true' in CloudEndpointUtils.java.",
-					true, true);
-			return;
-		}
-
-		sendNotificationIntent(
-				context,
-				"1) Registration with Google Cloud Messaging...SUCCEEDED!\n\n"
-						+ "2) Registration with Endpoints Server...SUCCEEDED!\n\n"
-						+ "Device registration with Cloud Endpoints Server running at  "
-						+ endpoint.getRootUrl()
-						+ " succeeded!\n\n"
-						+ "To send a mensagem to this device, "
-						+ "open your browser and navigate to the sample application at "
-						+ getWebSampleUrl(endpoint.getRootUrl()), false, true);
 	}
 
 	/**
@@ -209,72 +193,30 @@ public class GCMIntentService extends GCMBaseIntentService {
 	 */
 	@Override
 	protected void onUnregistered(Context context, String registrationId) {
-
 		if (registrationId != null && registrationId.length() > 0) {
-
-			try {
-				endpoint.remove(null).execute();
-			} catch (IOException e) {
-				Log.e(GCMIntentService.class.getName(),
-						"Exception received when attempting to unregister with server at "
-								+ endpoint.getRootUrl(), e);
-				sendNotificationIntent(
-						context,
-						"1) De-registration with Google Cloud Messaging....SUCCEEDED!\n\n"
-								+ "2) De-registration with Endpoints Server...FAILED!\n\n"
-								+ "We were unable to de-register your device from your Cloud "
-								+ "Endpoints server running at "
-								+ endpoint.getRootUrl() + "."
-								+ "See your Android log for more information.",
-						true, true);
-				return;
+			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+			String email = preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, "");
+			String senha = preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, "");
+			
+			int tries = 3;
+			int attempt = 0;
+			boolean isDesregistered = false;
+			
+			while (attempt < tries && !isDesregistered) {
+				try {
+					endpoint.desregistrarDispositivo(email, senha, registrationId).execute();
+					isDesregistered = true;
+				} catch(GoogleJsonResponseException e) {
+					Log.e(TAG, "Falha ao desregistrar device no endpoint!", e);
+				} catch (IOException e) {
+					Log.e(TAG, "Erro de comunicação ao tentar desregistrar device no endpoint!", e);
+					break;
+				}
+				attempt++;
 			}
+			
 		}
 
-		sendNotificationIntent(
-				context,
-				"1) De-registration with Google Cloud Messaging....SUCCEEDED!\n\n"
-						+ "2) De-registration with Endpoints Server...SUCCEEDED!\n\n"
-						+ "Device de-registration with Cloud Endpoints server running at  "
-						+ endpoint.getRootUrl() + " succeeded!", false, true);
 	}
 
-	/**
-	 * Generate a notification intent and dispatch it to the RegisterActivity.
-	 * This is how we get information from this service (non-UI) back to the
-	 * activity.
-	 * 
-	 * For this to work, the 'android:launchMode="singleTop"' attribute needs to
-	 * be set for the RegisterActivity in AndroidManifest.xml.
-	 * 
-	 * @param context
-	 *            the application context
-	 * @param mensagem
-	 *            the mensagem to send
-	 * @param isError
-	 *            true if the mensagem is an error-related mensagem; false
-	 *            otherwise
-	 * @param isRegistrationMessage
-	 *            true if this mensagem is related to registration/unregistration
-	 */
-	private void sendNotificationIntent(Context context, String message,
-			boolean isError, boolean isRegistrationMessage) {
-		Intent notificationIntent = new Intent(context, MeusProcessosActivity.class);
-		notificationIntent.putExtra("gcmIntentServiceMessage", true);
-		notificationIntent.putExtra("registrationMessage",
-				isRegistrationMessage);
-		notificationIntent.putExtra("error", isError);
-		notificationIntent.putExtra("mensagem", message);
-		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		startActivity(notificationIntent);
-	}
-
-	private String getWebSampleUrl(String endpointUrl) {
-		// Not the most elegant solution; we'll improve this in the future
-		if (CloudEndpointUtils.LOCAL_ANDROID_RUN) {
-			return CloudEndpointUtils.LOCAL_APP_ENGINE_SERVER_URL
-					+ "index.html";
-		}
-		return endpointUrl.replace("/_ah/api/", "/index.html");
-	}
 }

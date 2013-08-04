@@ -11,7 +11,7 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="src" path="endpoint-libs/libcompraEndpoint-v1/compraEndpoint/compraendpoint-v1-generated-source"/>
-	<classpathentry kind="src" path="endpoint-libs/libdeviceInfoEndpoint-v1/deviceInfoEndpoint/deviceinfoendpoint-v1-generated-source"/>
+	<classpathentry kind="src" path="endpoint-libs/libdeviceEndpoint-v1/deviceEndpoint/deviceendpoint-v1-generated-source"/>
 	<classpathentry kind="src" path="endpoint-libs/libprocessoEndpoint-v1/processoEndpoint/processoendpoint-v1-generated-source"/>
 	<classpathentry kind="src" path="endpoint-libs/libtribunalEndpoint-v1/tribunalEndpoint/tribunalendpoint-v1-generated-source"/>
 	<classpathentry kind="src" path="endpoint-libs/libusuarioEndpoint-v1/usuarioEndpoint/usuarioendpoint-v1-generated-source"/>

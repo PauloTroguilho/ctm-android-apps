@@ -5,7 +5,6 @@ import java.util.Locale;
 
 import org.apache.http.HttpStatus;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -520,14 +519,6 @@ public class MinhaContaActivity extends SlidingActivity {
         alert(message);
     }
 
-	void alert(String message) {
-        AlertDialog.Builder bld = new AlertDialog.Builder(this);
-        bld.setMessage(message);
-        bld.setNeutralButton("OK", null);
-        Log.d(TAG, "Showing alert dialog: " + message);
-        bld.create().show();
-    }
-	
 	/**
 	 * Carrega os dados da minha conta.
 	 */

@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.ctm.eadvogado.dto.ProcessoDTO;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.Key;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
 import com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Tribunal;
@@ -273,7 +272,7 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     }
     
     
-    public List<ProcessoDTO> selectProcessos() {
+    public List<Processo> selectProcessos() {
     	// Define a projection that specifies which columns from the database
     	// you will actually use after this query.
     	String[] projection = {
@@ -296,18 +295,20 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     	    null,                                     // don't filter by row groups
     	    sortOrder                                 // The sort order
     	    );
-    	List<ProcessoDTO> processos = new ArrayList<ProcessoDTO>();
+    	List<Processo> processos = new ArrayList<Processo>();
     	if (c.moveToFirst()) {
     		do {
-    			ProcessoDTO p = new ProcessoDTO();
     			Processo processo = new Processo();
     			processo.setKey(new Key());
     			processo.getKey().setId(c.getLong(0));
     			processo.setNpu(c.getString(1));
         		processo.setTipoJuizo(c.getString(2));
-        		p.setProcesso(processo);
-    			p.setTribunal(this.selectTribunalPorId(c.getLong(3)));
-    			processos.add(p);
+        		Tribunal tribunal = this.selectTribunalPorId(c.getLong(3));
+        		if (tribunal != null) {
+        			processo.put("tribunal.sigla", tribunal.getSigla());
+            		processo.put("tribunal.nome", tribunal.getNome());
+        		}
+    			processos.add(processo);
     		} while(c.moveToNext());
     	}
     	c.close();
