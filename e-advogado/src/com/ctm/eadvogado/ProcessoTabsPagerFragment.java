@@ -74,27 +74,25 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 			if (mTabHost == null) {
 				mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 				mTabHost.setup();
-				mViewPager = (ViewPager) findViewById(R.id.pager);
-
-				mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
-				mTabsAdapter.addTab(
-						mTabHost.newTabSpec("dados").setIndicator(
-								getString(R.string.processo_tab_dados)),
-						TabProcessoDadosFragment.class, null);
-				mTabsAdapter.addTab(
-						mTabHost.newTabSpec("polos").setIndicator(
-								getString(R.string.processo_tab_polos)),
-						TabProcessoPolosFragment.class, null);
-				mTabsAdapter.addTab(
-						mTabHost.newTabSpec("movimento").setIndicator(
-								getString(R.string.processo_tab_movimento)),
-						TabProcessoMovimentoFragment.class, null);
 			} else {
-				processoResult.set("tribunal.sigla", "NOVO VALOR");
-				mTabHost.refreshDrawableState();
+				mTabHost.getTabWidget().removeAllViews();
 			}
+			mViewPager = (ViewPager) findViewById(R.id.pager);
+
+			mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
+			mTabsAdapter.addTab(
+					mTabHost.newTabSpec("dados").setIndicator(
+							getString(R.string.processo_tab_dados)),
+					TabProcessoDadosFragment.class, null);
+			mTabsAdapter.addTab(
+					mTabHost.newTabSpec("polos").setIndicator(
+							getString(R.string.processo_tab_polos)),
+					TabProcessoPolosFragment.class, null);
+			mTabsAdapter.addTab(
+					mTabHost.newTabSpec("movimento").setIndicator(
+							getString(R.string.processo_tab_movimento)),
+					TabProcessoMovimentoFragment.class, null);
 		}
-		
 		updateButtons();
 	}
 
