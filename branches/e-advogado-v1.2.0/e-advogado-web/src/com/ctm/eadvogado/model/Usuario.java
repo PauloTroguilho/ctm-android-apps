@@ -20,9 +20,13 @@ import com.google.appengine.api.datastore.Key;
  * 
  */
 @Entity
-@NamedQueries(
-	@NamedQuery(name = "usuarioPorEmail", query = "select usu from Usuario as usu where usu.email = :email")
-)
+@NamedQueries({
+	@NamedQuery(name = "usuarioPorEmail", query = "select usu from Usuario as usu where usu.email = :email"),
+	@NamedQuery(
+			name = "usuariosInElements",
+			query = "select u from Usuario as u where u.key in (:usuarios)"
+		)
+})
 public class Usuario extends BaseEntity {
 
 	private static final long serialVersionUID = 1L;

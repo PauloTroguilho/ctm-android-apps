@@ -1,9 +1,11 @@
 /**
  * 
  */
-package com.ctm.eadvogado.model;
+package com.ctm.eadvogado.endpoints;
 
 import java.io.Serializable;
+
+import com.ctm.eadvogado.model.TipoJuizo;
 
 /**
  * @author Cleber

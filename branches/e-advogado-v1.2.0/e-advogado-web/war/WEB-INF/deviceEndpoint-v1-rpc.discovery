@@ -1,9 +1,9 @@
 {
- "kind": "discovery#restDescription",
- "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/YgvE-pZ-B4ybOblizERwLUNsHGw\"",
+ "kind": "discovery#rpcDescription",
+ "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/Q2tyWAODUNvr_VtlySIhlJFZLHE\"",
  "discoveryVersion": "v1",
- "id": "deviceInfoEndpoint:v1",
- "name": "deviceInfoEndpoint",
+ "id": "deviceEndpoint:v1",
+ "name": "deviceEndpoint",
  "version": "v1",
  "description": "This is an API",
  "ownerDomain": "eadvogado.ctm.com",
@@ -13,12 +13,10 @@
   "x16": "http://www.google.com/images/icons/product/search-16.gif",
   "x32": "http://www.google.com/images/icons/product/search-32.gif"
  },
- "protocol": "rest",
- "baseUrl": "https://e-advogado-web.appspot.com/_ah/api/deviceInfoEndpoint/v1/",
- "basePath": "/_ah/api/deviceInfoEndpoint/v1/",
+ "protocol": "rpc",
  "rootUrl": "https://e-advogado-web.appspot.com/_ah/api/",
- "servicePath": "deviceInfoEndpoint/v1/",
- "batchPath": "batch",
+ "rpcUrl": "https://e-advogado-web.appspot.com/_ah/api/rpc",
+ "rpcPath": "/_ah/api/rpc",
  "parameters": {
   "alt": {
    "type": "string",
@@ -65,14 +63,14 @@
   }
  },
  "schemas": {
-  "CollectionResponse_DeviceInfo": {
-   "id": "CollectionResponse_DeviceInfo",
+  "CollectionResponse_Device": {
+   "id": "CollectionResponse_Device",
    "type": "object",
    "properties": {
     "items": {
      "type": "array",
      "items": {
-      "$ref": "DeviceInfo"
+      "$ref": "Device"
      }
     },
     "nextPageToken": {
@@ -80,22 +78,28 @@
     }
    }
   },
-  "DeviceInfo": {
-   "id": "DeviceInfo",
+  "Device": {
+   "id": "Device",
    "type": "object",
    "properties": {
-    "deviceInformation": {
-     "type": "string"
-    },
-    "deviceRegistrationID": {
+    "deviceInfo": {
      "type": "string"
     },
     "key": {
      "$ref": "Key"
     },
+    "registrationId": {
+     "type": "string"
+    },
+    "status": {
+     "$ref": "StatusDevice"
+    },
     "timestamp": {
      "type": "string",
      "format": "int64"
+    },
+    "usuario": {
+     "$ref": "Key"
     }
    }
   },
@@ -126,58 +130,88 @@
      "$ref": "Key"
     }
    }
+  },
+  "StatusDevice": {
+   "id": "StatusDevice",
+   "type": "string",
+   "enum": [
+    "ATIVO",
+    "INATIVO"
+   ],
+   "enumDescriptions": [
+    "",
+    ""
+   ]
   }
  },
  "methods": {
-  "getByID": {
-   "id": "deviceInfoEndpoint.getByID",
-   "path": "deviceinfo/{id}",
-   "httpMethod": "GET",
+  "deviceEndpoint.desregistrarDispositivo": {
+   "id": "deviceEndpoint.desregistrarDispositivo",
+   "parameters": {
+    "email": {
+     "type": "string",
+     "required": true
+    },
+    "registrationId": {
+     "type": "string",
+     "required": true
+    },
+    "senha": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "email",
+    "senha",
+    "registrationId"
+   ]
+  },
+  "deviceEndpoint.getByID": {
+   "id": "deviceEndpoint.getByID",
+   "allowGet": true,
    "parameters": {
     "id": {
      "type": "string",
      "required": true,
-     "format": "int64",
-     "location": "path"
+     "format": "int64"
     }
    },
    "parameterOrder": [
     "id"
    ],
-   "response": {
-    "$ref": "DeviceInfo"
+   "returns": {
+    "$ref": "Device"
    }
   },
-  "insert": {
-   "id": "deviceInfoEndpoint.insert",
-   "path": "deviceinfo",
-   "httpMethod": "POST",
-   "request": {
-    "$ref": "DeviceInfo",
-    "parameterName": "resource"
+  "deviceEndpoint.insert": {
+   "id": "deviceEndpoint.insert",
+   "parameters": {
+    "resource": {
+     "$ref": "Device"
+    }
    },
-   "response": {
-    "$ref": "DeviceInfo"
+   "parameterOrder": [
+    "resource"
+   ],
+   "returns": {
+    "$ref": "Device"
    }
   },
-  "listAll": {
-   "id": "deviceInfoEndpoint.listAll",
-   "path": "deviceinfo",
-   "httpMethod": "GET",
+  "deviceEndpoint.listAll": {
+   "id": "deviceEndpoint.listAll",
+   "allowGet": true,
    "parameters": {
     "firstReault": {
      "type": "integer",
-     "format": "int32",
-     "location": "query"
+     "format": "int32"
     },
     "maxResults": {
      "type": "integer",
-     "format": "int32",
-     "location": "query"
+     "format": "int32"
     },
     "sortField": {
-     "type": "string",
-     "location": "query"
+     "type": "string"
     },
     "sortOrder": {
      "type": "string",
@@ -188,43 +222,68 @@
      "enumDescriptions": [
       "",
       ""
-     ],
-     "location": "query"
+     ]
     }
    },
-   "response": {
-    "$ref": "CollectionResponse_DeviceInfo"
+   "returns": {
+    "$ref": "CollectionResponse_Device"
    }
   },
-  "remove": {
-   "id": "deviceInfoEndpoint.remove",
-   "path": "remove/{id}",
-   "httpMethod": "DELETE",
+  "deviceEndpoint.registrarDispositivo": {
+   "id": "deviceEndpoint.registrarDispositivo",
+   "parameters": {
+    "deviceInfo": {
+     "type": "string",
+     "required": true
+    },
+    "email": {
+     "type": "string",
+     "required": true
+    },
+    "registrationId": {
+     "type": "string",
+     "required": true
+    },
+    "senha": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "email",
+    "senha",
+    "registrationId",
+    "deviceInfo"
+   ]
+  },
+  "deviceEndpoint.remove": {
+   "id": "deviceEndpoint.remove",
    "parameters": {
     "id": {
      "type": "string",
      "required": true,
-     "format": "int64",
-     "location": "path"
+     "format": "int64"
     }
    },
    "parameterOrder": [
     "id"
    ],
-   "response": {
-    "$ref": "DeviceInfo"
+   "returns": {
+    "$ref": "Device"
    }
   },
-  "update": {
-   "id": "deviceInfoEndpoint.update",
-   "path": "deviceinfo",
-   "httpMethod": "PUT",
-   "request": {
-    "$ref": "DeviceInfo",
-    "parameterName": "resource"
+  "deviceEndpoint.update": {
+   "id": "deviceEndpoint.update",
+   "parameters": {
+    "resource": {
+     "$ref": "Device"
+    }
    },
-   "response": {
-    "$ref": "DeviceInfo"
+   "parameterOrder": [
+    "resource"
+   ],
+   "returns": {
+    "$ref": "Device"
    }
   }
  }

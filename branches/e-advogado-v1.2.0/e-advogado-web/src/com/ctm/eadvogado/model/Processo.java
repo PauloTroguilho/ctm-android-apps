@@ -25,10 +25,6 @@ import com.google.appengine.api.datastore.Key;
 		query = "select p from Processo as p where p.npu = :npu and p.tribunal = :idTribunal and p.tipoJuizo = :tipoJuizo"
 	),
 	@NamedQuery(
-		name = "processosPorUsuario",
-		query = "select usu.processos from Usuario as usu where usu = :usuario"
-	),
-	@NamedQuery(
 		name = "processosInElements",
 		query = "select p from Processo as p where p.key in (:processos)"
 	)

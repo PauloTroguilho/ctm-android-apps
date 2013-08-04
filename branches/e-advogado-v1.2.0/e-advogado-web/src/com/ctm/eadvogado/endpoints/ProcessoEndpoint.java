@@ -15,7 +15,6 @@ import br.jus.cnj.pje.v1.TipoDocumento;
 import com.ctm.eadvogado.exception.NegocioException;
 import com.ctm.eadvogado.model.Documento;
 import com.ctm.eadvogado.model.Processo;
-import com.ctm.eadvogado.model.ProcessoUsuario;
 import com.ctm.eadvogado.model.TipoJuizo;
 import com.ctm.eadvogado.model.Tribunal;
 import com.ctm.eadvogado.model.Usuario;
