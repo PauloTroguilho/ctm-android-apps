@@ -121,4 +121,19 @@ public class UsuarioEndpoint extends BaseEndpoint<Usuario, UsuarioNegocio> {
 		}
 	}
 
+	@ApiMethod(name = "enviarEmailParaUsuario")
+	public void enviarEmailParaUsuario(@Named("assunto") String assunto, @Named("mensagem") String mensagem, @Named("email") String email)
+			throws NotFoundException {
+		Usuario usuario = getNegocio().findByEmail(email);
+		if (usuario != null) {
+			getNegocio().enviarEmailParaUsuario(assunto, mensagem, usuario);
+		} else {
+			throw new NotFoundException(String.format("Não foi encontrado usuário com e-mail: %s", email));
+		}
+	}
+	
+	@ApiMethod(name = "enviarEmailParaTodosUsuarios")
+	public void enviarEmailParaTodosUsuarios(@Named("assunto") String assunto, @Named("mensagem") String mensagem) {
+		getNegocio().enviarEmailParaTodosUsuarios(assunto, mensagem);
+	}
 }

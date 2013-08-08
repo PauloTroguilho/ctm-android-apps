@@ -100,6 +100,34 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "usuarioEndpoint.enviarEmailParaUsuario" : {
+      "path" : "enviarEmailParaUsuario/{assunto}/{mensagem}/{email}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaUsuario",
+      "request" : {
+        "parameters" : {
+          "assunto" : {
+            "type" : "string",
+            "required" : true
+          },
+          "mensagem" : {
+            "type" : "string",
+            "required" : true
+          },
+          "email" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
     "usuarioEndpoint.insert" : {
       "path" : "usuario",
       "httpMethod" : "POST",
@@ -191,6 +219,30 @@
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "usuarioEndpoint.enviarEmailParaTodosUsuarios" : {
+      "path" : "enviarEmailParaTodosUsuarios/{assunto}/{mensagem}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaTodosUsuarios",
+      "request" : {
+        "parameters" : {
+          "assunto" : {
+            "type" : "string",
+            "required" : true
+          },
+          "mensagem" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
       }
     }
   },
@@ -306,6 +358,8 @@
           "$ref" : "Usuario"
         }
       },
+      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaUsuario" : {
+      },
       "com.ctm.eadvogado.endpoints.UsuarioEndpoint.insert" : {
         "request" : {
           "$ref" : "Usuario"
@@ -328,6 +382,8 @@
         "response" : {
           "$ref" : "Usuario"
         }
+      },
+      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaTodosUsuarios" : {
       }
     }
   }

@@ -6,7 +6,6 @@ import java.util.logging.Level;
 
 import javax.inject.Named;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
 
 import org.apache.commons.codec.binary.Hex;
 
@@ -93,14 +92,7 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 		if (usuario != null) {
 			Processo processo = getNegocio().findByID(idProcesso);
 			if (processo != null) {
-				if (usuario.getProcessos().remove(processo.getKey())) {
-					try {
-						usuarioNegocio.update(usuario);
-					} catch (PersistenceException e) {
-						throw new InternalServerErrorException(
-								"Falha ao associar processo ao usuário!", e);
-					}
-				}
+				getNegocio().removerProcessoDoUsuario(idProcesso, email);
 			} else {
 				throw new NotFoundException("Processo não encontrado!");
 			}

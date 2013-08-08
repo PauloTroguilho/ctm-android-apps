@@ -34,6 +34,7 @@ import com.ctm.eadvogado.util.PJeServiceUtil;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.api.server.spi.response.ServiceUnavailableException;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 /**
@@ -98,6 +99,19 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	@Transacional
 	public void associarProcessoAoUsuario(Long idProcesso, String email) throws NegocioException, PersistenceException{
 		Usuario usuario = usuarioDao.findByEmail(email);
+		if (usuario.getProcessos() != null && !usuario.getProcessos().isEmpty()) {
+			for (Key processoKey : usuario.getProcessos()) {
+				UsuarioProcesso usuarioProcesso = usuarioProcessoDao.selectPorUsuarioProcesso(usuario.getKey().getId(), idProcesso);
+				if (usuarioProcesso == null) {
+					usuarioProcesso = new UsuarioProcesso();
+					usuarioProcesso.setUsuario(usuario.getKey());
+					usuarioProcesso.setProcesso(processoKey);
+					usuarioProcessoDao.insert(usuarioProcesso);
+				}
+			}
+			usuario.getProcessos().clear();
+			usuarioDao.update(usuario);
+		}
 		Long saldoLancamentos = lancamentoDao.getSaldoLancamentos(usuario);
 		if (saldoLancamentos.longValue() > 0 || 
 					usuario.getTipoConta().equals(TipoConta.PREMIUM)) {
@@ -111,9 +125,6 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 				lancamento.setTipo(TipoLancamento.DEBITO);
 				lancamento.setUsuario(usuario.getKey());
 				lancamentoDao.insert(lancamento);
-				
-				usuario.getProcessos().add(processo.getKey());
-				usuarioDao.update(usuario);
 				
 				usuarioProcesso = new UsuarioProcesso();
 				usuarioProcesso.setUsuario(usuario.getKey());
@@ -239,6 +250,28 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 			throw new NotFoundException("Serviço não disponivel para o Tipo de Juízo informado.");
 		}
 		return processoJudicial;
+	}
+	
+	@Transacional
+	public void removerProcessoDoUsuario(Long idProcesso, String email) throws NegocioException, PersistenceException{
+		Usuario usuario = usuarioDao.findByEmail(email);
+		if (usuario.getProcessos() != null && !usuario.getProcessos().isEmpty()) {
+			Key keyToRemove = null;
+			for (Key processoKey : usuario.getProcessos()) {
+				if (processoKey.getId() == idProcesso.longValue()) {
+					keyToRemove = processoKey;
+					break;
+				}
+			}
+			if (keyToRemove != null) {
+				usuario.getProcessos().remove(keyToRemove);
+			}
+			usuarioDao.update(usuario);
+		}
+		UsuarioProcesso usuarioProcesso = usuarioProcessoDao.selectPorUsuarioProcesso(usuario.getKey().getId(), idProcesso);
+		if (usuarioProcesso != null) {
+			usuarioProcessoDao.remove(usuarioProcesso);
+		}
 	}
 	
 }
