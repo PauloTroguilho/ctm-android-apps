@@ -78,4 +78,7 @@
     <string name="mov_documento_vinculado">Documento Vinculado:</string>
     <string name="mov_documento">Documento:</string>
     <string name="btn_download">Download</string>
+    <string name="login_primeiro_acesso">Primeiro acesso:</string>
+    <string name="login_btn_registrese">Registre-se aqui!</string>
+    <string name="reg_bt_cadastrar">Cadastrar</string>
 </resources>

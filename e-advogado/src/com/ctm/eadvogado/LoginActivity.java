@@ -60,6 +60,7 @@ public class LoginActivity extends SherlockActivity {
 	private EditText passwordEt;
 	private Button loginBt;
 	private Button cancelLoginBt;
+	private Button registroBt;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +117,18 @@ public class LoginActivity extends SherlockActivity {
 							if (mAuthTask != null) {
 								mAuthTask.cancel(true);
 							}
+						}
+					});
+			registroBt = (Button) findViewById(R.id.btnRegistrese);
+			registroBt.setOnClickListener(
+					new View.OnClickListener() {
+						@Override
+						public void onClick(View view) {
+							if (mAuthTask != null) {
+								mAuthTask.cancel(true);
+							}
+							startActivity(new Intent(LoginActivity.this, RegistroActivity.class));
+							finish();
 						}
 					});
 		} else {
