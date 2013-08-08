@@ -70,9 +70,9 @@
         <activity
             android:name="com.ctm.eadvogado.ProcessoTabsPagerFragment"
             android:label="@string/activity_processo_title"
+            android:launchMode="singleTop"
             android:parentActivityName="com.ctm.eadvogado.ConsultarProcessoActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:launchMode="singleTop" >
+            android:windowSoftInputMode="adjustResize" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ctm.eadvogado.ConsultarProcessoActivity" />
@@ -88,14 +88,18 @@
 
         <service android:name="com.ctm.eadvogado.GCMIntentService" />
 
-        <receiver android:name="com.google.android.gcm.GCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND">
+        <receiver
+            android:name="com.google.android.gcm.GCMBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
-                <category android:name="com.ctm.eadvogado"/>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
+                <category android:name="com.ctm.eadvogado" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
-                <category android:name="com.ctm.eadvogado"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
+                <category android:name="com.ctm.eadvogado" />
             </intent-filter>
         </receiver>
 
@@ -106,6 +110,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ctm.eadvogado.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.ctm.eadvogado.RegistroActivity"
+            android:label="@string/title_activity_registro"
+            android:parentActivityName="com.ctm.eadvogado.LoginActivity"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ctm.eadvogado.LoginActivity" />
         </activity>
     </application>
 
