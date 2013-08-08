@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+  <cron>
+    <url>/atualizarProcessos</url>
+    <description>Atualiza os processos a cada 6 horas</description>
+    <schedule>every 6 hours synchronized</schedule>
+  </cron>
+</cronentries>

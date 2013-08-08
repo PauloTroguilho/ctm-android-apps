@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/ZcA6MLQjSxxXsRvThQFUJm9CP5M\"",
+ "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/gf6bj8JLs5gUJhfMeOejbZfaenk\"",
  "discoveryVersion": "v1",
  "id": "usuarioEndpoint:v1",
  "name": "usuarioEndpoint",
@@ -191,6 +191,54 @@
     "$ref": "Usuario"
    }
   },
+  "enviarEmailParaTodosUsuarios": {
+   "id": "usuarioEndpoint.enviarEmailParaTodosUsuarios",
+   "path": "enviarEmailParaTodosUsuarios/{assunto}/{mensagem}",
+   "httpMethod": "POST",
+   "parameters": {
+    "assunto": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "mensagem": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "assunto",
+    "mensagem"
+   ]
+  },
+  "enviarEmailParaUsuario": {
+   "id": "usuarioEndpoint.enviarEmailParaUsuario",
+   "path": "enviarEmailParaUsuario/{assunto}/{mensagem}/{email}",
+   "httpMethod": "POST",
+   "parameters": {
+    "assunto": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "email": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "mensagem": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "assunto",
+    "mensagem",
+    "email"
+   ]
+  },
   "getByID": {
    "id": "usuarioEndpoint.getByID",
    "path": "usuario/{id}",
@@ -257,6 +305,42 @@
    "response": {
     "$ref": "CollectionResponse_Usuario"
    }
+  },
+  "notificarMovimentacaoProcessual": {
+   "id": "usuarioEndpoint.notificarMovimentacaoProcessual",
+   "path": "notificarMovimentacaoProcessual/{npu}/{idTribunal}/{tipoJuizo}",
+   "httpMethod": "POST",
+   "parameters": {
+    "idTribunal": {
+     "type": "string",
+     "required": true,
+     "format": "int64",
+     "location": "path"
+    },
+    "npu": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "tipoJuizo": {
+     "type": "string",
+     "required": true,
+     "enum": [
+      "PRIMEIRO_GRAU",
+      "SEGUNDO_GRAU"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ],
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "npu",
+    "idTribunal",
+    "tipoJuizo"
+   ]
   },
   "remove": {
    "id": "usuarioEndpoint.remove",

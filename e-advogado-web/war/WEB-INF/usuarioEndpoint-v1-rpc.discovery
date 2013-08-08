@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/ZcA6MLQjSxxXsRvThQFUJm9CP5M\"",
+ "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/gf6bj8JLs5gUJhfMeOejbZfaenk\"",
  "discoveryVersion": "v1",
  "id": "usuarioEndpoint:v1",
  "name": "usuarioEndpoint",
@@ -185,6 +185,45 @@
     "$ref": "Usuario"
    }
   },
+  "usuarioEndpoint.enviarEmailParaTodosUsuarios": {
+   "id": "usuarioEndpoint.enviarEmailParaTodosUsuarios",
+   "parameters": {
+    "assunto": {
+     "type": "string",
+     "required": true
+    },
+    "mensagem": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "assunto",
+    "mensagem"
+   ]
+  },
+  "usuarioEndpoint.enviarEmailParaUsuario": {
+   "id": "usuarioEndpoint.enviarEmailParaUsuario",
+   "parameters": {
+    "assunto": {
+     "type": "string",
+     "required": true
+    },
+    "email": {
+     "type": "string",
+     "required": true
+    },
+    "mensagem": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "assunto",
+    "mensagem",
+    "email"
+   ]
+  },
   "usuarioEndpoint.getByID": {
    "id": "usuarioEndpoint.getByID",
    "allowGet": true,
@@ -246,6 +285,37 @@
    "returns": {
     "$ref": "CollectionResponse_Usuario"
    }
+  },
+  "usuarioEndpoint.notificarMovimentacaoProcessual": {
+   "id": "usuarioEndpoint.notificarMovimentacaoProcessual",
+   "parameters": {
+    "idTribunal": {
+     "type": "string",
+     "required": true,
+     "format": "int64"
+    },
+    "npu": {
+     "type": "string",
+     "required": true
+    },
+    "tipoJuizo": {
+     "type": "string",
+     "required": true,
+     "enum": [
+      "PRIMEIRO_GRAU",
+      "SEGUNDO_GRAU"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   },
+   "parameterOrder": [
+    "npu",
+    "idTribunal",
+    "tipoJuizo"
+   ]
   },
   "usuarioEndpoint.remove": {
    "id": "usuarioEndpoint.remove",
