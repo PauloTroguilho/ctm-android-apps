@@ -1,4 +1,8 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list><!-- ***** Designate client-side state saving. ***** -->
@@ -22,14 +26,14 @@
 		<param-name>com.sun.faces.enableThreading</param-name>
 		<param-value>false</param-value>
 		<description>
-	      When enabled, the runtime initialization and default ResourceHandler 
-	      implementation will use threads to perform their functions. Set this 
-	      value to false if threads aren't desired (as in the case of running 
-	      within the Google Application Engine).
-	
-	      Note that when this option is disabled, the ResourceHandler will not 
-	      pick up new versions of resources when ProjectStage is development.
-	   </description>
+			When enabled, the runtime initialization and default ResourceHandler
+			implementation will use threads to perform their functions. Set this
+			value to false if threads aren't desired (as in the case of running
+			within the Google Application Engine).
+
+			Note that when this option is disabled, the ResourceHandler will not
+			pick up new versions of resources when ProjectStage is development.
+		</description>
 	</context-param>
 	<!-- ***** Specify Java Unified Expression Language 3.0 Over Default -->
 	<context-param>
@@ -47,16 +51,35 @@
 		<url-pattern>/faces/*</url-pattern>
 		<url-pattern>*.jsf</url-pattern>
 	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>CarregarProcessoServlet</servlet-name>
+		<servlet-class>com.ctm.eadvogado.servlets.CarregarProcessoServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CarregarProcessoServlet</servlet-name>
+		<url-pattern>/carregarProcesso</url-pattern>
+	</servlet-mapping>
 	
 	<servlet>
-        <servlet-name>CarregarProcessoServlet</servlet-name>
-        <servlet-class>com.ctm.eadvogado.servlets.CarregarProcessoServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>CarregarProcessoServlet</servlet-name>
-        <url-pattern>/carregarProcesso</url-pattern>
-    </servlet-mapping>
+		<servlet-name>AtualizarProcessosServlet</servlet-name>
+		<servlet-class>com.ctm.eadvogado.servlets.AtualizarProcessosServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AtualizarProcessosServlet</servlet-name>
+		<url-pattern>/atualizarProcessos</url-pattern>
+	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>NotificarMovimentacaoServlet</servlet-name>
+		<servlet-class>com.ctm.eadvogado.servlets.NotificarMovimentacaoServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AtualizarProcessosServlet</servlet-name>
+		<url-pattern>/notificarMovimentacao</url-pattern>
+	</servlet-mapping>
+	
+
 	<listener>
 		<listener-class>com.ctm.eadvogado.listener.ContextListener</listener-class>
 	</listener>
@@ -70,16 +93,25 @@
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>welcome.xhtml</welcome-file>
 	</welcome-file-list>
- <servlet>
-  <servlet-name>SystemServiceServlet</servlet-name>
-  <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
-  <init-param>
-   <param-name>services</param-name>
-   <param-value>com.ctm.eadvogado.endpoints.CompraEndpoint,com.ctm.eadvogado.endpoints.DeviceEndpoint,com.ctm.eadvogado.endpoints.ProcessoEndpoint,com.ctm.eadvogado.endpoints.TribunalEndpoint,com.ctm.eadvogado.endpoints.UsuarioEndpoint</param-value>
-  </init-param>
- </servlet>
- <servlet-mapping>
-  <servlet-name>SystemServiceServlet</servlet-name>
-  <url-pattern>/_ah/spi/*</url-pattern>
- </servlet-mapping>
+	<servlet>
+		<servlet-name>SystemServiceServlet</servlet-name>
+		<servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
+		<init-param>
+			<param-name>services</param-name>
+			<param-value>com.ctm.eadvogado.endpoints.CompraEndpoint,com.ctm.eadvogado.endpoints.DeviceEndpoint,com.ctm.eadvogado.endpoints.ProcessoEndpoint,com.ctm.eadvogado.endpoints.TribunalEndpoint,com.ctm.eadvogado.endpoints.UsuarioEndpoint</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SystemServiceServlet</servlet-name>
+		<url-pattern>/_ah/spi/*</url-pattern>
+	</servlet-mapping>
+	
+	<security-constraint>
+        <web-resource-collection>
+            <url-pattern>/cron/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
 </web-app>

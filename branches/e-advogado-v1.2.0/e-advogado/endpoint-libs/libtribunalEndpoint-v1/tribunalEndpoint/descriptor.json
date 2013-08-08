@@ -1,20 +1,29 @@
 {
   "files": [
     {
-      "path": "e-advogado-web-tribunalEndpoint-v1-20130727043040-java-1.15.0-rc-sources.jar", 
-      "type": "source"
+      "downloadUrl": "/downloads/tribunalEndpoint/v1/20130808063601/java/1.15.0-rc/e-advogado-web-tribunalEndpoint-v1-20130808063601-java-1.15.0-rc-sources.jar", 
+      "path": "e-advogado-web-tribunalEndpoint-v1-20130808063601-java-1.15.0-rc-sources.jar", 
+      "type": "source", 
+      "timestamp": "2013-08-08 06:36"
     }, 
     {
-      "path": "e-advogado-web-tribunalEndpoint-v1-20130727043040-java-1.15.0-rc.jar.properties", 
+      "path": "e-advogado-web-tribunalEndpoint-v1-20130808063601-java-1.15.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
+  "proguard-config": "proguard-google-api-client.txt", 
   "kind": "discovery#directoryItem", 
   "moduleName": "com.ctm.eadvogado.endpoints", 
   "name": "tribunalEndpoint", 
   "language": "java", 
-  "proguard-config": "proguard-google-api-client.txt", 
+  "ownerDomain": "appspot.com", 
+  "maven": {
+    "group_id": "com.appspot", 
+    "artifact_id": "endpoints-tribunalEndpoint", 
+    "version": "v1-SNAPSHOT"
+  }, 
   "version": "v1", 
+  "ownerName": "eadvogado.ctm.com", 
   "dependencies": [
     {
       "files": [
@@ -689,7 +698,7 @@
     }
   ], 
   "language_version": "1.15.0-rc", 
-  "revision": 20130727043040, 
+  "revision": 20130808063601, 
   "id": "tribunalEndpoint:v1", 
   "modulePath": "com/ctm/eadvogado/endpoints"
 }
