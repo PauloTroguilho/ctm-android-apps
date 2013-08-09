@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/gf6bj8JLs5gUJhfMeOejbZfaenk\"",
+ "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/OhSymPfPCr_x5A022iiBIhaqIFQ\"",
  "discoveryVersion": "v1",
  "id": "usuarioEndpoint:v1",
  "name": "usuarioEndpoint",
@@ -192,14 +192,19 @@
      "type": "string",
      "required": true
     },
-    "mensagem": {
+    "htmlContent": {
+     "type": "string",
+     "required": true
+    },
+    "textContent": {
      "type": "string",
      "required": true
     }
    },
    "parameterOrder": [
     "assunto",
-    "mensagem"
+    "textContent",
+    "htmlContent"
    ]
   },
   "usuarioEndpoint.enviarEmailParaUsuario": {
@@ -213,14 +218,19 @@
      "type": "string",
      "required": true
     },
-    "mensagem": {
+    "htmlContent": {
+     "type": "string",
+     "required": true
+    },
+    "textContent": {
      "type": "string",
      "required": true
     }
    },
    "parameterOrder": [
     "assunto",
-    "mensagem",
+    "textContent",
+    "htmlContent",
     "email"
    ]
   },

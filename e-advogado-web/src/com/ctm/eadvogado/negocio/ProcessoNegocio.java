@@ -124,19 +124,6 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	@Transacional
 	public void associarProcessoAoUsuario(Long idProcesso, String email) throws NegocioException, PersistenceException{
 		Usuario usuario = usuarioDao.findByEmail(email);
-		if (usuario.getProcessos() != null && !usuario.getProcessos().isEmpty()) {
-			for (Key processoKey : usuario.getProcessos()) {
-				UsuarioProcesso usuarioProcesso = usuarioProcessoDao.selectPorUsuarioProcesso(usuario.getKey().getId(), idProcesso);
-				if (usuarioProcesso == null) {
-					usuarioProcesso = new UsuarioProcesso();
-					usuarioProcesso.setUsuario(usuario.getKey());
-					usuarioProcesso.setProcesso(processoKey);
-					usuarioProcessoDao.insert(usuarioProcesso);
-				}
-			}
-			usuario.getProcessos().clear();
-			usuarioDao.update(usuario);
-		}
 		Long saldoLancamentos = lancamentoDao.getSaldoLancamentos(usuario);
 		if (saldoLancamentos.longValue() > 0 || 
 					usuario.getTipoConta().equals(TipoConta.PREMIUM)) {
