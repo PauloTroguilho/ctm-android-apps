@@ -133,23 +133,10 @@ public class MeusProcessosActivity extends SlidingActivity {
 			List<ProcessoUsuario> processos = null;
 			int tries = 3;
 			int attempt = 0;
-			while (attempt < tries) {
+			while (attempt < tries && processos == null) {
 				try {
 					processos = processoEndpoint.consultarProcessosDoUsuario(
 							getEmail(), getSenha()).execute().getItems();
-					for (ProcessoUsuario processoUsuario : processos) {
-						Processo p = new Processo();
-						p.setNpu(processoUsuario.getNpu());
-						p.setTipoJuizo(processoUsuario.getTipoJuizo());
-						p.setTribunal(new Key());
-						p.getTribunal().setId(processoUsuario.getIdTribunal());
-						try {
-							dbHelper.insertProcessoSeNaoExiste(p);
-						} catch (Exception e) {
-							Log.e(TAG, "Falha ao inserir processo do usuario.");
-						}
-					}
-					break;
 				} catch(GoogleJsonResponseException e) {
 					Log.e(TAG, "Erro ao executar a operação!", e);
 					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
@@ -168,6 +155,20 @@ public class MeusProcessosActivity extends SlidingActivity {
 			consultarMeusProcessosTask = null;
 			showProgress(false, statusView, listarFormView);
 			if (processos != null && !processos.isEmpty()) {
+				
+				for (ProcessoUsuario processoUsuario : processos) {
+					Processo p = new Processo();
+					p.setNpu(processoUsuario.getNpu());
+					p.setTipoJuizo(processoUsuario.getTipoJuizo());
+					p.setTribunal(new Key());
+					p.getTribunal().setId(processoUsuario.getIdTribunal());
+					try {
+						dbHelper.insertProcessoSeNaoExiste(p);
+					} catch (Exception e) {
+						Log.e(TAG, "Falha ao inserir processo do usuario.");
+					}
+				}
+				
 				ProcessoUsuarioAdapter processoAdapter = new ProcessoUsuarioAdapter(
 						MeusProcessosActivity.this,
 						R.layout.processo_list_item, processos);

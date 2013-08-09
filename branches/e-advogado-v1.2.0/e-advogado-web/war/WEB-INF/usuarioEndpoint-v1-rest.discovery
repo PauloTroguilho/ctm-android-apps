@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/gf6bj8JLs5gUJhfMeOejbZfaenk\"",
+ "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/OhSymPfPCr_x5A022iiBIhaqIFQ\"",
  "discoveryVersion": "v1",
  "id": "usuarioEndpoint:v1",
  "name": "usuarioEndpoint",
@@ -193,7 +193,7 @@
   },
   "enviarEmailParaTodosUsuarios": {
    "id": "usuarioEndpoint.enviarEmailParaTodosUsuarios",
-   "path": "enviarEmailParaTodosUsuarios/{assunto}/{mensagem}",
+   "path": "enviarEmailParaTodosUsuarios/{assunto}/{textContent}/{htmlContent}",
    "httpMethod": "POST",
    "parameters": {
     "assunto": {
@@ -201,7 +201,12 @@
      "required": true,
      "location": "path"
     },
-    "mensagem": {
+    "htmlContent": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "textContent": {
      "type": "string",
      "required": true,
      "location": "path"
@@ -209,12 +214,13 @@
    },
    "parameterOrder": [
     "assunto",
-    "mensagem"
+    "textContent",
+    "htmlContent"
    ]
   },
   "enviarEmailParaUsuario": {
    "id": "usuarioEndpoint.enviarEmailParaUsuario",
-   "path": "enviarEmailParaUsuario/{assunto}/{mensagem}/{email}",
+   "path": "enviarEmailParaUsuario/{assunto}/{textContent}/{htmlContent}/{email}",
    "httpMethod": "POST",
    "parameters": {
     "assunto": {
@@ -227,7 +233,12 @@
      "required": true,
      "location": "path"
     },
-    "mensagem": {
+    "htmlContent": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "textContent": {
      "type": "string",
      "required": true,
      "location": "path"
@@ -235,7 +246,8 @@
    },
    "parameterOrder": [
     "assunto",
-    "mensagem",
+    "textContent",
+    "htmlContent",
     "email"
    ]
   },

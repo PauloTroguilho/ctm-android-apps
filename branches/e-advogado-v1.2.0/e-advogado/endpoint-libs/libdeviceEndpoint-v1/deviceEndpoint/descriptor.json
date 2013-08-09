@@ -1,13 +1,13 @@
 {
   "files": [
     {
-      "downloadUrl": "/downloads/deviceEndpoint/v1/20130808063703/java/1.15.0-rc/e-advogado-web-deviceEndpoint-v1-20130808063703-java-1.15.0-rc-sources.jar", 
-      "path": "e-advogado-web-deviceEndpoint-v1-20130808063703-java-1.15.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/deviceEndpoint/v1/20130809024950/java/1.15.0-rc/e-advogado-web-deviceEndpoint-v1-20130809024950-java-1.15.0-rc-sources.jar", 
+      "path": "e-advogado-web-deviceEndpoint-v1-20130809024950-java-1.15.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-08-08 06:37"
+      "timestamp": "2013-08-09 02:49"
     }, 
     {
-      "path": "e-advogado-web-deviceEndpoint-v1-20130808063703-java-1.15.0-rc.jar.properties", 
+      "path": "e-advogado-web-deviceEndpoint-v1-20130809024950-java-1.15.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -698,7 +698,7 @@
     }
   ], 
   "language_version": "1.15.0-rc", 
-  "revision": 20130808063703, 
+  "revision": 20130809024950, 
   "id": "deviceEndpoint:v1", 
   "modulePath": "com/ctm/eadvogado/endpoints"
 }

@@ -116,7 +116,7 @@
       }
     },
     "usuarioEndpoint.enviarEmailParaUsuario" : {
-      "path" : "enviarEmailParaUsuario/{assunto}/{mensagem}/{email}",
+      "path" : "enviarEmailParaUsuario/{assunto}/{textContent}/{htmlContent}/{email}",
       "httpMethod" : "POST",
       "scopes" : [ ],
       "audiences" : [ ],
@@ -128,7 +128,11 @@
             "type" : "string",
             "required" : true
           },
-          "mensagem" : {
+          "textContent" : {
+            "type" : "string",
+            "required" : true
+          },
+          "htmlContent" : {
             "type" : "string",
             "required" : true
           },
@@ -201,30 +205,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "usuarioEndpoint.enviarEmailParaTodosUsuarios" : {
-      "path" : "enviarEmailParaTodosUsuarios/{assunto}/{mensagem}",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaTodosUsuarios",
-      "request" : {
-        "parameters" : {
-          "assunto" : {
-            "type" : "string",
-            "required" : true
-          },
-          "mensagem" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "empty"
-      }
-    },
     "usuarioEndpoint.getByID" : {
       "path" : "usuario/{id}",
       "httpMethod" : "GET",
@@ -243,6 +223,34 @@
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "usuarioEndpoint.enviarEmailParaTodosUsuarios" : {
+      "path" : "enviarEmailParaTodosUsuarios/{assunto}/{textContent}/{htmlContent}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaTodosUsuarios",
+      "request" : {
+        "parameters" : {
+          "assunto" : {
+            "type" : "string",
+            "required" : true
+          },
+          "textContent" : {
+            "type" : "string",
+            "required" : true
+          },
+          "htmlContent" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
       }
     }
   },
@@ -378,12 +386,12 @@
           "$ref" : "CollectionResponse_Usuario"
         }
       },
-      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaTodosUsuarios" : {
-      },
       "com.ctm.eadvogado.endpoints.UsuarioEndpoint.getByID" : {
         "response" : {
           "$ref" : "Usuario"
         }
+      },
+      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaTodosUsuarios" : {
       }
     }
   }
