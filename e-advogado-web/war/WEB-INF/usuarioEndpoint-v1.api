@@ -116,7 +116,7 @@
       }
     },
     "usuarioEndpoint.enviarEmailParaUsuario" : {
-      "path" : "enviarEmailParaUsuario/{assunto}/{textContent}/{htmlContent}/{email}",
+      "path" : "enviarEmailParaUsuario/{from}/{assunto}/{email}",
       "httpMethod" : "POST",
       "scopes" : [ ],
       "audiences" : [ ],
@@ -124,17 +124,21 @@
       "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaUsuario",
       "request" : {
         "parameters" : {
+          "from" : {
+            "type" : "string",
+            "required" : true
+          },
           "assunto" : {
             "type" : "string",
             "required" : true
           },
           "textContent" : {
             "type" : "string",
-            "required" : true
+            "required" : false
           },
           "htmlContent" : {
             "type" : "string",
-            "required" : true
+            "required" : false
           },
           "email" : {
             "type" : "string",
@@ -205,6 +209,46 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "usuarioEndpoint.enviarEmailParaTodosUsuarios" : {
+      "path" : "enviarEmailParaTodosUsuarios/{from}/{assunto}/{firstRecord}/{maxRecords}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaTodosUsuarios",
+      "request" : {
+        "parameters" : {
+          "from" : {
+            "type" : "string",
+            "required" : true
+          },
+          "assunto" : {
+            "type" : "string",
+            "required" : true
+          },
+          "textContent" : {
+            "type" : "string",
+            "required" : false
+          },
+          "htmlContent" : {
+            "type" : "string",
+            "required" : false
+          },
+          "firstRecord" : {
+            "type" : "int32",
+            "required" : true
+          },
+          "maxRecords" : {
+            "type" : "int32",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
     "usuarioEndpoint.getByID" : {
       "path" : "usuario/{id}",
       "httpMethod" : "GET",
@@ -223,34 +267,6 @@
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "usuarioEndpoint.enviarEmailParaTodosUsuarios" : {
-      "path" : "enviarEmailParaTodosUsuarios/{assunto}/{textContent}/{htmlContent}",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaTodosUsuarios",
-      "request" : {
-        "parameters" : {
-          "assunto" : {
-            "type" : "string",
-            "required" : true
-          },
-          "textContent" : {
-            "type" : "string",
-            "required" : true
-          },
-          "htmlContent" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "empty"
       }
     }
   },
@@ -321,11 +337,11 @@
           "parent" : {
             "$ref" : "Key"
           },
-          "complete" : {
-            "type" : "boolean"
-          },
           "namespace" : {
             "type" : "string"
+          },
+          "complete" : {
+            "type" : "boolean"
           }
         }
       },
@@ -386,12 +402,12 @@
           "$ref" : "CollectionResponse_Usuario"
         }
       },
+      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaTodosUsuarios" : {
+      },
       "com.ctm.eadvogado.endpoints.UsuarioEndpoint.getByID" : {
         "response" : {
           "$ref" : "Usuario"
         }
-      },
-      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaTodosUsuarios" : {
       }
     }
   }

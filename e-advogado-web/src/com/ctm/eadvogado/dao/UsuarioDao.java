@@ -51,6 +51,7 @@ public class UsuarioDao extends BaseDao<Usuario> {
 	 * @param processo
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Usuario> findByProcesso(Processo processo) {
 		Query query = entityManager.createNamedQuery("usuariosPorProcesso");
 		query.setParameter("idProcesso", processo.getKey());

@@ -53,8 +53,7 @@ public class CarregarProcessoServlet extends HttpServlet {
 
 		try {
 			processoNegocio.consultarProcessoJudicial(pNpu,
-					Long.parseLong(pIdTribunal), TipoJuizo.valueOf(pTipoJuizo),
-					true, true);
+					Long.parseLong(pIdTribunal), TipoJuizo.valueOf(pTipoJuizo), true);
 			LOGGER.fine(String.format(
 					"Processo: %s, %s, %s foi salvo com sucesso!", pNpu,
 					pIdTribunal, pTipoJuizo));

@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/OhSymPfPCr_x5A022iiBIhaqIFQ\"",
+ "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/sy-dkl4kCAZ5Z5VWIT1rgY1qHGI\"",
  "discoveryVersion": "v1",
  "id": "usuarioEndpoint:v1",
  "name": "usuarioEndpoint",
@@ -192,19 +192,32 @@
      "type": "string",
      "required": true
     },
-    "htmlContent": {
+    "firstRecord": {
+     "type": "integer",
+     "required": true,
+     "format": "int32"
+    },
+    "from": {
      "type": "string",
      "required": true
     },
+    "htmlContent": {
+     "type": "string"
+    },
+    "maxRecords": {
+     "type": "integer",
+     "required": true,
+     "format": "int32"
+    },
     "textContent": {
-     "type": "string",
-     "required": true
+     "type": "string"
     }
    },
    "parameterOrder": [
+    "from",
     "assunto",
-    "textContent",
-    "htmlContent"
+    "firstRecord",
+    "maxRecords"
    ]
   },
   "usuarioEndpoint.enviarEmailParaUsuario": {
@@ -218,19 +231,20 @@
      "type": "string",
      "required": true
     },
-    "htmlContent": {
+    "from": {
      "type": "string",
      "required": true
     },
+    "htmlContent": {
+     "type": "string"
+    },
     "textContent": {
-     "type": "string",
-     "required": true
+     "type": "string"
     }
    },
    "parameterOrder": [
+    "from",
     "assunto",
-    "textContent",
-    "htmlContent",
     "email"
    ]
   },

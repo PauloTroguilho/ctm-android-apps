@@ -239,26 +239,6 @@
         "body" : "empty"
       }
     },
-    "processoEndpoint.getByID" : {
-      "path" : "processo/{id}",
-      "httpMethod" : "GET",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.getByID",
-      "request" : {
-        "parameters" : {
-          "id" : {
-            "type" : "int64",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "processoEndpoint.removerProcessoDoUsuario" : {
       "path" : "rprocessodousuario/{email}/{idProcesso}",
       "httpMethod" : "DELETE",
@@ -281,6 +261,26 @@
       },
       "response" : {
         "body" : "empty"
+      }
+    },
+    "processoEndpoint.getByID" : {
+      "path" : "processo/{id}",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.getByID",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
       }
     }
   },
@@ -327,11 +327,11 @@
           "parent" : {
             "$ref" : "Key"
           },
-          "complete" : {
-            "type" : "boolean"
-          },
           "namespace" : {
             "type" : "string"
+          },
+          "complete" : {
+            "type" : "boolean"
           }
         }
       },
@@ -962,12 +962,12 @@
       },
       "com.ctm.eadvogado.endpoints.ProcessoEndpoint.associarProcessoAoUsuario" : {
       },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.removerProcessoDoUsuario" : {
+      },
       "com.ctm.eadvogado.endpoints.ProcessoEndpoint.getByID" : {
         "response" : {
           "$ref" : "Processo"
         }
-      },
-      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.removerProcessoDoUsuario" : {
       }
     }
   }
