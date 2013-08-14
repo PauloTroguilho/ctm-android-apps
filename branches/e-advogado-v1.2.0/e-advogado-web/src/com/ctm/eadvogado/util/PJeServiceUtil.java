@@ -26,7 +26,6 @@ public class PJeServiceUtil {
 	private static final String ID_CONSULTANTE = "123";
 	private static final String SENHA_CONSULTANTE = "123";
 	
-	
 	/**
 	 * Consulta um processo no endereço wsdl informado.
 	 * 

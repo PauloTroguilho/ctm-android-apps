@@ -82,7 +82,7 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	private TribunalDao tribunalDao;
 	@Inject
 	private UsuarioProcessoDao usuarioProcessoDao;
-
+	
 	@Override
 	@Inject
 	public void setDao(ProcessoDao dao) {
@@ -149,6 +149,8 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 		}
 	}
 	
+	public static Comparator<TipoMovimentoProcessual> movimentoReverseComparator = Collections.reverseOrder(new TipoMovimentoProcessualComparator());
+	
 	/**
 	 * Consulta um processo
 	 * 
@@ -179,9 +181,9 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 		}
 		if (processo == null || (processo != null && ignorarCache)) {
 			TipoProcessoJudicial processoJudicial = consultarProcessoJudicial(
-					npu, idTribunal, tipoJuizo, ignorarCache, incluirDocumentos);
+					npu, idTribunal, tipoJuizo, incluirDocumentos);
 			if (processoJudicial != null) {
-				Collections.sort(processoJudicial.getMovimento(), new TipoMovimentoProcessualComparator());
+				Collections.sort(processoJudicial.getMovimento(), movimentoReverseComparator);
 				if (processoJudicial.getDadosBasicos().getNivelSigilo() == 0) {
 					if (processo != null) {
 						verificaAtualizacaoENotifica(processo, processoJudicial);
@@ -197,6 +199,7 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 						getDao().insert(processo);
 					}
 				} else {
+					logger.log(Level.WARNING, String.format("Não é permitido acessar o processo %s, idTribunal %s, tipoJuizo %s, ", npu, idTribunal, tipoJuizo));
 					throw new UnauthorizedException("Desculpe! O processo informado não pode ser acessado!");
 				}
 			} else {
@@ -216,8 +219,10 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 			}
 		} else {
 			if (falhaNoServico) {
+				logger.log(Level.WARNING, String.format("Serviço indisponível para o processo %s, idTribunal %s, tipoJuizo %s, ", npu, idTribunal, tipoJuizo));
 				throw new ServiceUnavailableException("Desculpe! Serviço de consulta processual temporáriamente indisponível neste tribunal.");
 			} else {
+				logger.log(Level.WARNING, String.format("Não foi possível localizar o processo %s, idTribunal %s, tipoJuizo %s, ", npu, idTribunal, tipoJuizo));
 				throw new NotFoundException("Desculpe! O Processo informado não foi localizado.");
 			}
 		}
@@ -229,9 +234,7 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	 * @param processoJudicial
 	 */
 	public void verificaAtualizacaoENotifica(Processo processo, TipoProcessoJudicial processoJudicial) {
-		Comparator<TipoMovimentoProcessual> reverseOrder = Collections.reverseOrder(new TipoMovimentoProcessualComparator());
-		Collections.sort(processo.getProcessoJudicial().getMovimento(), reverseOrder);
-		Collections.sort(processoJudicial.getMovimento(), reverseOrder);
+		Collections.sort(processo.getProcessoJudicial().getMovimento(), movimentoReverseComparator);
 		Date dataUltimoMovAnterior = null;
 		try {
 			dataUltimoMovAnterior = TipoMovimentoProcessualComparator.movimentoDateFormat.parse(
@@ -269,7 +272,6 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	 * @param npu
 	 * @param idTribunal
 	 * @param tipoJuizo
-	 * @param ignorarCache
 	 * @param incluirDocumentos
 	 * @return
 	 * @throws NotFoundException
@@ -277,7 +279,7 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	 * @throws ServiceUnavailableException
 	 */
 	public TipoProcessoJudicial consultarProcessoJudicial(String npu, Long idTribunal,
-			TipoJuizo tipoJuizo, boolean ignorarCache, boolean incluirDocumentos)
+			TipoJuizo tipoJuizo, boolean incluirDocumentos)
 			throws NotFoundException, UnauthorizedException,
 			ServiceUnavailableException {
 		TipoProcessoJudicial processoJudicial = null;
@@ -337,12 +339,13 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 			throws NotFoundException {
 		Processo processo = findByNpuTribunalTipoJuizo(npu, idTribunal, tipoJuizo);
 		if (processo != null) {
+			Tribunal tribunal = tribunalDao.findByID(idTribunal);
 			Sender sender = new Sender(API_KEY);
 			// This message object is a Google Cloud Messaging object, it is NOT
 			// related to the MessageData class
 			Message msg = new Message.Builder()
-				.addData("titulo", "e-Advogado: Processo atualizado!")
-				.addData("mensagem", String.format("O processo %s foi recentemente atualizado!", npu))
+				.addData("titulo", "Processo atualizado!")
+				.addData("mensagem", String.format("%s: %s", tribunal.getSigla(), npu))
 				.addData("npu", npu)
 				.addData("idTribunal", idTribunal.toString())
 				.addData("tipoJuizo", tipoJuizo.name())

@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/OhSymPfPCr_x5A022iiBIhaqIFQ\"",
+ "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/sy-dkl4kCAZ5Z5VWIT1rgY1qHGI\"",
  "discoveryVersion": "v1",
  "id": "usuarioEndpoint:v1",
  "name": "usuarioEndpoint",
@@ -193,7 +193,7 @@
   },
   "enviarEmailParaTodosUsuarios": {
    "id": "usuarioEndpoint.enviarEmailParaTodosUsuarios",
-   "path": "enviarEmailParaTodosUsuarios/{assunto}/{textContent}/{htmlContent}",
+   "path": "enviarEmailParaTodosUsuarios/{from}/{assunto}/{firstRecord}/{maxRecords}",
    "httpMethod": "POST",
    "parameters": {
     "assunto": {
@@ -201,26 +201,42 @@
      "required": true,
      "location": "path"
     },
-    "htmlContent": {
+    "firstRecord": {
+     "type": "integer",
+     "required": true,
+     "format": "int32",
+     "location": "path"
+    },
+    "from": {
      "type": "string",
      "required": true,
      "location": "path"
     },
+    "htmlContent": {
+     "type": "string",
+     "location": "query"
+    },
+    "maxRecords": {
+     "type": "integer",
+     "required": true,
+     "format": "int32",
+     "location": "path"
+    },
     "textContent": {
      "type": "string",
-     "required": true,
-     "location": "path"
+     "location": "query"
     }
    },
    "parameterOrder": [
+    "from",
     "assunto",
-    "textContent",
-    "htmlContent"
+    "firstRecord",
+    "maxRecords"
    ]
   },
   "enviarEmailParaUsuario": {
    "id": "usuarioEndpoint.enviarEmailParaUsuario",
-   "path": "enviarEmailParaUsuario/{assunto}/{textContent}/{htmlContent}/{email}",
+   "path": "enviarEmailParaUsuario/{from}/{assunto}/{email}",
    "httpMethod": "POST",
    "parameters": {
     "assunto": {
@@ -233,21 +249,23 @@
      "required": true,
      "location": "path"
     },
-    "htmlContent": {
+    "from": {
      "type": "string",
      "required": true,
      "location": "path"
     },
+    "htmlContent": {
+     "type": "string",
+     "location": "query"
+    },
     "textContent": {
      "type": "string",
-     "required": true,
-     "location": "path"
+     "location": "query"
     }
    },
    "parameterOrder": [
+    "from",
     "assunto",
-    "textContent",
-    "htmlContent",
     "email"
    ]
   },

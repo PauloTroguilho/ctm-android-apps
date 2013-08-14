@@ -97,4 +97,16 @@ public abstract class BaseNegocio<E extends BaseEntity, DAO extends BaseDao<E>> 
 	public List<E> findAll(String sortField, SortOrder sortOrder) throws PersistenceException {
 		return getDao().findAll(sortField, sortOrder);
 	}
+	
+	/**
+	 * @param sortField
+	 * @param sortOrder
+	 * @param firstResult
+	 * @param maxResults
+	 * @return
+	 * @throws PersistenceException
+	 */
+	public List<E> findAll(String sortField, SortOrder sortOrder, int firstResult, int maxResults) throws PersistenceException{
+		return getDao().findAll(sortField, sortOrder, firstResult, maxResults);
+	}
 }

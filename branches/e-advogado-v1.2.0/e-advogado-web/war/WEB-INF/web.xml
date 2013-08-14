@@ -79,6 +79,15 @@
 		<url-pattern>/notificarMovimentacao</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>SendMailServlet</servlet-name>
+		<servlet-class>com.ctm.eadvogado.servlets.SendMailServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SendMailServlet</servlet-name>
+		<url-pattern>/sendMail</url-pattern>
+	</servlet-mapping>
+	
 
 	<listener>
 		<listener-class>com.ctm.eadvogado.listener.ContextListener</listener-class>

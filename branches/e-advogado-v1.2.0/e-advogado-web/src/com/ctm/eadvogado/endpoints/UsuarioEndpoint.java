@@ -1,5 +1,6 @@
 package com.ctm.eadvogado.endpoints;
 
+import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.persistence.NoResultException;
 
@@ -51,18 +52,18 @@ public class UsuarioEndpoint extends BaseEndpoint<Usuario, UsuarioNegocio> {
 	}
 
 	@ApiMethod(name = "enviarEmailParaUsuario")
-	public void enviarEmailParaUsuario(@Named("assunto") String assunto, @Named("textContent") String textContent, @Named("htmlContent") String htmlContent, @Named("email") String email)
+	public void enviarEmailParaUsuario(@Named("from") String from, @Named("assunto") String assunto, @Nullable @Named("textContent") String textContent, @Nullable @Named("htmlContent") String htmlContent, @Named("email") String email)
 			throws NotFoundException {
 		Usuario usuario = getNegocio().findByEmail(email);
 		if (usuario != null) {
-			getNegocio().enviarEmailParaUsuario(assunto, textContent, htmlContent, usuario);
+			getNegocio().enviarEmailParaUsuario(from, assunto, textContent, htmlContent, usuario);
 		} else {
 			throw new NotFoundException(String.format("Não foi encontrado usuário com e-mail: %s", email));
 		}
 	}
 	
 	@ApiMethod(name = "enviarEmailParaTodosUsuarios")
-	public void enviarEmailParaTodosUsuarios(@Named("assunto") String assunto, @Named("textContent") String textContent, @Named("htmlContent") String htmlContent) {
-		getNegocio().enviarEmailParaTodosUsuarios(assunto, textContent, htmlContent);
+	public void enviarEmailParaTodosUsuarios(@Named("from") String from, @Named("assunto") String assunto, @Nullable @Named("textContent") String textContent, @Nullable @Named("htmlContent") String htmlContent, @Named("firstRecord") Integer firstRecord, @Named("maxRecords") Integer maxRecords) {
+		getNegocio().enviarEmailParaTodosUsuarios(from, assunto, textContent, htmlContent, firstRecord, maxRecords);
 	}
 }

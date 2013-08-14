@@ -81,6 +81,7 @@ public class DeviceDao extends BaseDao<Device> {
 	 * @return
 	 * @throws PersistenceException
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Device> findByUsuario(Usuario usuario) throws PersistenceException {
 		Query query = entityManager.createNamedQuery("devicePorUsuario");
 		query.setParameter("idUsuario", usuario.getKey());

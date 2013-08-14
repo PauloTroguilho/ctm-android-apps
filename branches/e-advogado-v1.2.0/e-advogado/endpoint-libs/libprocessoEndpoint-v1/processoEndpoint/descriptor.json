@@ -1,13 +1,13 @@
 {
   "files": [
     {
-      "downloadUrl": "/downloads/processoEndpoint/v1/20130809025116/java/1.15.0-rc/e-advogado-web-processoEndpoint-v1-20130809025116-java-1.15.0-rc-sources.jar", 
-      "path": "e-advogado-web-processoEndpoint-v1-20130809025116-java-1.15.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/processoEndpoint/v1/20130814022004/java/1.15.0-rc/e-advogado-web-processoEndpoint-v1-20130814022004-java-1.15.0-rc-sources.jar", 
+      "path": "e-advogado-web-processoEndpoint-v1-20130814022004-java-1.15.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-08-09 02:51"
+      "timestamp": "2013-08-14 02:20"
     }, 
     {
-      "path": "e-advogado-web-processoEndpoint-v1-20130809025116-java-1.15.0-rc.jar.properties", 
+      "path": "e-advogado-web-processoEndpoint-v1-20130814022004-java-1.15.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -698,7 +698,7 @@
     }
   ], 
   "language_version": "1.15.0-rc", 
-  "revision": 20130809025116, 
+  "revision": 20130814022004, 
   "id": "processoEndpoint:v1", 
   "modulePath": "com/ctm/eadvogado/endpoints"
 }
