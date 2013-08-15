@@ -108,7 +108,10 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 	@Override
 	@Transacional
 	public Usuario insert(Usuario entity) throws PersistenceException, NegocioException {
-		Usuario usuario = findByEmail(entity.getEmail().toLowerCase());
+		Usuario usuario = null;
+		try {
+			usuario = findByEmail(entity.getEmail().toLowerCase());
+		} catch (NoResultException e) {}
 		if (usuario == null) {
 			entity.setTipoConta(TipoConta.BASICA);
 			entity.setDataCadastro(new Date());
