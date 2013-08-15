@@ -9,6 +9,7 @@ import java.util.logging.Level;
 
 import javax.inject.Named;
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
@@ -44,7 +45,16 @@ public class UsuarioDao extends BaseDao<Usuario> {
 	public Usuario findByEmail(String email) throws PersistenceException, NoResultException {
 		Query query = entityManager.createNamedQuery("usuarioPorEmail");
 		query.setParameter("email", email.toLowerCase());
-		return (Usuario) query.getSingleResult();
+		Usuario usuario = null;
+		try {
+			usuario = (Usuario) query.getSingleResult();
+		} catch(NonUniqueResultException e) {
+			logger.log(Level.WARNING, 
+				String.format("Foram encontrados mais de um usuário com o email: %s", email));
+			query.setMaxResults(1);
+			usuario = (Usuario) query.getResultList().get(0);
+		}
+		return usuario;
 	}
 	
 	/**
