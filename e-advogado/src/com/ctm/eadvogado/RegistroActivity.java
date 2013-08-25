@@ -281,28 +281,28 @@ public class RegistroActivity extends Activity {
 		
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			// TODO: attempt authentication against a network service.
 			Usuario usuario = new Usuario();
 			usuario.setEmail(mEmail);
 			usuario.setSenha(mPassword);
-			boolean success = false;
+			boolean isSuccess = false;
 			int tries = 3;
 			int attempt = 0;
-			while (attempt < tries && !success) {
+			while (attempt < tries && !isSuccess) {
 				try {
 					usuarioResult = usuarioEndpoint.insert(usuario).execute();
-					success = true;
+					isSuccess = true;
 				} catch(GoogleJsonResponseException e) {
 					Log.e("e-Advogado", "Erro ao executar a operação!", e);
 					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
 							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
+					break;
 				} catch (IOException e) {
 					Log.e("e-Advogado", "Erro de comunicação ao executar a operação!", e);
 					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
 				}
 				attempt++;
 			}
-			return success;
+			return isSuccess;
 		}
 
 		@Override
