@@ -35,10 +35,6 @@ public class LoginActivity extends SherlockActivity {
 	//protected AccountManager accountManager;
 	//protected Account[] accounts;
 	
-	public static enum LoginStatus {
-		LOGIN_OK, LOGIN_ERROR, INVALID_PASSWORD, ACCOUNT_NOT_FOUND, NETWORK_ERROR;
-	}
-	
 	public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
 	
 	private UsuarioEndpoint usuarioEndpoint;
