@@ -5,7 +5,6 @@ import java.io.IOException;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -17,13 +16,13 @@ import android.support.v4.app.NavUtils;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuInflater;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.UsuarioEndpoint;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.model.Usuario;
 import com.ctm.eadvogado.util.EndpointUtils;
@@ -33,7 +32,7 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
  * Activity which displays a login screen to the user, offering registration as
  * well.
  */
-public class RegistroActivity extends Activity {
+public class RegistroActivity extends SherlockActivity {
 	
 	private SharedPreferences preferences;
 	/**
@@ -127,9 +126,10 @@ public class RegistroActivity extends Activity {
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 	}
-
+	
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(
+			com.actionbarsherlock.view.MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			// This ID represents the Home or Up button. In the case of this
@@ -148,10 +148,10 @@ public class RegistroActivity extends Activity {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		getMenuInflater().inflate(R.menu.registro, menu);
-		return true;
+	public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
+		MenuInflater inflater = getSupportMenuInflater();
+	    inflater.inflate(R.menu.registro, menu);
+	    return true;
 	}
 
 	/**
