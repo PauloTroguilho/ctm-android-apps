@@ -42,6 +42,26 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "usuarioEndpoint.resetarSenha" : {
+      "path" : "resetarSenha/{email}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.resetarSenha",
+      "request" : {
+        "parameters" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
     "usuarioEndpoint.notificarMovimentacaoProcessual" : {
       "path" : "notificarMovimentacaoProcessual/{npu}/{idTribunal}/{tipoJuizo}",
       "httpMethod" : "POST",
@@ -76,6 +96,34 @@
         "body" : "empty"
       }
     },
+    "usuarioEndpoint.enviarNotificacaoParaTodos" : {
+      "path" : "enviarNotificacaoParaTodos/{titulo}/{mensagem}/{tipoNotificacao}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarNotificacaoParaTodos",
+      "request" : {
+        "parameters" : {
+          "titulo" : {
+            "type" : "string",
+            "required" : true
+          },
+          "mensagem" : {
+            "type" : "string",
+            "required" : true
+          },
+          "tipoNotificacao" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
     "usuarioEndpoint.autenticar" : {
       "path" : "autenticar/{email}/{senha}",
       "httpMethod" : "POST",
@@ -95,21 +143,6 @@
           }
         },
         "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "usuarioEndpoint.insert" : {
-      "path" : "usuario",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.insert",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
@@ -149,6 +182,21 @@
       },
       "response" : {
         "body" : "empty"
+      }
+    },
+    "usuarioEndpoint.insert" : {
+      "path" : "usuario",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.insert",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
       }
     },
     "usuarioEndpoint.remove" : {
@@ -240,6 +288,38 @@
           },
           "maxRecords" : {
             "type" : "int32",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
+    "usuarioEndpoint.enviarNotificacao" : {
+      "path" : "enviarNotificacao/{email}/{titulo}/{mensagem}/{tipoNotificacao}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarNotificacao",
+      "request" : {
+        "parameters" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          },
+          "titulo" : {
+            "type" : "string",
+            "required" : true
+          },
+          "mensagem" : {
+            "type" : "string",
+            "required" : true
+          },
+          "tipoNotificacao" : {
+            "type" : "string",
             "required" : true
           }
         },
@@ -375,12 +455,21 @@
           "$ref" : "Usuario"
         }
       },
+      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.resetarSenha" : {
+        "response" : {
+          "$ref" : "Usuario"
+        }
+      },
       "com.ctm.eadvogado.endpoints.UsuarioEndpoint.notificarMovimentacaoProcessual" : {
+      },
+      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarNotificacaoParaTodos" : {
       },
       "com.ctm.eadvogado.endpoints.UsuarioEndpoint.autenticar" : {
         "response" : {
           "$ref" : "Usuario"
         }
+      },
+      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaUsuario" : {
       },
       "com.ctm.eadvogado.endpoints.UsuarioEndpoint.insert" : {
         "request" : {
@@ -389,8 +478,6 @@
         "response" : {
           "$ref" : "Usuario"
         }
-      },
-      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaUsuario" : {
       },
       "com.ctm.eadvogado.endpoints.UsuarioEndpoint.remove" : {
         "response" : {
@@ -403,6 +490,8 @@
         }
       },
       "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaTodosUsuarios" : {
+      },
+      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarNotificacao" : {
       },
       "com.ctm.eadvogado.endpoints.UsuarioEndpoint.getByID" : {
         "response" : {

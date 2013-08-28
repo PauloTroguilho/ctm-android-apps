@@ -1,5 +1,6 @@
 package com.ctm.eadvogado;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
@@ -14,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ctm.eadvogado.billingutils.IabHelper;
 import com.ctm.eadvogado.billingutils.IabResult;
@@ -45,6 +47,8 @@ public class MinhaContaActivity extends SlidingActivity {
     static final String SKU_PROCESSOS_10 = "processos_10";
     static final String SKU_PROCESSOS_25 = "processos_25";
     static final String SKU_PROCESSOS_100 = "processos_100";
+    static final String SKU_PROCESSOS_ILIMITADOS = "processos_ilimitados";
+     
     // SKU for our subscription (conta premium)
     static final String SKU_CONTA_PREMIUM = "conta_premium";
     
@@ -80,7 +84,7 @@ public class MinhaContaActivity extends SlidingActivity {
 		btContaPremium.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				doEfetuarCompra(SKU_CONTA_PREMIUM);
+				doEfetuarCompra(SKU_PROCESSOS_ILIMITADOS);
 			}
 		});
 		
@@ -165,7 +169,7 @@ public class MinhaContaActivity extends SlidingActivity {
 					isThreadStarted = true;
 				}
 			}
-			String[] skus = new String[] {SKU_PROCESSOS_10, SKU_PROCESSOS_25, SKU_PROCESSOS_100};
+			String[] skus = new String[] {SKU_PROCESSOS_10, SKU_PROCESSOS_25, SKU_PROCESSOS_100, SKU_PROCESSOS_ILIMITADOS};
 			for (String sku : skus) {
 				// Check for gas delivery -- if we own gas, we should fill up the tank immediately
 	            Purchase purchase = inventory.getPurchase(sku);
@@ -191,7 +195,13 @@ public class MinhaContaActivity extends SlidingActivity {
 			for (int i = 0; i < results.size(); i++) {
 				IabResult iabResult = results.get(i);
 				if (iabResult.isSuccess()) {
-					Log.d(TAG, "Compra realizada com sucesso: " + purchases.get(i));
+					Purchase purchase = purchases.get(i);
+					Log.d(TAG, "Compra realizada com sucesso: " + purchase);
+					if (purchase.getSku().equals(SKU_PROCESSOS_ILIMITADOS)) {
+						preferences.edit().putString(
+	    					PreferencesActivity.PREFS_KEY_TIPO_CONTA, Consts.TIPO_CONTA_PREMIUM).commit();
+	    				isContaPremium = true;
+					}
 				} else {
 	            	complain("Houve um erro registrando a compra! Favor reiniciar o aplicativo." + iabResult);
 	            }
@@ -208,6 +218,11 @@ public class MinhaContaActivity extends SlidingActivity {
             Log.d(TAG, "Consumo finalizado. Compra: " + purchase + ", result: " + result);
 			if (result.isSuccess()) {
 				Log.d(TAG, "Compra realizada com sucesso: " + purchase);
+				if (purchase.getSku().equals(SKU_PROCESSOS_ILIMITADOS)) {
+					preferences.edit().putString(
+    					PreferencesActivity.PREFS_KEY_TIPO_CONTA, Consts.TIPO_CONTA_PREMIUM).commit();
+    				isContaPremium = true;
+				}
 			} else {
             	complain("Houve um erro registrando a compra! Favor reiniciar o aplicativo." + result);
             }
@@ -263,28 +278,29 @@ public class MinhaContaActivity extends SlidingActivity {
      */
     public class EfetuarCompraTask extends AsyncTask<String, Void, Compra> {
     	
-    	int errorCode = -1;
+    	String mensagem = null;
     	String sku = null;
 
 		@Override
 		protected Compra doInBackground(String... skus) {
 			sku = skus[0];
 			Compra compra = null;
-	        try {
-				compra = compraEndpoint.gerarCompraPendente(getEmail(), getSenha(), sku).execute();
-			} catch(GoogleJsonResponseException e) {
-				if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_NOT_FOUND)
-						|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("not found"))) {
-					errorCode = HttpStatus.SC_NOT_FOUND;
-				} else if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_UNAUTHORIZED)
-						|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("unauthorized"))) {
-					errorCode = HttpStatus.SC_UNAUTHORIZED;
-				} else if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_BAD_REQUEST)
-						|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("bad request"))) {
-					errorCode = HttpStatus.SC_BAD_REQUEST;
+			int tries = 3;
+			int attempt = 0;
+			while (attempt < tries) {
+				try {
+					compra = compraEndpoint.gerarCompraPendente(getEmail(), getSenha(), sku).execute();
+					if (compra != null)
+						break;
+				} catch(GoogleJsonResponseException e) {
+					Log.e(TAG, "Erro ao executar a operação!", e);
+					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
+							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
+				} catch (IOException e) {
+					Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
+					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
 				}
-			} catch (Exception e) {
-				Log.e(TAG, "Falha ao realizar login.", e);
+				attempt++;
 			}
 			return compra;
 		}
@@ -297,22 +313,14 @@ public class MinhaContaActivity extends SlidingActivity {
 						compra.getPayload());
 				isOnPurchase = true;
 	        } else {
-	        	String msg = null;
-	        	switch (errorCode) {
-					case HttpStatus.SC_NOT_FOUND:
-						msg = "Desculpe! OS dados informados não foram encontrados no servidor.";
-						break;
-					case HttpStatus.SC_UNAUTHORIZED:
-						msg = "Usuário e/ou senha inválidos.";
-						break;
-					case HttpStatus.SC_BAD_REQUEST:
-						msg = "O SKU informado é válido.";
-						break;
-					default:
-						msg = "Desculpe! Não foi possível realizar a compra neste momento. Tente novamente em alguns minutos.";
-						break;
+	        	if (mensagem.length() == 0) {
+					Toast.makeText(MinhaContaActivity.this,
+							R.string.msg_erro_inesperado,
+							Toast.LENGTH_LONG).show();
+				} else {
+					Toast.makeText(MinhaContaActivity.this,
+							mensagem, Toast.LENGTH_LONG).show();
 				}
-	        	alert(msg);
 	        }
 			efetuarCompraTask = null;
 			setSupportProgressBarIndeterminateVisibility(false);
@@ -363,8 +371,8 @@ public class MinhaContaActivity extends SlidingActivity {
      */
     public class ConfirmarCompraTask extends AsyncTask<Purchase, Void, Compra> {
     	
-    	int errorCode = -1;
     	Purchase purchase = null;
+    	String mensagem = null;
     	
 		@Override
 		protected Compra doInBackground(Purchase... params) {
@@ -374,23 +382,24 @@ public class MinhaContaActivity extends SlidingActivity {
 					purchase.getSku(), purchase.getDeveloperPayload(),
 					purchase.getToken()));
 			Compra compra = null;
-	        try {
-				compra = compraEndpoint.confirmarCompra(getEmail(),
-						getSenha(), purchase.getSku(),
-						purchase.getDeveloperPayload(), purchase.getToken(), purchase.getOrderId()).execute();
-			} catch(GoogleJsonResponseException e) {
-				if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_NOT_FOUND)
-						|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("not found"))) {
-					errorCode = HttpStatus.SC_NOT_FOUND;
-				} else if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_UNAUTHORIZED)
-						|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("unauthorized"))) {
-					errorCode = HttpStatus.SC_UNAUTHORIZED;
-				} else if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_BAD_REQUEST)
-						|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("bad request"))) {
-					errorCode = HttpStatus.SC_BAD_REQUEST;
+			int tries = 3;
+			int attempt = 0;
+			while (attempt < tries) {
+				try {
+					compra = compraEndpoint.confirmarCompra(getEmail(),
+							getSenha(), purchase.getSku(), purchase.getDeveloperPayload(), 
+							purchase.getToken(), purchase.getOrderId()).execute();
+					if (compra != null)
+						break;
+				} catch(GoogleJsonResponseException e) {
+					Log.e(TAG, "Erro ao executar a operação!", e);
+					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
+							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
+				} catch (IOException e) {
+					Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
+					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
 				}
-			} catch (Exception e) {
-				Log.e(TAG, "Falha ao realizar login.", e);
+				attempt++;
 			}
 			return compra;
 		}
@@ -401,12 +410,12 @@ public class MinhaContaActivity extends SlidingActivity {
 				if (compra.getSituacao().equals(Consts.SITUACAO_COMPRA_CONFIMADA)) {
 					if (purchase.getSku().equals(SKU_PROCESSOS_10)
 	    					|| purchase.getSku().equals(SKU_PROCESSOS_25)
-	    					|| purchase.getSku().equals(SKU_PROCESSOS_100)) {
+	    					|| purchase.getSku().equals(SKU_PROCESSOS_100)
+	    					|| purchase.getSku().equals(SKU_PROCESSOS_ILIMITADOS)) {
 	                	Log.d(TAG, String.format("Comprou o produto %s. Registrando compra", purchase.getSku()));
 	                	alert("Obrigado pela realização da compra!");
 	                	mHelper.consumeAsync(purchase, mConsumeFinishedListener);
 	                } else if (purchase.getSku().equals(SKU_CONTA_PREMIUM)) {
-	                    // bought the infinite gas subscription
 	                    Log.d(TAG, "Fez o upgrade para conta premium.");
 	                    preferences.edit().putString(
 	    						PreferencesActivity.PREFS_KEY_TIPO_CONTA, USUARIO.getTipoConta()).commit();
@@ -418,22 +427,14 @@ public class MinhaContaActivity extends SlidingActivity {
 					alert("Desculpe! Não foi possível confirmar a compra. Tente novamente em alguns minutos.");
 				}
             } else {
-            	String msg = null;
-	        	switch (errorCode) {
-					case HttpStatus.SC_NOT_FOUND:
-						msg = "Desculpe! Os dados informados não foram encontrados no servidor.";
-						break;
-					case HttpStatus.SC_UNAUTHORIZED:
-						msg = "Usuário e/ou senha inválidos.";
-						break;
-					case HttpStatus.SC_BAD_REQUEST:
-						msg = "O SKU informado é válido.";
-						break;
-					default:
-						msg = "Desculpe! Não foi possível realizar a compra neste momento. Tente novamente em alguns minutos.";
-						break;
+            	if (mensagem.length() == 0) {
+					Toast.makeText(MinhaContaActivity.this,
+							R.string.msg_erro_inesperado,
+							Toast.LENGTH_LONG).show();
+				} else {
+					Toast.makeText(MinhaContaActivity.this,
+							mensagem, Toast.LENGTH_LONG).show();
 				}
-	        	alert(msg);
             }
 			confirmarCompraTask = null;
 			setSupportProgressBarIndeterminateVisibility(false);
@@ -568,7 +569,7 @@ public class MinhaContaActivity extends SlidingActivity {
 			if (usuario != null) {
 				USUARIO = usuario;
 				tvCategoria.setText(usuario.getTipoConta());
-				tvQtdeCadastrados.setText((usuario.getProcessos() != null ? usuario.getProcessos().size() : 0) + "");
+				tvQtdeCadastrados.setText(dbHelper.selectProcessosCount() + "");
 				tvQtdeDisponivel.setText(usuario.getSaldo().toString());
 			} else {
 				if (errorCode == HttpStatus.SC_UNAUTHORIZED) {

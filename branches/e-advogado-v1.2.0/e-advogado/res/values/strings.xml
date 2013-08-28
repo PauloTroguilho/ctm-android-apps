@@ -57,6 +57,7 @@
     <string name="msg_nenhum_processo_cadastrado">Você ainda não possui processos em acompanhamento!</string>
     <string name="msg_tipo_documento_nao_suportado">No momento, este tipo de documento ainda não é suportado.</string>
     <string name="msg_erro_salvando_arquivo">Não foi possível salvar o arquivo. Favor verificar seu cartão de memória e espaço disponível!</string>
+    <string name="msg_email_nova_senha">Atenção! Foi enviada uma nova senha para seu e-mail. Verifique e tente novamente.</string>
     <string name="title_activity_minha_conta">Minha Conta</string>
     <string name="hello_world">Hello world!</string>
     <string name="msg_minha_conta">Aqui você pode verificar as informações sobre sua conta.</string>
@@ -78,7 +79,9 @@
     <string name="mov_documento_vinculado">Documento Vinculado:</string>
     <string name="mov_documento">Documento:</string>
     <string name="btn_download">Download</string>
-    <string name="login_primeiro_acesso">Primeiro acesso:</string>
+    <string name="login_primeiro_acesso">Primeiro acesso?</string>
     <string name="login_btn_registrese">Registre-se aqui!</string>
     <string name="reg_bt_cadastrar">Cadastrar</string>
+    <string name="btn_esqueci_senha">Esqueceu sua senha?</string>
+    <string name="btn_clique_aqui">Clique aqui!</string>
 </resources>

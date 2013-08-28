@@ -4,7 +4,10 @@
 package com.ctm.eadvogado.dao;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import javax.inject.Named;
@@ -77,13 +80,50 @@ public class ProcessoDao extends BaseDao<Processo> {
 			logger.log(Level.INFO, "Nenhum processo por usuario: "+ usuario.getEmail(), e);
 		}
 		if (!processosKeys.isEmpty()) {
-			query = entityManager.createNamedQuery("processosInElements");
-			query.setParameter("processos", processosKeys);
-			try {
-				resultList = query.getResultList();
-			} catch(PersistenceException e) {
-				logger.log(Level.SEVERE, "Erro ao consultar processos do usuario: "+ usuario.getEmail(), e);
-			}
+			resultList = findByKeys(processosKeys);
+		}
+		return resultList;
+	}
+	
+	
+	/**
+	 * @param processosKeys
+	 * @return
+	 * @throws PersistenceException
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Processo> findByKeys(List<Key> processosKeys) throws PersistenceException {
+		List<Processo> resultList = new ArrayList<Processo>();
+		Query query = entityManager.createNamedQuery("processosInElements");
+		query.setParameter("processos", processosKeys);
+		try {
+			resultList = query.getResultList();
+		} catch(PersistenceException e) {
+			logger.log(Level.SEVERE, "Erro ao consultar processosInElements!", e);
+		}
+		return resultList;
+	}
+	
+	/**
+	 * @return
+	 * @throws PersistenceException
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Processo> findAllAssociados() throws PersistenceException {
+		List<Processo> resultList = new ArrayList<Processo>();
+		Query query = entityManager.createNamedQuery("processosAssociados");
+		List<Key> processosKeys = new ArrayList<Key>(); 
+		try {
+			processosKeys = query.getResultList();
+		} catch(NoResultException e) {
+			logger.log(Level.INFO, "Nenhum processo associado a usuario encontrado.", e);
+		}
+		Set<Key> processosKeysSet = new HashSet<Key>();
+		processosKeysSet.addAll(processosKeys);
+		if (!processosKeysSet.isEmpty()) {
+			logger.log(Level.INFO, String.format("Foram encontrados %s processos associados a usuários.", processosKeysSet.size()));
+			List<Key> list = Arrays.asList(processosKeysSet.toArray(new Key[0]));
+			resultList = findByKeys(list);
 		}
 		return resultList;
 	}

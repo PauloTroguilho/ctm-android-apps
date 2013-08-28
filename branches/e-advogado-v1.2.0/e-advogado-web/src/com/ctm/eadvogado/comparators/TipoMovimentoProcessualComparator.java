@@ -26,7 +26,16 @@ public class TipoMovimentoProcessualComparator implements
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		return dm1.compareTo(dm2);
+		if (dm1 != null && dm2 != null) {
+			return dm1.compareTo(dm2);
+		} else if (dm1 != null) {
+			return 1;
+		} else if (dm2 != null) {
+			return -1;
+		} else {
+			return 0;
+		}
+		
 	}
 	
 }

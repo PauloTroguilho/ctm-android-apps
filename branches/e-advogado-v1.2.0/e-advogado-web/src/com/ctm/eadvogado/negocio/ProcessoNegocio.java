@@ -3,7 +3,6 @@
  */
 package com.ctm.eadvogado.negocio;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -13,6 +12,7 @@ import java.util.logging.Level;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.PersistenceException;
+import javax.xml.ws.WebServiceException;
 
 import br.jus.cnj.pje.v1.TipoMovimentoProcessual;
 import br.jus.cnj.pje.v1.TipoProcessoJudicial;
@@ -27,7 +27,6 @@ import com.ctm.eadvogado.dao.UsuarioProcessoDao;
 import com.ctm.eadvogado.exception.DAOException;
 import com.ctm.eadvogado.exception.NegocioException;
 import com.ctm.eadvogado.interceptors.Transacional;
-import com.ctm.eadvogado.model.Device;
 import com.ctm.eadvogado.model.Lancamento;
 import com.ctm.eadvogado.model.Processo;
 import com.ctm.eadvogado.model.TipoConta;
@@ -38,10 +37,6 @@ import com.ctm.eadvogado.model.Usuario;
 import com.ctm.eadvogado.model.UsuarioProcesso;
 import com.ctm.eadvogado.util.CacheUtils;
 import com.ctm.eadvogado.util.PJeServiceUtil;
-import com.google.android.gcm.server.Constants;
-import com.google.android.gcm.server.Message;
-import com.google.android.gcm.server.Result;
-import com.google.android.gcm.server.Sender;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.api.server.spi.response.ServiceUnavailableException;
 import com.google.api.server.spi.response.UnauthorizedException;
@@ -63,14 +58,6 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	/*
-	 * TODO: Fill this in with the server key that you've obtained from the API
-	 * Console (https://code.google.com/apis/console). This is required for
-	 * using Google Cloud Messaging from your AppEngine application even if you
-	 * are using a App Engine's local development server.
-	 */
-	private static final String API_KEY = "AIzaSyDbfKFwbwXZXF5al1vUC8QVE2Q4veRXv-E";
 	
 	@Inject
 	private LancamentoDao lancamentoDao;
@@ -102,6 +89,15 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	 */
 	public List<Processo> findByUsuario(Usuario usuario) throws PersistenceException{
 		return getDao().findByUsuario(usuario);
+	}
+	
+	/**
+	 * Retorna os processos associados a usuários.
+	 * @return
+	 * @throws PersistenceException
+	 */
+	public List<Processo> findAllAssociados() throws PersistenceException {
+		return getDao().findAllAssociados();
 	}
 
 	@Override
@@ -251,7 +247,8 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 		} catch (Exception e1) {
 			logger.log(Level.SEVERE, "Falha ao converter data da movimentacao", e1);
 		}
-		if (dataUltimoMovAtual.after(dataUltimoMovAnterior)) {
+		if (dataUltimoMovAtual != null && dataUltimoMovAnterior != null &&
+				dataUltimoMovAtual.after(dataUltimoMovAnterior)) {
 			Queue queue = QueueFactory.getDefaultQueue();
 			queue.add(TaskOptions.Builder.withUrl("/notificarMovimentacao")
 					.method(Method.POST)
@@ -297,6 +294,9 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 			try {
 				processoJudicial = PJeServiceUtil.consultarProcessoJudicial(endpoint,
 						npu, null, Boolean.TRUE, incluirDocumentos, null);
+			} catch(WebServiceException e) {
+				logger.log(Level.SEVERE, String.format("Serviço temporariamente indisponível no tribunal %s, %s", idTribunal, tipoJuizo.name()), e);
+				throw new ServiceUnavailableException("O serviço de consulta neste tribunal está temporariamente indisponível!");
 			} catch(Exception e) {
 				logger.log(Level.SEVERE, String.format("Falha ao consultar processo %s, %s, %s no servico", npu, idTribunal, tipoJuizo.name()), e);
 			}
@@ -328,63 +328,33 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 		}
 	}
 	
+	
+	
 	/**
 	 * @param npu
 	 * @param idTribunal
 	 * @param tipoJuizo
 	 * @throws NotFoundException
 	 */
-	@Transacional
 	public void notificarMovimentacaoProcessual(String npu, Long idTribunal, TipoJuizo tipoJuizo)
 			throws NotFoundException {
 		Processo processo = findByNpuTribunalTipoJuizo(npu, idTribunal, tipoJuizo);
 		if (processo != null) {
 			Tribunal tribunal = tribunalDao.findByID(idTribunal);
-			Sender sender = new Sender(API_KEY);
-			// This message object is a Google Cloud Messaging object, it is NOT
-			// related to the MessageData class
-			Message msg = new Message.Builder()
-				.addData("titulo", "Processo atualizado!")
-				.addData("mensagem", String.format("%s: %s", tribunal.getSigla(), npu))
-				.addData("npu", npu)
-				.addData("idTribunal", idTribunal.toString())
-				.addData("tipoJuizo", tipoJuizo.name())
-				.build();
-			
 			List<Usuario> usuarios = usuarioDao.findByProcesso(processo);
 			for (Usuario usuario : usuarios) {
-				List<Device> devices = deviceDao.findByUsuario(usuario);
-				if (!devices.isEmpty()) {
-					for (Device device : devices) {
-						try {
-							Result result = sender.send(msg, device.getRegistrationId(), 5);
-							if (result.getMessageId() != null) {
-								String canonicalRegId = result.getCanonicalRegistrationId();
-								if (canonicalRegId != null) {
-									device.setRegistrationId(canonicalRegId);
-									deviceDao.update(device);
-								}
-							} else {
-								String error = result.getErrorCodeName();
-								if (error.equals(Constants.ERROR_NOT_REGISTERED)) {
-									deviceDao.remove(device);
-								}
-							}
-						} catch (IOException e) {
-							logger.log(
-								Level.SEVERE, String.format(
-									"Falha ao enviar GCM para dispositivo %s, usuário %s",
-									device.getRegistrationId(), usuario.getEmail()), e);
-						} catch (PersistenceException e) {
-							logger.log(
-								Level.SEVERE, String.format(
-									"Falha ao atualizar dispositivo %s, usuário %s",
-									device.getRegistrationId(), usuario.getEmail()), e);
-						}
-					}
-				}
+				Queue queue = QueueFactory.getDefaultQueue();
+				queue.add(TaskOptions.Builder.withUrl("/enviarNotificacao")
+						.method(Method.POST)
+						.param("email", usuario.getEmail())
+						.param("titulo", "Processo atualizado!")
+						.param("mensagem", String.format("%s: %s", tribunal.getSigla(), npu))
+						.param("npu", npu)
+						.param("idTribunal", idTribunal.toString())
+						.param("tipoJuizo", tipoJuizo.name()));
+				logger.info(String.format(
+						"Queue /enviarNotificacao criada para o email %s", usuario.getEmail()));
 			}
-			
 		} else {
 			throw new NotFoundException("Processo não encontrado!");
 		}

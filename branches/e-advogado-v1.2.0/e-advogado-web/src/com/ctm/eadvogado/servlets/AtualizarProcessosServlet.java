@@ -5,8 +5,6 @@ package com.ctm.eadvogado.servlets;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -17,9 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 import com.ctm.eadvogado.model.Processo;
 import com.ctm.eadvogado.negocio.ProcessoNegocio;
 import com.ctm.eadvogado.util.WeldUtils;
-import com.google.api.server.spi.response.NotFoundException;
-import com.google.api.server.spi.response.ServiceUnavailableException;
-import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.TaskOptions.Method;
 
 /**
  * @author Cleber
@@ -31,9 +30,6 @@ public class AtualizarProcessosServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	private static final Logger LOGGER = Logger
-			.getLogger(AtualizarProcessosServlet.class.getSimpleName());
 
 	@Inject
 	private ProcessoNegocio processoNegocio;
@@ -54,22 +50,18 @@ public class AtualizarProcessosServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		List<Processo> processos = processoNegocio.findAll(null, null);
+		List<Processo> processos = processoNegocio.findAllAssociados();
 		for (Processo processo : processos) {
-			try {
-				processoNegocio.consultarProcesso(processo.getNpu(), processo.getTribunal().getId(), 
-						processo.getTipoJuizo(), true, false);
-				LOGGER.fine(String.format("Processo: %s, %s, %s foi atualizado com sucesso!", processo.getNpu(),
-						processo.getTribunal().getId(), processo.getTipoJuizo()));
-			} catch (NumberFormatException e) {
-				LOGGER.log(Level.SEVERE, "Falha na conversao de parametros", e);
-			} catch (NotFoundException e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			} catch (UnauthorizedException e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			} catch (ServiceUnavailableException e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			}
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(TaskOptions.Builder.withUrl("/consultarProcessoAsync")
+					.method(Method.POST)
+					.param("npu",processo.getNpu())
+					.param("idTribunal", processo.getTribunal().getId() + "")
+					.param("tipoJuizo", processo.getTipoJuizo().name()));
+			log(String.format(
+					"Queue de consulta criada para o processo %s, %s, %s",
+					processo.getNpu(), processo.getTribunal().getId(),
+					processo.getTipoJuizo()));
 		}
 	}
 

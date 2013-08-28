@@ -1,8 +1,6 @@
 package com.ctm.eadvogado;
 
-import java.util.Locale;
-
-import org.apache.http.HttpStatus;
+import java.io.IOException;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,7 +16,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Window;
@@ -26,6 +23,7 @@ import com.ctm.eadvogado.endpoints.usuarioEndpoint.UsuarioEndpoint;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.model.Usuario;
 import com.ctm.eadvogado.util.Consts;
 import com.ctm.eadvogado.util.EndpointUtils;
+import com.ctm.eadvogado.util.MessageUtils;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
 public class LoginActivity extends SherlockActivity {
@@ -44,9 +42,8 @@ public class LoginActivity extends SherlockActivity {
 	 * Keep track of the login task to ensure we can cancel it if requested.
 	 */
 	private UserLoginTask mAuthTask = null;
+	private RecuperaSenhaTask recuperaSenhaTask = null;
 	
-	private boolean byPassLogin = false;
-
 	// Values for email and password at the time of the login attempt.
 	private String email;
 	private String password;
@@ -57,6 +54,7 @@ public class LoginActivity extends SherlockActivity {
 	private Button loginBt;
 	private Button cancelLoginBt;
 	private Button registroBt;
+	private Button esqueciSenhaBt;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +111,9 @@ public class LoginActivity extends SherlockActivity {
 							if (mAuthTask != null) {
 								mAuthTask.cancel(true);
 							}
+							if (recuperaSenhaTask != null) {
+								recuperaSenhaTask.cancel(true);
+							}
 						}
 					});
 			registroBt = (Button) findViewById(R.id.btnRegistrese);
@@ -125,6 +126,17 @@ public class LoginActivity extends SherlockActivity {
 							}
 							startActivity(new Intent(LoginActivity.this, RegistroActivity.class));
 							finish();
+						}
+					});
+			esqueciSenhaBt = (Button) findViewById(R.id.btnEsqueciSenha);
+			esqueciSenhaBt.setOnClickListener(
+					new View.OnClickListener() {
+						@Override
+						public void onClick(View view) {
+							if (recuperaSenhaTask != null) {
+								recuperaSenhaTask.cancel(true);
+							}
+							doRecuperarSenha();
 						}
 					});
 		} else {
@@ -192,6 +204,8 @@ public class LoginActivity extends SherlockActivity {
 		passwordEt.setEnabled(enabled);
 		loginBt.setVisibility(enabled ? View.VISIBLE : View.GONE);
 		cancelLoginBt.setVisibility(enabled ? View.GONE : View.VISIBLE);
+		esqueciSenhaBt.setEnabled(enabled);
+		registroBt.setEnabled(enabled);
 	}
 	
 	
@@ -201,39 +215,27 @@ public class LoginActivity extends SherlockActivity {
 	 */
 	public class UserLoginTask extends AsyncTask<Void, Void, Usuario> {
 		
-		String errorMessage = null;
-		int errorCode = -1;
+		String mensagem = null;
 		
 		@Override
 		protected Usuario doInBackground(Void... params) {
 			Usuario usuario = null;
-			errorMessage = "";
-			if (!byPassLogin) {
+			int tries = 3;
+			int attempt = 0;
+			while (attempt < tries) {
 				try {
 					usuario = usuarioEndpoint.autenticar(email, password).execute();
+					if (usuario != null)
+						break;
 				} catch(GoogleJsonResponseException e) {
-					if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_NOT_FOUND)
-							|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("not found"))) {
-						errorCode = HttpStatus.SC_NOT_FOUND;
-					} else if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_UNAUTHORIZED)
-							|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("unauthorized"))) {
-						errorCode = HttpStatus.SC_UNAUTHORIZED;
-					}
-				} catch (Exception e) {
-					Log.e(TAG, "Falha ao realizar login.", e);
+					Log.e(TAG, "Erro ao executar a operação!", e);
+					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
+							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
+				} catch (IOException e) {
+					Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
+					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
 				}
-			}
-			if (errorCode == HttpStatus.SC_NOT_FOUND) {
-				try {
-					usuario = new Usuario();
-					usuario.setEmail(email);
-					usuario.setSenha(password);
-					usuario = usuarioEndpoint.insert(usuario).execute();
-				} catch (Exception e) {
-					Log.e(TAG, "Erro ao realizar cadastro do usuário", e);
-					errorMessage = getString(R.string.error_cadastro_fail);
-					usuario = null;
-				}
+				attempt++;
 			}
 			return usuario;
 		}
@@ -256,13 +258,10 @@ public class LoginActivity extends SherlockActivity {
 				startActivity(intent);
 				finish();
 			} else {
-				if (errorCode == HttpStatus.SC_UNAUTHORIZED) {
-					passwordEt.setError(getString(R.string.error_incorrect_password));
-					passwordEt.requestFocus();
+				if (mensagem.length() == 0) {
+					MessageUtils.alert(getString(R.string.msg_erro_inesperado), LoginActivity.this);
 				} else {
-					Toast.makeText(LoginActivity.this,
-							R.string.error_login_fail,
-							Toast.LENGTH_LONG).show();
+					MessageUtils.alert(mensagem, LoginActivity.this);
 				}
 			}
 		}
@@ -272,6 +271,88 @@ public class LoginActivity extends SherlockActivity {
 			mAuthTask = null;
 			setSupportProgressBarIndeterminateVisibility(false);
 			setControlsEnabled(true);
+		}
+	}
+	
+	public class RecuperaSenhaTask extends AsyncTask<Void, Void, Usuario> {
+		
+		String mensagem = null;
+		
+		@Override
+		protected Usuario doInBackground(Void... params) {
+			Usuario usuario = null;
+			int tries = 3;
+			int attempt = 0;
+			while (attempt < tries) {
+				try {
+					usuario = usuarioEndpoint.resetarSenha(email).execute();
+					if (usuario != null)
+						break;
+				} catch(GoogleJsonResponseException e) {
+					Log.e(TAG, "Erro ao executar a operação!", e);
+					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
+							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
+				} catch (IOException e) {
+					Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
+					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
+				}
+				attempt++;
+			}
+			return usuario;
+		}
+
+		@Override
+		protected void onPostExecute(Usuario usuario) {
+			recuperaSenhaTask = null;
+			setSupportProgressBarIndeterminateVisibility(false);
+			setControlsEnabled(true);
+			if (usuario != null) {
+				Editor editor = preferences.edit();
+				editor.remove(PreferencesActivity.PREFS_KEY_EMAIL);
+				editor.remove(PreferencesActivity.PREFS_KEY_SENHA);
+				editor.remove(PreferencesActivity.PREFS_KEY_TIPO_CONTA);
+				editor.commit();
+				emailEt.requestFocus();
+				MessageUtils.alert(getString(R.string.msg_email_nova_senha), LoginActivity.this);
+			} else {
+				if (mensagem.length() == 0) {
+					MessageUtils.alert(getString(R.string.msg_erro_inesperado), LoginActivity.this);
+				} else {
+					MessageUtils.alert(mensagem, LoginActivity.this);
+				}
+			}
+		}
+
+		@Override
+		protected void onCancelled() {
+			recuperaSenhaTask = null;
+			setSupportProgressBarIndeterminateVisibility(false);
+			setControlsEnabled(true);
+		}
+	}
+	
+	public void doRecuperarSenha() {
+		if (recuperaSenhaTask != null) {
+			return;
+		}
+		boolean cancel = false;
+		email = emailEt.getText().toString();
+		// Check for a valid email address.
+		if (TextUtils.isEmpty(email)) {
+			emailEt.setError(getString(R.string.error_field_required));
+			cancel = true;
+		} else if (!email.contains("@")) {
+			emailEt.setError(getString(R.string.error_invalid_email));
+			cancel = true;
+		}
+
+		if (cancel) {
+			emailEt.requestFocus();
+		} else {
+			setSupportProgressBarIndeterminateVisibility(true);
+			setControlsEnabled(false);
+			recuperaSenhaTask = new RecuperaSenhaTask();
+			recuperaSenhaTask.execute((Void) null);
 		}
 	}
 

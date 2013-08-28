@@ -88,7 +88,7 @@ public class TabProcessoMovimentoFragment extends SherlockFragment {
 				if (movimento.getIdDocumentoVinculado() != null && processoJudicial.getDocumento() != null) {
 					for (String idDocumentoVinculado : movimento.getIdDocumentoVinculado()) {
 						for (TipoDocumento tipoDocumento : processoJudicial.getDocumento()) {
-							if (tipoDocumento.getIdDocumento().equals(idDocumentoVinculado)) {
+							if (idDocumentoVinculado.equals(tipoDocumento.getIdDocumento())) {
 								documentosVinculados.add(tipoDocumento);
 								break;
 							}

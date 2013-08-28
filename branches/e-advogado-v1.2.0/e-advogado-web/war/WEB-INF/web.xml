@@ -71,6 +71,15 @@
 	</servlet-mapping>
 	
 	<servlet>
+		<servlet-name>ConsultarProcessoAsyncServlet</servlet-name>
+		<servlet-class>com.ctm.eadvogado.servlets.ConsultarProcessoAsyncServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ConsultarProcessoAsyncServlet</servlet-name>
+		<url-pattern>/consultarProcessoAsync</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
 		<servlet-name>NotificarMovimentacaoServlet</servlet-name>
 		<servlet-class>com.ctm.eadvogado.servlets.NotificarMovimentacaoServlet</servlet-class>
 	</servlet>
@@ -86,6 +95,15 @@
 	<servlet-mapping>
 		<servlet-name>SendMailServlet</servlet-name>
 		<url-pattern>/sendMail</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>EnviarNotificacaoServlet</servlet-name>
+		<servlet-class>com.ctm.eadvogado.servlets.EnviarNotificacaoServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EnviarNotificacaoServlet</servlet-name>
+		<url-pattern>/enviarNotificacao</url-pattern>
 	</servlet-mapping>
 	
 
