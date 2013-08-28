@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/sy-dkl4kCAZ5Z5VWIT1rgY1qHGI\"",
+ "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/mcot04FTl8FZ_15pRrtb1LHWYVo\"",
  "discoveryVersion": "v1",
  "id": "usuarioEndpoint:v1",
  "name": "usuarioEndpoint",
@@ -248,6 +248,55 @@
     "email"
    ]
   },
+  "usuarioEndpoint.enviarNotificacao": {
+   "id": "usuarioEndpoint.enviarNotificacao",
+   "parameters": {
+    "email": {
+     "type": "string",
+     "required": true
+    },
+    "mensagem": {
+     "type": "string",
+     "required": true
+    },
+    "tipoNotificacao": {
+     "type": "string",
+     "required": true
+    },
+    "titulo": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "email",
+    "titulo",
+    "mensagem",
+    "tipoNotificacao"
+   ]
+  },
+  "usuarioEndpoint.enviarNotificacaoParaTodos": {
+   "id": "usuarioEndpoint.enviarNotificacaoParaTodos",
+   "parameters": {
+    "mensagem": {
+     "type": "string",
+     "required": true
+    },
+    "tipoNotificacao": {
+     "type": "string",
+     "required": true
+    },
+    "titulo": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "titulo",
+    "mensagem",
+    "tipoNotificacao"
+   ]
+  },
   "usuarioEndpoint.getByID": {
    "id": "usuarioEndpoint.getByID",
    "allowGet": true,
@@ -352,6 +401,21 @@
    },
    "parameterOrder": [
     "id"
+   ],
+   "returns": {
+    "$ref": "Usuario"
+   }
+  },
+  "usuarioEndpoint.resetarSenha": {
+   "id": "usuarioEndpoint.resetarSenha",
+   "parameters": {
+    "email": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "email"
    ],
    "returns": {
     "$ref": "Usuario"

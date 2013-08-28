@@ -38,6 +38,7 @@ public class CompraNegocio extends BaseNegocio<Compra, CompraDao> {
     static final String SKU_PROCESSOS_10 = "processos_10";
     static final String SKU_PROCESSOS_25 = "processos_25";
     static final String SKU_PROCESSOS_100 = "processos_100";
+    static final String SKU_PROCESSOS_ILIMITADOS = "processos_ilimitados";
     // SKU for our subscription (conta premium)
     static final String SKU_CONTA_PREMIUM = "conta_premium";
 	
@@ -62,7 +63,8 @@ public class CompraNegocio extends BaseNegocio<Compra, CompraDao> {
 	public Compra gerarCompraPendente(Usuario usuario, String sku) throws NegocioException {
 		if (sku.equals(SKU_CONTA_PREMIUM) || sku.equals(SKU_PROCESSOS_10)
 				|| sku.equals(SKU_PROCESSOS_25)
-				|| sku.equals(SKU_PROCESSOS_100)) {
+				|| sku.equals(SKU_PROCESSOS_100)
+				|| sku.equals(SKU_PROCESSOS_ILIMITADOS)) {
 			List<Compra> comprasPendentes = getDao().findByUsuarioSkuSituacao(
 					usuario, sku, SituacaoCompra.PENDENTE);
 			Compra compra = null;
@@ -96,20 +98,15 @@ public class CompraNegocio extends BaseNegocio<Compra, CompraDao> {
 	public Compra confirmarCompraPendente(Usuario usuario, String sku, String payload, String token, String orderId) {
 		Compra compra = getDao().findByUsuarioSkuPayload(usuario, sku, payload);
 		if (compra != null && compra.getSituacao().equals(SituacaoCompra.PENDENTE)) {
-			if (sku.equals(SKU_CONTA_PREMIUM)) {
+			compra.setSituacao(SituacaoCompra.CONFIMADA);
+			if (sku.equals(SKU_CONTA_PREMIUM) || sku.equals(SKU_PROCESSOS_ILIMITADOS)) {
 				usuario = usuarioDao.findByID(usuario.getKey().getId());
 				if (usuario.getTipoConta().equals(TipoConta.BASICA)) {
 					usuario.setTipoConta(TipoConta.PREMIUM);
-					usuario.setDataExpiracao(new Date(System.currentTimeMillis() + SETE_DIAS));
 					usuarioDao.update(usuario);
 					logger.info(String.format("Conta do usuario %s atualizada para PREMIUM.", usuario.getEmail()));
 				}
-				if (usuario.getDataExpiracao() != null && usuario.getDataExpiracao().before(new Date())) {
-					logger.info(String.format("A conta do usuario %s foi confirmada como PREMIUM.", usuario.getEmail()));
-					compra.setSituacao(SituacaoCompra.CONFIMADA);
-				}
 			} else {
-				compra.setSituacao(SituacaoCompra.CONFIMADA);
 				Lancamento lancamento = new Lancamento();
 				if (sku.equals(SKU_PROCESSOS_10)) {
 					lancamento.setQuantidade(10);

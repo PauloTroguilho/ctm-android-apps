@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
+import javax.xml.ws.WebServiceException;
 
 import br.jus.cnj.pje.v1.IntercomunicacaoService;
 import br.jus.cnj.pje.v1.ServicoIntercomunicacao21;
@@ -38,11 +39,12 @@ public class PJeServiceUtil {
 	 * @param incluirDocumentos
 	 * @param documento
 	 * @return
+	 * @throws WebServiceException
 	 */
 	public static TipoProcessoJudicial consultarProcessoJudicial(String wsdlURL, String idConsultante,
 			String senhaConsultante, String numeroProcesso,
 			Date dataReferencia, Boolean incluirMovimentos,
-			Boolean incluirDocumentos, List<String> documento) {
+			Boolean incluirDocumentos, List<String> documento) throws WebServiceException {
 		Holder<Boolean> sucesso = new Holder<Boolean>();
 		Holder<String> mensagem = new Holder<String>();
 		Holder<TipoProcessoJudicial> processo = new Holder<TipoProcessoJudicial>();
@@ -57,7 +59,11 @@ public class PJeServiceUtil {
 			servico.consultarProcesso(idConsultante, senhaConsultante,
 					numeroProcesso, dataRefStr, incluirMovimentos,
 					incluirDocumentos, documento, sucesso, mensagem, processo);
-		}catch(Exception e) {
+		} catch(WebServiceException e) {
+			log.log(Level.WARNING, 
+				"Falha no serviço ao consultar processo no endpoint: " + wsdlURL, e);
+			throw e;
+		} catch(Exception e) {
 			log.log(Level.WARNING, 
 				"Erro ao consultar processo com endereço do endpoint: " + wsdlURL, e);
 			servico = getPortFromURL(wsdlURL);
@@ -65,6 +71,10 @@ public class PJeServiceUtil {
 				servico.consultarProcesso(idConsultante, senhaConsultante,
 						numeroProcesso, dataRefStr, incluirMovimentos,
 						incluirDocumentos, documento, sucesso, mensagem, processo);
+			} catch(WebServiceException e1) {
+				log.log(Level.WARNING, 
+						"Falha no serviço ao consultar processo com wsdlURL: " + wsdlURL, e1);
+					throw e1;
 			} catch(Exception e1) {
 				log.log(Level.WARNING, "Erro ao consultar processo com wsdlURL: " + wsdlURL, e);
 				throw new RuntimeException("Falha ao consultar processo.", e1);
@@ -83,11 +93,12 @@ public class PJeServiceUtil {
 	 * @param incluirDocumentos
 	 * @param documento
 	 * @return
+	 * @throws WebServiceException
 	 */
 	public static TipoProcessoJudicial consultarProcessoJudicial(String wsdlURL,
 			String numeroProcesso, Date dataReferencia,
 			Boolean incluirMovimentos, Boolean incluirDocumentos,
-			List<String> documento) {
+			List<String> documento)  throws WebServiceException {
 		return consultarProcessoJudicial(wsdlURL, ID_CONSULTANTE,
 				SENHA_CONSULTANTE, numeroProcesso, dataReferencia,
 				incluirMovimentos, incluirDocumentos, documento);
@@ -101,11 +112,12 @@ public class PJeServiceUtil {
 	 * @param senhaConsultante
 	 * @param numeroProcesso
 	 * @return
+	 * @throws WebServiceException
 	 */
 	public static TipoProcessoJudicial consultarProcessoJudicial(String wsdlURL,
 			String idConsultante,
 			String senhaConsultante,
-			String numeroProcesso) {
+			String numeroProcesso)  throws WebServiceException {
 		return consultarProcessoJudicial(wsdlURL, idConsultante, senhaConsultante, numeroProcesso, null, Boolean.TRUE, Boolean.FALSE, null);
 	}
 	
@@ -132,9 +144,10 @@ public class PJeServiceUtil {
 	 * @param numeroProcesso
 	 * @param documentoIds
 	 * @return
+	 * @throws WebServiceException
 	 */
 	public static List<TipoDocumento> consultarDocumentos(String wsdlURL, String idConsultante,
-			String senhaConsultante, String numeroProcesso, List<String> documentoIds) {
+			String senhaConsultante, String numeroProcesso, List<String> documentoIds)  throws WebServiceException {
 		TipoProcessoJudicial processoJudicial = consultarProcessoJudicial(
 				wsdlURL, idConsultante, senhaConsultante, numeroProcesso, null, Boolean.FALSE, Boolean.TRUE, documentoIds);
 		List<TipoDocumento> documentosList = new ArrayList<TipoDocumento>();

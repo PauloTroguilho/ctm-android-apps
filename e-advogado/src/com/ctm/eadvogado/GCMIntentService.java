@@ -99,37 +99,32 @@ public class GCMIntentService extends GCMBaseIntentService {
 	 * Called when a cloud mensagem has been received.
 	 */
 	@Override
-	public void onMessage(Context context, Intent intent) {
+	public void onMessage(Context context, Intent messageIntent) {
+		Bundle bundle = messageIntent.getExtras();
+		String tipoNotificacao = bundle.getString("tipoNotificacao");
 		
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-			Intent notificationIntent = new Intent(context, ProcessoTabsPagerFragment.class);
-			Bundle bundle = intent.getExtras();
+		Intent notificationIntent = null;
+		if (tipoNotificacao.equals("movimentacao")) {
+			notificationIntent = new Intent(context, ProcessoTabsPagerFragment.class);
 			notificationIntent.putExtra("gcmIntentServiceMessage", true);
 			notificationIntent.putExtra("npu", bundle.getString("npu"));
 			notificationIntent.putExtra("idTribunal", bundle.getString("idTribunal"));
 			notificationIntent.putExtra("tipoJuizo", bundle.getString("tipoJuizo"));
-			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			
-			startActivity(notificationIntent);
 		} else {
-			doNotification(context, intent);
+			notificationIntent = new Intent(context, MainActivity.class);
+			notificationIntent.putExtra("gcmIntentServiceMessage", true);
 		}
 		
-		/**/
-		
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(notificationIntent);
+		} else {
+			doNotification(context, notificationIntent, bundle);
+		}
 	}
 	
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	public void doNotification(Context context, Intent intent) {
-		// Prepare intent which is triggered if the
-		// notification is selected
-		Intent notificationIntent = new Intent(context, ProcessoTabsPagerFragment.class);
-		Bundle bundle = intent.getExtras();
-		notificationIntent.putExtra("gcmIntentServiceMessage", true);
-		notificationIntent.putExtra("npu", bundle.getString("npu"));
-		notificationIntent.putExtra("idTribunal", bundle.getString("idTribunal"));
-		notificationIntent.putExtra("tipoJuizo", bundle.getString("tipoJuizo"));
-		
+	public void doNotification(Context context, Intent notificationIntent, Bundle bundle) {
 		String titulo = bundle.getString("titulo");
 		String mensagem = bundle.getString("mensagem");
 		

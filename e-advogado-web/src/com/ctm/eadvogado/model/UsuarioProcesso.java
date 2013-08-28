@@ -18,7 +18,8 @@ import com.google.appengine.api.datastore.Key;
 @NamedQueries({
 	@NamedQuery(name = "usuariosPorProcesso", query = "select usuProc.usuario from UsuarioProcesso as usuProc where usuProc.processo = :idProcesso"),
 	@NamedQuery(name = "processosPorUsuario", query = "select usuProc.processo from UsuarioProcesso as usuProc where usuProc.usuario = :idUsuario"),
-	@NamedQuery(name = "usuarioProcessoPorUsuarioProcesso", query = "select usuProc from UsuarioProcesso as usuProc where usuProc.usuario = :idUsuario and usuProc.processo = :idProcesso")
+	@NamedQuery(name = "usuarioProcessoPorUsuarioProcesso", query = "select usuProc from UsuarioProcesso as usuProc where usuProc.usuario = :idUsuario and usuProc.processo = :idProcesso"),
+	@NamedQuery(name = "processosAssociados", query = "select usuProc.processo from UsuarioProcesso as usuProc")
 })
 public class UsuarioProcesso extends BaseEntity {
 

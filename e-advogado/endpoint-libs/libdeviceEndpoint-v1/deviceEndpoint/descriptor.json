@@ -1,13 +1,13 @@
 {
   "files": [
     {
-      "downloadUrl": "/downloads/deviceEndpoint/v1/20130815202222/java/1.15.0-rc/e-advogado-web-deviceEndpoint-v1-20130815202222-java-1.15.0-rc-sources.jar", 
-      "path": "e-advogado-web-deviceEndpoint-v1-20130815202222-java-1.15.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/deviceEndpoint/v1/20130828015823/java/1.15.0-rc/eadvogado.ctm.com-deviceEndpoint-v1-20130828015823-java-1.15.0-rc-sources.jar", 
+      "path": "eadvogado.ctm.com-deviceEndpoint-v1-20130828015823-java-1.15.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-08-15 20:22"
+      "timestamp": "2013-08-28 01:58"
     }, 
     {
-      "path": "e-advogado-web-deviceEndpoint-v1-20130815202222-java-1.15.0-rc.jar.properties", 
+      "path": "eadvogado.ctm.com-deviceEndpoint-v1-20130828015823-java-1.15.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -16,9 +16,9 @@
   "moduleName": "com.ctm.eadvogado.endpoints", 
   "name": "deviceEndpoint", 
   "language": "java", 
-  "ownerDomain": "appspot.com", 
+  "ownerDomain": "eadvogado.ctm.com", 
   "maven": {
-    "group_id": "com.appspot", 
+    "group_id": "com.ctm.eadvogado", 
     "artifact_id": "endpoints-deviceEndpoint", 
     "version": "v1-SNAPSHOT"
   }, 
@@ -698,7 +698,7 @@
     }
   ], 
   "language_version": "1.15.0-rc", 
-  "revision": 20130815202222, 
+  "revision": 20130828015823, 
   "id": "deviceEndpoint:v1", 
   "modulePath": "com/ctm/eadvogado/endpoints"
 }

@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/Q2tyWAODUNvr_VtlySIhlJFZLHE\"",
+ "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/Q2tyWAODUNvr_VtlySIhlJFZLHE\"",
  "discoveryVersion": "v1",
  "id": "deviceEndpoint:v1",
  "name": "deviceEndpoint",

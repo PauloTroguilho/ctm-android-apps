@@ -57,11 +57,15 @@ public class TabProcessoDadosFragment extends SherlockFragment {
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.processo_tab_dados, container, false);
 		initAdmobBanner(R.id.adView, v);
+		if (processo == null || processo.getProcessoJudicial() == null
+				|| processo.getProcessoJudicial().getDadosBasicos() == null) {
+			return v;
+		}
 		TipoCabecalhoProcesso dadosBasicos = processo.getProcessoJudicial().getDadosBasicos();
 		TextView tvNPU = (TextView) v.findViewById(R.id.tvTabDados_NPU);
 		tvNPU.setText(dadosBasicos.getNumero());
 		TextView tvTribunal = (TextView) v.findViewById(R.id.tvTabDados_Tribunal);
-		if (processo.getTribunal() != null) {
+		if (processo.getTribunal() != null && processo.get("tribunal.nome") != null) {
 			tvTribunal.setText(processo.get("tribunal.nome").toString());
 		}
 		TextView tvTipoJuizo = (TextView) v.findViewById(R.id.tvTabDados_TipoJuizo);
@@ -74,9 +78,11 @@ public class TabProcessoDadosFragment extends SherlockFragment {
 		tvOrgao.setText(dadosBasicos.getCodigoOrgaoJulgador());
 		TextView tvClasse = (TextView) v.findViewById(R.id.tvTabDados_ClasseProc);
 		tvClasse.setText(dadosBasicos.getClasseProcessual() + "");
-		TextView tvValor = (TextView) v.findViewById(R.id.tvTabDados_ValorCausa);
-		tvValor.setText(NumberFormat.getCurrencyInstance().format(
-				dadosBasicos.getValorCausa()));
+		if (dadosBasicos.getValorCausa() != null) {
+			TextView tvValor = (TextView) v.findViewById(R.id.tvTabDados_ValorCausa);
+			tvValor.setText(NumberFormat.getCurrencyInstance().format(
+					dadosBasicos.getValorCausa()));
+		}
 		return v;
 	}
 	
