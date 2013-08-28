@@ -1,13 +1,13 @@
 {
   "files": [
     {
-      "downloadUrl": "/downloads/tribunalEndpoint/v1/20130828015655/java/1.15.0-rc/eadvogado.ctm.com-tribunalEndpoint-v1-20130828015655-java-1.15.0-rc-sources.jar", 
-      "path": "eadvogado.ctm.com-tribunalEndpoint-v1-20130828015655-java-1.15.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/tribunalEndpoint/v1/20130828044453/java/1.15.0-rc/eadvogado.ctm.com-tribunalEndpoint-v1-20130828044453-java-1.15.0-rc-sources.jar", 
+      "path": "eadvogado.ctm.com-tribunalEndpoint-v1-20130828044453-java-1.15.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-08-28 01:56"
+      "timestamp": "2013-08-28 04:44"
     }, 
     {
-      "path": "eadvogado.ctm.com-tribunalEndpoint-v1-20130828015655-java-1.15.0-rc.jar.properties", 
+      "path": "eadvogado.ctm.com-tribunalEndpoint-v1-20130828044453-java-1.15.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -698,7 +698,7 @@
     }
   ], 
   "language_version": "1.15.0-rc", 
-  "revision": 20130828015655, 
+  "revision": 20130828044453, 
   "id": "tribunalEndpoint:v1", 
   "modulePath": "com/ctm/eadvogado/endpoints"
 }

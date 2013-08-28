@@ -4,6 +4,9 @@
 package com.ctm.eadvogado.servlets;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
@@ -43,7 +46,7 @@ public class EnviarNotificacaoServlet extends HttpServlet {
 		doPost(req, resp);
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes" })
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -53,7 +56,14 @@ public class EnviarNotificacaoServlet extends HttpServlet {
 			usuario = usuarioNegocio.findByEmail(pEmail);
 		} catch(NoResultException e) {}
 		if (usuario != null) {
-			usuarioNegocio.enviarNotificacao(usuario, req.getParameterMap());
+			Map<String, String> paramsMap = new HashMap<String, String>();
+			Enumeration enumeration = req.getParameterNames();
+			while (enumeration.hasMoreElements()) {
+				Object object = (Object) enumeration.nextElement();
+				String paramName = object.toString();
+				paramsMap.put(paramName, req.getParameter(paramName));
+			}
+			usuarioNegocio.enviarNotificacao(usuario, paramsMap);
 		} else {
 			log(String.format("Nenhum usuario encontrado com o e-mail: %s", pEmail));
 		}
