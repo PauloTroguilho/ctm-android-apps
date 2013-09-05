@@ -75,7 +75,11 @@ public class CompraEndpoint {
 		try {
 			return compraNegocio.confirmarCompraPendente(usuario, sku, payload, token, orderId);
 		} catch(NegocioException e) {
-			logger.log(Level.SEVERE, "Erro ao confirmar compra", e);
+			logger.log(
+					Level.SEVERE,
+					String.format(
+							"Erro ao confirmar compra. Email: %s, SKU: %s, Payload: %s, Token: %s, OrderId: %s",
+							email, sku, payload, token, orderId), e);
 			throw new BadRequestException(e.getMessage());
 		}
 	}

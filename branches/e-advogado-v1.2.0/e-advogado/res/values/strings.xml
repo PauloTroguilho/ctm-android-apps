@@ -4,7 +4,7 @@
     <string name="service_base_url">https://192.168.1.5:8443/advogadope-web/services</string>
     <string name="app_name">e-Advogado</string>
     <string name="prefs_category_conta">Conta do Usuário</string>
-    <string name="main_msg_1">O aplicativo e-Advogado possibilita efetuar de forma simples, a consulta e o acompanhamento de processos judiciais, on-line.</string>
+    <string name="main_msg_1">O aplicativo e-Advogado possibilita efetuar de forma simples, a consulta de processos judiciais, em todos os tribunais que utilizem o sistema PJ-e..</string>
     <string name="main_msg_2">Acesse uma das opções:</string>
     <string name="menu_meus_processos">Meus Processos</string>
     <string name="menu_consultar_processos">Consultar Processos</string>

@@ -18,7 +18,6 @@ import javax.persistence.PersistenceException;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import com.ctm.eadvogado.dao.BaseDao.SortOrder;
-import com.ctm.eadvogado.dao.DeviceDao;
 import com.ctm.eadvogado.dao.LancamentoDao;
 import com.ctm.eadvogado.dao.UsuarioDao;
 import com.ctm.eadvogado.dao.UsuarioProcessoDao;
@@ -69,7 +68,7 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 	@Inject
 	private UsuarioProcessoDao usuarioProcessoDao;
 	@Inject
-	private DeviceDao deviceDao;
+	private DeviceNegocio deviceNegocio;
 	@Inject
 	private UsuarioDao usuarioDao;
 
@@ -269,7 +268,6 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 		}
 	}
 	
-	@Transacional
 	public void enviarNotificacao(Usuario usuario, Map<String, String> paramsMap) {
 		Sender sender = new Sender(API_KEY);
 		// This message object is a Google Cloud Messaging object, it is NOT
@@ -279,7 +277,7 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 			builder.addData(paramName, paramsMap.get(paramName));
 		}
 		Message msg = builder.build();
-		List<Device> devices = deviceDao.findByUsuario(usuario);
+		List<Device> devices = deviceNegocio.findByUsuario(usuario);
 		if (!devices.isEmpty()) {
 			for (Device device : devices) {
 				try {
@@ -288,12 +286,12 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 						String canonicalRegId = result.getCanonicalRegistrationId();
 						if (canonicalRegId != null) {
 							device.setRegistrationId(canonicalRegId);
-							deviceDao.update(device);
+							deviceNegocio.update(device);
 						}
 					} else {
 						String error = result.getErrorCodeName();
 						if (error.equals(Constants.ERROR_NOT_REGISTERED)) {
-							deviceDao.remove(device);
+							deviceNegocio.remove(device);
 						}
 					}
 				} catch (IOException e) {
@@ -303,6 +301,10 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 				} catch (PersistenceException e) {
 					logger.log(Level.SEVERE, String.format(
 							"Falha ao atualizar dispositivo %s, usuário %s",
+							device.getRegistrationId(), usuario.getEmail()), e);
+				} catch (Exception e) {
+					logger.log(Level.SEVERE, String.format(
+							"Falha inesperada ao atualizar dispositivo %s, usuário %s",
 							device.getRegistrationId(), usuario.getEmail()), e);
 				}
 			}

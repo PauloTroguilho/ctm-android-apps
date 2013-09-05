@@ -76,8 +76,8 @@ public class MainActivity extends SlidingActivity {
 			
 			carregarListaTribunais();
 			
-			if (!isAppRated()) {
-				long intervalUltimaRate = System.currentTimeMillis() - getUltimaRateThisApp();
+			if (!PreferencesActivity.isAppRated(this)) {
+				long intervalUltimaRate = System.currentTimeMillis() - PreferencesActivity.getUltimaRateThisApp(this);
 				if (intervalUltimaRate >= Consts.TRES_DIAS_EM_MILLIS) {
 					doRateThisApp();
 				}
@@ -153,7 +153,7 @@ public class MainActivity extends SlidingActivity {
     
     private void carregarListaTribunais() {
     	List<Tribunal> tribunais = dbHelper.selectTribunais();
-		long intervaloAtualizacao = System.currentTimeMillis() - getUltimaAtualizacao();
+		long intervaloAtualizacao = System.currentTimeMillis() - PreferencesActivity.getUltimaAtualizacao(this);
 		if (tribunais.isEmpty() || intervaloAtualizacao > Consts.UM_DIA_EM_MILLIS) {
 			doAtualizarTribunais();
 		}

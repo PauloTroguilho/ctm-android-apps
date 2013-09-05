@@ -15,16 +15,22 @@ public class TipoMovimentoProcessualComparator implements
 	@Override
 	public int compare(TipoMovimentoProcessual o1, TipoMovimentoProcessual o2) {
 		Date dm1 = null;
-		try {
-			dm1 = movimentoDateFormat.parse(o1.getDataHora());
-		} catch (ParseException e) {
-			e.printStackTrace();
+		if (o1.getDataHora() != null) {
+			try {
+				dm1 = movimentoDateFormat.parse(
+					o1.getDataHora().replaceAll("[-./:]", ""));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 		}
 		Date dm2 = null;
-		try {
-			dm2 = movimentoDateFormat.parse(o2.getDataHora());
-		} catch (ParseException e) {
-			e.printStackTrace();
+		if (o2.getDataHora() != null) {
+			try {
+				dm2 = movimentoDateFormat.parse(
+					o2.getDataHora().replaceAll("[-./:]", ""));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 		}
 		if (dm1 != null && dm2 != null) {
 			return dm1.compareTo(dm2);
@@ -37,5 +43,5 @@ public class TipoMovimentoProcessualComparator implements
 		}
 		
 	}
-	
+
 }
