@@ -27,6 +27,7 @@ import com.ctm.eadvogado.endpoints.compraEndpoint.model.Compra;
 import com.ctm.eadvogado.endpoints.compraEndpoint.model.WrappedBoolean;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.UsuarioEndpoint;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.model.Usuario;
+import com.ctm.eadvogado.tasks.AutenticarUsuarioTask;
 import com.ctm.eadvogado.util.Consts;
 import com.ctm.eadvogado.util.EndpointUtils;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -36,7 +37,7 @@ public class MinhaContaActivity extends SlidingActivity {
 	private UsuarioEndpoint usuarioEndpoint;
 	private CompraEndpoint compraEndpoint;
 	
-	private CarregarMinhaContaTask minhaContaTask = null;
+	private AutenticarUsuarioTask carregarMinhaContaTask = null;
 	private EfetuarCompraTask efetuarCompraTask = null;
 	private ConfirmarCompraTask confirmarCompraTask = null;
 	private CancelarContaPremiumTask cancelarContaPremiumTask = null;
@@ -116,10 +117,9 @@ public class MinhaContaActivity extends SlidingActivity {
 		tvQtdeCadastrados = (TextView) findViewById(R.id.textViewQtdeCadastrada);
 		tvQtdeDisponivel = (TextView) findViewById(R.id.textViewQtdeDisponivel);
 		tvCategoria = (TextView) findViewById(R.id.textViewCategoriaConta);
-		
-		setUpInAppBilling();
-		
+
 		doCarregarMinhaConta();
+		setUpInAppBilling();
 	}
 	
 	private void setUpInAppBilling() {
@@ -291,7 +291,13 @@ public class MinhaContaActivity extends SlidingActivity {
 			int attempt = 0;
 			while (attempt < tries) {
 				try {
-					compra = compraEndpoint.gerarCompraPendente(getEmail(), getSenha(), sku).execute();
+					compra = compraEndpoint
+							.gerarCompraPendente(
+									PreferencesActivity
+											.getEmail(MinhaContaActivity.this),
+									PreferencesActivity
+											.getSenha(MinhaContaActivity.this),
+									sku).execute();
 					if (compra != null)
 						break;
 				} catch(GoogleJsonResponseException e) {
@@ -388,9 +394,16 @@ public class MinhaContaActivity extends SlidingActivity {
 			int attempt = 0;
 			while (attempt < tries) {
 				try {
-					compra = compraEndpoint.confirmarCompra(getEmail(),
-							getSenha(), purchase.getSku(), purchase.getDeveloperPayload(), 
-							purchase.getToken(), purchase.getOrderId()).execute();
+					compra = compraEndpoint
+							.confirmarCompra(
+									PreferencesActivity
+											.getEmail(MinhaContaActivity.this),
+									PreferencesActivity
+											.getSenha(MinhaContaActivity.this),
+									purchase.getSku(),
+									purchase.getDeveloperPayload(),
+									purchase.getToken(), purchase.getOrderId())
+							.execute();
 					if (compra != null)
 						break;
 				} catch(GoogleJsonResponseException e) {
@@ -462,7 +475,10 @@ public class MinhaContaActivity extends SlidingActivity {
 			Log.d(TAG, "Cancelando conta premium.");
 			Compra compra = null;
 	        try {
-	        	wBool = compraEndpoint.cancelarContaPremium(getEmail(), getSenha()).execute();
+				wBool = compraEndpoint.cancelarContaPremium(
+						PreferencesActivity.getEmail(MinhaContaActivity.this),
+						PreferencesActivity.getSenha(MinhaContaActivity.this))
+						.execute();
 			} catch(GoogleJsonResponseException e) {
 				Log.e(TAG, "Falha na comunicação com o server.", e);
 				if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_NOT_FOUND)
@@ -528,8 +544,38 @@ public class MinhaContaActivity extends SlidingActivity {
 	private void doCarregarMinhaConta() {
 		setSupportProgressBarIndeterminateVisibility(true);
 		setControlsEnabled(false);
-		minhaContaTask = new CarregarMinhaContaTask();
-		minhaContaTask.execute((Void) null);
+		carregarMinhaContaTask = new AutenticarUsuarioTask(this) {
+			@Override
+			protected void onPostExecute(Usuario result) {
+				if (result != null) {
+					if (!result.getTipoConta().equals(PreferencesActivity.getTipoConta(MinhaContaActivity.this))){
+						preferences.edit()
+							.putString(
+								PreferencesActivity.PREFS_KEY_TIPO_CONTA,
+								result.getTipoConta()).commit();
+					}
+					tvCategoria.setText(result.getTipoConta());
+					tvQtdeCadastrados.setText(dbHelper.selectProcessosCount() + "");
+					tvQtdeDisponivel.setText(result.getSaldo().toString());
+				} else {
+					if (getErrorMessage().length() == 0) {
+						alert(R.string.msg_erro_inesperado);
+					} else {
+						alert(getErrorMessage());
+					}
+				}
+				carregarMinhaContaTask = null;
+				setSupportProgressBarIndeterminateVisibility(false);
+				setControlsEnabled(true);
+			}
+			@Override
+			protected void onCancelled(Usuario result) {
+				carregarMinhaContaTask = null;
+				setSupportProgressBarIndeterminateVisibility(false);
+				setControlsEnabled(true);
+			}
+		};
+		carregarMinhaContaTask.execute(PreferencesActivity.getEmail(MinhaContaActivity.this), PreferencesActivity.getSenha(MinhaContaActivity.this));
 	}
  	
 	/**
@@ -541,62 +587,6 @@ public class MinhaContaActivity extends SlidingActivity {
 		tvCategoria.setVisibility(enabled ? View.VISIBLE : View.GONE);
 		tvQtdeCadastrados.setVisibility(enabled ? View.VISIBLE : View.GONE);
 		tvQtdeDisponivel.setVisibility(enabled ? View.VISIBLE : View.GONE);
-	}
-	
-	/**
-	 * the user.
-	 */
-	public class CarregarMinhaContaTask extends AsyncTask<Void, Void, Usuario> {
-		
-		String mensagem = null;
-		
-		@Override
-		protected Usuario doInBackground(Void... params) {
-			Usuario usuario = null;
-			int tries = 3;
-			int attempt = 0;
-			while (attempt < tries) {
-				try {
-					usuario = usuarioEndpoint.autenticar(getEmail(), getSenha()).execute();
-					if (usuario != null)
-						break;
-				} catch(GoogleJsonResponseException e) {
-					Log.e(TAG, "Erro ao executar a operação!", e);
-					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
-							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
-				} catch (IOException e) {
-					Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
-					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
-				}
-				attempt++;
-			}
-			return usuario;
-		}
-
-		@Override
-		protected void onPostExecute(Usuario usuario) {
-			if (usuario != null) {
-				tvCategoria.setText(usuario.getTipoConta());
-				tvQtdeCadastrados.setText(dbHelper.selectProcessosCount() + "");
-				tvQtdeDisponivel.setText(usuario.getSaldo().toString());
-			} else {
-				if (mensagem.length() == 0) {
-					alert(getString(R.string.msg_erro_inesperado));
-				} else {
-					alert(mensagem);
-				}
-			}
-			minhaContaTask = null;
-			setSupportProgressBarIndeterminateVisibility(false);
-			setControlsEnabled(true);
-		}
-
-		@Override
-		protected void onCancelled() {
-			minhaContaTask = null;
-			setSupportProgressBarIndeterminateVisibility(false);
-			setControlsEnabled(true);
-		}
 	}
     
     @Override

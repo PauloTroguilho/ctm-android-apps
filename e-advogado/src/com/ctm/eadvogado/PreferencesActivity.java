@@ -3,6 +3,7 @@ package com.ctm.eadvogado;
 import java.util.List;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
@@ -23,7 +24,6 @@ public class PreferencesActivity extends SherlockPreferenceActivity implements
 	public static final String PREFS_KEY_RATE_THIS_APP = "rateThisApp";
 	public static final String PREFS_KEY_ULTIMA_RATE_THIS_APP = "ultimaRateThisApp";
 	public static final String PREFS_KEY_ULTIMA_ATUALIZACAO = "ultimaAtualizacao";
-	
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -64,4 +64,51 @@ public class PreferencesActivity extends SherlockPreferenceActivity implements
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.unregisterOnSharedPreferenceChangeListener(this);
 	}
+
+	public static SharedPreferences preferences;
+
+	private static SharedPreferences getPreferences(Context context) {
+		if (preferences == null)
+			preferences = PreferenceManager
+					.getDefaultSharedPreferences(context);
+		return preferences;
+	}
+
+	public static String getEmail(Context context) {
+		return getPreferences(context).getString(
+				PreferencesActivity.PREFS_KEY_EMAIL, "");
+	}
+
+	public static String getSenha(Context context) {
+		return getPreferences(context).getString(
+				PreferencesActivity.PREFS_KEY_SENHA, "");
+	}
+
+	public static boolean isAppRated(Context context) {
+		return getPreferences(context).getBoolean(
+				PreferencesActivity.PREFS_KEY_RATE_THIS_APP, false);
+	}
+
+	public static String getTipoConta(Context context) {
+		return getPreferences(context).getString(
+				PreferencesActivity.PREFS_KEY_TIPO_CONTA,
+				Consts.TIPO_CONTA_BASICA);
+	}
+
+	public static boolean isContaPremium(Context context) {
+		return getTipoConta(context).equals(Consts.TIPO_CONTA_PREMIUM);
+	}
+
+	public static long getUltimaAtualizacao(Context context) {
+		return getPreferences(context).getLong(
+				PreferencesActivity.PREFS_KEY_ULTIMA_ATUALIZACAO,
+				System.currentTimeMillis() - Consts.UM_DIA_EM_MILLIS);
+	}
+
+	public static long getUltimaRateThisApp(Context context) {
+		return getPreferences(context).getLong(
+				PreferencesActivity.PREFS_KEY_ULTIMA_RATE_THIS_APP,
+				System.currentTimeMillis() - Consts.TRES_DIAS_EM_MILLIS);
+	}
+
 }

@@ -97,6 +97,11 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
 				tribunal.getPje1gEndpoint());
 		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_ENDPOINT_2G,
 				tribunal.getPje2gEndpoint());
+		Object qtdConsultas = tribunal.get(EAdvogadoContract.TribunalTable.COLUMN_NAME_QTD_CONSULTAS);
+		if (qtdConsultas != null) {
+			initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_QTD_CONSULTAS,
+					qtdConsultas.toString());
+		}
 		
 		String whereClause = EAdvogadoContract.TribunalTable.COLUMN_NAME_TRIBUNAL_ID + " = ?";
 		String[] whereArgs = new String[] {tribunal.getKey().getId().toString()};

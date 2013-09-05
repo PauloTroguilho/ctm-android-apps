@@ -9,12 +9,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.ctm.eadvogado.PreferencesActivity;
 import com.ctm.eadvogado.ProcessoTabsPagerFragment;
 import com.ctm.eadvogado.R;
 import com.ctm.eadvogado.dto.TipoJuizo;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoCabecalhoProcesso;
-import com.ctm.eadvogado.util.Consts;
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;
 
@@ -39,7 +39,7 @@ public class TabProcessoDadosFragment extends SherlockFragment {
 	 * @param admobViewId
 	 */
 	protected void initAdmobBanner(int admobViewId, View parentView) {
-		if (Consts.VERSAO_GRATIS) {
+		if (!PreferencesActivity.isContaPremium(getActivity())) {
 			// Look up the AdView as a resource and load a request.
 		    AdView adView = (AdView) parentView.findViewById(admobViewId);
 		    AdRequest request = new AdRequest();

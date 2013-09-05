@@ -97,34 +97,36 @@ public class CompraNegocio extends BaseNegocio<Compra, CompraDao> {
 	@Transacional
 	public Compra confirmarCompraPendente(Usuario usuario, String sku, String payload, String token, String orderId) {
 		Compra compra = getDao().findByUsuarioSkuPayload(usuario, sku, payload);
-		if (compra != null && compra.getSituacao().equals(SituacaoCompra.PENDENTE)) {
-			compra.setSituacao(SituacaoCompra.CONFIMADA);
-			if (sku.equals(SKU_CONTA_PREMIUM) || sku.equals(SKU_PROCESSOS_ILIMITADOS)) {
-				usuario = usuarioDao.findByID(usuario.getKey().getId());
-				if (usuario.getTipoConta().equals(TipoConta.BASICA)) {
-					usuario.setTipoConta(TipoConta.PREMIUM);
-					usuarioDao.update(usuario);
-					logger.info(String.format("Conta do usuario %s atualizada para PREMIUM.", usuario.getEmail()));
-				}
-			} else {
-				Lancamento lancamento = new Lancamento();
-				if (sku.equals(SKU_PROCESSOS_10)) {
-					lancamento.setQuantidade(10);
-				} else if (sku.equals(SKU_PROCESSOS_25)) {
-					lancamento.setQuantidade(25);
-				} else if (sku.equals(SKU_PROCESSOS_100)) {
-					lancamento.setQuantidade(100);
+		if (compra != null) {
+			if (compra.getSituacao().equals(SituacaoCompra.PENDENTE)) {
+				compra.setSituacao(SituacaoCompra.CONFIMADA);
+				if (sku.equals(SKU_CONTA_PREMIUM) || sku.equals(SKU_PROCESSOS_ILIMITADOS)) {
+					usuario = usuarioDao.findByID(usuario.getKey().getId());
+					if (usuario.getTipoConta().equals(TipoConta.BASICA)) {
+						usuario.setTipoConta(TipoConta.PREMIUM);
+						usuarioDao.update(usuario);
+						logger.info(String.format("Conta do usuario %s atualizada para PREMIUM.", usuario.getEmail()));
+					}
 				} else {
-					throw new NegocioException("O SKU informado é inválido");
+					Lancamento lancamento = new Lancamento();
+					if (sku.equals(SKU_PROCESSOS_10)) {
+						lancamento.setQuantidade(10);
+					} else if (sku.equals(SKU_PROCESSOS_25)) {
+						lancamento.setQuantidade(25);
+					} else if (sku.equals(SKU_PROCESSOS_100)) {
+						lancamento.setQuantidade(100);
+					} else {
+						throw new NegocioException("O SKU informado é inválido");
+					}
+					lancamento.setTipo(TipoLancamento.CREDITO);
+					lancamento.setUsuario(usuario.getKey());
+					lancamento.setData(new Date());
+					lancamentoDao.insert(lancamento);
 				}
-				lancamento.setTipo(TipoLancamento.CREDITO);
-				lancamento.setUsuario(usuario.getKey());
-				lancamento.setData(new Date());
-				lancamentoDao.insert(lancamento);
+				compra.setToken(token);
+				compra.setOrderId(orderId);
+				compra = getDao().update(compra);
 			}
-			compra.setToken(token);
-			compra.setOrderId(orderId);
-			compra = getDao().update(compra);
 		} else {
 			throw new NegocioException("erro.compra.naoEncontrada");
 		}

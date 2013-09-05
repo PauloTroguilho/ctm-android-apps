@@ -136,7 +136,7 @@ public class MeusProcessosActivity extends SlidingActivity {
 			while (attempt < tries && processos == null) {
 				try {
 					processos = processoEndpoint.consultarProcessosDoUsuario(
-							getEmail(), getSenha()).execute().getItems();
+							PreferencesActivity.getEmail(MeusProcessosActivity.this), PreferencesActivity.getSenha(MeusProcessosActivity.this)).execute().getItems();
 				} catch(GoogleJsonResponseException e) {
 					Log.e(TAG, "Erro ao executar a operação!", e);
 					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 

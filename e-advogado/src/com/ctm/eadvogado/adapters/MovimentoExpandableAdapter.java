@@ -212,6 +212,7 @@ public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
 			MessageUtils.alert("Por favor aguarde! O download está em andamento.", context);
 			return;
 		}
+		MessageUtils.alert("O download do documento foi iniciado, por favor aguarde!", context);
 		downloadDocumentoTask = new DownloadDocumentoTask();
 		downloadDocumentoTask.execute(npu, idTribunal.toString(), tipoJuizo, idDocumento);
 		((SherlockFragmentActivity) context).setSupportProgressBarIndeterminateVisibility(true);
