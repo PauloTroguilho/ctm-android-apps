@@ -48,6 +48,8 @@
     <string name="title_activity_termos_de_uso">Termos de Uso</string>
     <string name="action_settings">Settings</string>
     <string name="btn_termos_aceito">Aceito</string>
+    <string name="btn_sim">Sim</string>
+    <string name="btn_nao">Não</string>
     <string name="msg_op_incluir_atingiu_max_versao_gratis">Para incluir mais processos, adquira a versão PREMIUM do aplicativo e-Advogado!</string>
     <string name="msg_op_incluir_processo_disponivel_versao_paga">Acompanhamento de processos está disponível somente na versão e-Advogado PRO</string>
     <string name="msg_erro_operacao_nao_realizada">Desculpe! Não foi possível executar a operação neste momento.</string>
@@ -58,6 +60,7 @@
     <string name="msg_tipo_documento_nao_suportado">No momento, este tipo de documento ainda não é suportado.</string>
     <string name="msg_erro_salvando_arquivo">Não foi possível salvar o arquivo. Favor verificar seu cartão de memória e espaço disponível!</string>
     <string name="msg_email_nova_senha">Atenção! Foi enviada uma nova senha para seu e-mail. Verifique e tente novamente.</string>
+    <string name="msg_avaliacao_app">Olá! Faça a avaliação do nosso aplicativo e ajude-nos a melhorá-lo. Deseja avaliar agora?</string>
     <string name="title_activity_minha_conta">Minha Conta</string>
     <string name="hello_world">Hello world!</string>
     <string name="msg_minha_conta">Aqui você pode verificar as informações sobre sua conta.</string>

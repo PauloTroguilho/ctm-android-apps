@@ -99,7 +99,7 @@ public class SlidingActivity extends SherlockFragmentActivity implements
 	 * @param admobViewId
 	 */
 	protected void initAdmobBanner(int admobViewId) {
-		if (Consts.VERSAO_GRATIS) {
+		if (!isContaPremium()) {
 			// Look up the AdView as a resource and load a request.
 		    AdView adView = (AdView)this.findViewById(admobViewId);
 		    AdRequest request = new AdRequest();
@@ -376,11 +376,33 @@ public class SlidingActivity extends SherlockFragmentActivity implements
 	protected String getSenha() {
 		return preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, "");
 	}
+	protected boolean isAppRated() {
+		return preferences.getBoolean(PreferencesActivity.PREFS_KEY_RATE_THIS_APP, false);
+	}
+	protected boolean isContaPremium() {
+		return preferences.getString(PreferencesActivity.PREFS_KEY_TIPO_CONTA,
+				Consts.TIPO_CONTA_BASICA).equals(Consts.TIPO_CONTA_PREMIUM);
+	}
+	/**
+	 * @return
+	 */
+	protected long getUltimaAtualizacao() {
+		return preferences.getLong(PreferencesActivity.PREFS_KEY_ULTIMA_ATUALIZACAO, 
+				System.currentTimeMillis() - Consts.UM_DIA_EM_MILLIS);
+	}
+	protected long getUltimaRateThisApp() {
+		return preferences.getLong(PreferencesActivity.PREFS_KEY_ULTIMA_RATE_THIS_APP, 
+				System.currentTimeMillis() - Consts.TRES_DIAS_EM_MILLIS);
+	}
 	
 	/**
 	 * @param message
 	 */
 	protected void alert(String message) {
         MessageUtils.alert(message, this);
+    }
+	
+	protected void alert(int resId) {
+        MessageUtils.alert(getString(resId), this);
     }
 }

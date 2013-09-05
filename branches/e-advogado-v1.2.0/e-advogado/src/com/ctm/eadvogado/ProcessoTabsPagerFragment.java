@@ -15,57 +15,51 @@
  */
 package com.ctm.eadvogado;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.AsyncTask;
-import android.os.Build;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
 import android.widget.TabWidget;
-import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 import com.ctm.eadvogado.db.EAdvogadoDbHelper;
-import com.ctm.eadvogado.endpoints.processoEndpoint.ProcessoEndpoint;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
-import com.ctm.eadvogado.endpoints.tribunalEndpoint.TribunalEndpoint;
 import com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Tribunal;
 import com.ctm.eadvogado.fragment.TabProcessoDadosFragment;
 import com.ctm.eadvogado.fragment.TabProcessoMovimentoFragment;
 import com.ctm.eadvogado.fragment.TabProcessoPolosFragment;
+import com.ctm.eadvogado.tasks.AssociarProcessoTask;
+import com.ctm.eadvogado.tasks.ConsultarProcessoTask;
 import com.ctm.eadvogado.util.Consts;
-import com.ctm.eadvogado.util.EndpointUtils;
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.ctm.eadvogado.util.MessageUtils;
 
 /**
  * Demonstrates combining a TabHost with a ViewPager to implement a tab UI that
  * switches between tabs and also allows the user to perform horizontal flicks
  * to move between the tabs.
  */
-public class ProcessoTabsPagerFragment extends SlidingActivity {
+public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 
 	TabHost mTabHost;
 	ViewPager mViewPager;
 	TabsAdapter mTabsAdapter;
 
-	private ProcessoEndpoint processoEndpoint;
-	private TribunalEndpoint tribunalEndpoint;
-	
+	private SharedPreferences preferences;
 	private EAdvogadoDbHelper dbHelper;
-	private SalvarProcessoTask salvarProcessoTask;
-	private AtualizarProcessoTask atualizarProcessoTask;
+	private AssociarProcessoTask associarProcessoTask;
+	private ConsultarProcessoTask atualizarProcessoTask;
 	
 	public static Processo processoResult;
 	
@@ -92,6 +86,8 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 					mTabHost.newTabSpec("movimento").setIndicator(
 							getString(R.string.processo_tab_movimento)),
 					TabProcessoMovimentoFragment.class, null);
+			
+			mTabsAdapter.onTabChanged("dados");
 		}
 		updateButtons();
 	}
@@ -99,11 +95,12 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		dbHelper = new EAdvogadoDbHelper(this);
-		setContentView(R.layout.processo_tabs_pager_fragment);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
-		processoEndpoint = EndpointUtils.initProcessoEndpoint();
-		tribunalEndpoint = EndpointUtils.initTribunalEndpoint();
+		dbHelper = new EAdvogadoDbHelper(this);
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		setContentView(R.layout.processo_tabs_pager_fragment);
 		
 		carregarTelaProcesso();
 		
@@ -242,26 +239,87 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 	/**
 	 * Consulta os Processos
 	 */
-	public void doSalvarProcesso() {
-		if (salvarProcessoTask != null) {
-			alert("Por favor, aguarde! Já estamos processando sua solicitação.");
+	public void doSalvarProcesso(final Processo processo) {
+		if (associarProcessoTask != null) {
+			MessageUtils.alert("Por favor, aguarde! Já estamos processando sua solicitação.", this);
 			return;
 		}
 		setSupportProgressBarIndeterminateVisibility(true);
 		setControlsEnabled(false);
-		salvarProcessoTask = new SalvarProcessoTask();
-		salvarProcessoTask.execute((Void) null);
+		associarProcessoTask = new AssociarProcessoTask(this) {
+			boolean isProcessoSalvo = false;
+			@Override
+			protected void onPostExecute(Boolean result) {
+				if (result != null) {
+					if (result.booleanValue()) {
+						dbHelper.insertProcessoSeNaoExiste(processo);
+						alert(R.string.msg_processo_inserido_sucesso);
+						isProcessoSalvo = true;
+					} else {
+						alert(R.string.msg_erro_inesperado);
+					}
+				} else {
+					if (getErrorMessage().length() == 0) {
+						alert(R.string.msg_erro_inesperado);
+					} else {
+						alert(getErrorMessage());
+					}
+				}
+				associarProcessoTask = null;
+				setSupportProgressBarIndeterminateVisibility(false);
+				setControlsEnabled(true);
+				menuSalvar.setVisible(!isProcessoSalvo);
+			}
+			
+			@Override
+			protected void onCancelled(Boolean result) {
+				associarProcessoTask = null;
+				setSupportProgressBarIndeterminateVisibility(false);
+				setControlsEnabled(true);
+				menuSalvar.setVisible(!isProcessoSalvo);
+			}
+			
+		};
+		associarProcessoTask.execute(getEmail(), processo.getKey().getId().toString());
 	}
 	
 	public void doAtualizarProcesso(String npu, Long idTribunal, String tipoJuizo) {
 		if (atualizarProcessoTask != null) {
-			alert("Por favor, aguarde! Já existe uma atualização em andamento.");
+			MessageUtils.alert("Por favor, aguarde! Já existe uma atualização em andamento.", this);
 			return;
 		}
 		setSupportProgressBarIndeterminateVisibility(true);
 		setControlsEnabled(false);
-		atualizarProcessoTask = new AtualizarProcessoTask();
-		atualizarProcessoTask.execute(npu, idTribunal.toString(), tipoJuizo);
+		atualizarProcessoTask = new ConsultarProcessoTask(this) {
+			@Override
+			protected void onPostExecute(Processo result) {
+				if (result != null) {
+					Tribunal tribunal = dbHelper.selectTribunalPorId(result.getTribunal().getId());
+					if (tribunal != null) {
+						result.put("tribunal.sigla", tribunal.getSigla());
+						result.put("tribunal.nome", tribunal.getSigla());
+					}
+					processoResult = result;
+					carregarTelaProcesso();
+				} else {
+					if (getErrorMessage().length() == 0) {
+						alert(R.string.msg_erro_inesperado);
+					} else {
+						alert(getErrorMessage());
+					}
+				}
+				atualizarProcessoTask = null;
+				setSupportProgressBarIndeterminateVisibility(false);
+				setControlsEnabled(true);
+			}
+			@Override
+			protected void onCancelled(Processo result) {
+				atualizarProcessoTask = null;
+				setSupportProgressBarIndeterminateVisibility(false);
+				setControlsEnabled(true);
+			}
+		};
+		atualizarProcessoTask.execute(npu, idTribunal.toString(), tipoJuizo, Boolean.TRUE.toString());
 	}
 	
 	private void setControlsEnabled(boolean enabled) {
@@ -269,156 +327,12 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
 			menuSalvar.setVisible(enabled);
 		if (menuAtualizar != null)
 			menuAtualizar.setVisible(enabled);
+		updateButtons();
 	}
-	
-	public class SalvarProcessoTask extends AsyncTask<Void, Void, Boolean> {
-		
-		boolean isProcessoSalvo = false;
-		String mensagem = "";
-
-		@Override
-		protected Boolean doInBackground(Void... params) {
-			Boolean result = Boolean.FALSE;
-			try {
-				processoEndpoint.associarProcessoAoUsuario(
-						preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, ""), 
-						processoResult.getKey().getId()).execute();
-				result = Boolean.TRUE;
-				dbHelper.insertProcessoSeNaoExiste(processoResult);
-			} catch(GoogleJsonResponseException e) {
-				Log.e(TAG, "Erro ao executar a operação!", e);
-				mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
-						e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
-			} catch (IOException e) {
-				Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
-				mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
-			} catch(Exception e) {
-				Log.e(TAG, "Erro inesperado!", e);
-				mensagem = getString(R.string.msg_erro_inesperado);
-			}
-			return result;
-		}
-
-		@Override
-		protected void onPostExecute(Boolean result) {
-			if (result.booleanValue()) {
-				Toast.makeText(ProcessoTabsPagerFragment.this,
-						R.string.msg_processo_inserido_sucesso,
-						Toast.LENGTH_LONG).show();
-				isProcessoSalvo = true;
-			} else {
-				Toast.makeText(ProcessoTabsPagerFragment.this,
-						mensagem, Toast.LENGTH_LONG).show();
-			}
-			setSupportProgressBarIndeterminateVisibility(false);
-			setControlsEnabled(true);
-			menuSalvar.setVisible(!isProcessoSalvo);
-			salvarProcessoTask = null;
-		}
-
-		@Override
-		protected void onCancelled() {
-			salvarProcessoTask = null;
-			setSupportProgressBarIndeterminateVisibility(false);
-			setControlsEnabled(true);
-			menuSalvar.setVisible(!isProcessoSalvo);
-		}
-		
-	}
-	
-	
-	public class AtualizarProcessoTask extends AsyncTask<String, Void, Processo> {
-		
-		String mensagem = "";
-		
-		@Override
-		protected Processo doInBackground(String... params) {
-			setControlsEnabled(false);
-			Processo processo = null;
-			String npu = params[0];
-			Long idTribunal = Long.parseLong(params[1]);
-			String tipoJuizo = params[2];
-			
-			int tries = 3;
-			int attempt = 0;
-			while (attempt < tries) {
-				try {
-					processo = processoEndpoint.consultarProcesso(
-							npu, idTribunal, tipoJuizo, true)
-							.execute();
-					Tribunal tribunal = dbHelper.selectTribunalPorId(idTribunal);
-					if (tribunal == null) {
-						List<Tribunal> tribunais = new ArrayList<Tribunal>();
-						int triesTrib = 3;
-						int attemptTrib = 0;
-						while (attemptTrib < triesTrib) {
-							try {
-								tribunais = tribunalEndpoint.listAll()
-										.set("sortField", "sigla")
-										.set("sortOrder", "ASC")
-										.execute().getItems();
-								dbHelper.inserirTribunais(tribunais);
-								tribunal = dbHelper.selectTribunalPorId(idTribunal);
-								break;
-							} catch (IOException e) {
-								Log.e("E-Advogado", "Falha ao carregar tribunais pelo servico", e);
-							}
-						}
-					}
-					if (tribunal != null) {
-						processo.put("tribunal.sigla", tribunal.getSigla());
-						processo.put("tribunal.nome", tribunal.getSigla());
-					}
-					break;
-				} catch(GoogleJsonResponseException e) {
-					Log.e(TAG, "Erro ao executar a operação!", e);
-					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
-							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
-				} catch (IOException e) {
-					Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
-					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
-				}
-				attempt++;
-			}
-			return processo;
-		}
-
-		@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-		@Override
-		protected void onPostExecute(Processo processo) {
-			setSupportProgressBarIndeterminateVisibility(false);
-			setControlsEnabled(true);
-			atualizarProcessoTask = null;
-			if (processo != null) {
-				processoResult = processo;
-				carregarTelaProcesso();
-	        	//finish();
-			} else {
-				if (mensagem.length() == 0) {
-					Toast.makeText(ProcessoTabsPagerFragment.this,
-							R.string.msg_nao_foi_possivel_carregar_dados,
-							Toast.LENGTH_LONG).show();
-				} else {
-					Toast.makeText(ProcessoTabsPagerFragment.this,
-							mensagem, Toast.LENGTH_LONG).show();
-				}
-			}
-		}
-
-		@Override
-		protected void onCancelled() {
-			setSupportProgressBarIndeterminateVisibility(false);
-			setControlsEnabled(true);
-			atualizarProcessoTask = null;
-		}
-		
-	}
-	
-	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item == menuSalvar) {
-			doSalvarProcesso();
+			doSalvarProcesso(processoResult);
 		} else if (item == menuAtualizar) {
 			doAtualizarProcesso(processoResult.getNpu(), processoResult
 					.getTribunal().getId(), processoResult.getTipoJuizo());
@@ -455,5 +369,9 @@ public class ProcessoTabsPagerFragment extends SlidingActivity {
     			menuSalvar.setVisible(false);
     		}
         }
+	}
+	
+	protected String getEmail() {
+		return preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, "");
 	}
 }
