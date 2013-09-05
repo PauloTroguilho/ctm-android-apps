@@ -16,7 +16,7 @@ import com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Tribunal;
 public class EAdvogadoDbHelper extends SQLiteOpenHelper {
 	// If you change the database schema, you must increment the database
 	// version.
-	public static final int DATABASE_VERSION = 5;
+	public static final int DATABASE_VERSION = 6;
 	public static final String DATABASE_NAME = "EAdvogado.db";
 	
 	protected final Context mHelperContext;
@@ -75,6 +75,12 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
 				tribunal.getNome());
 		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_SIGLA,
 				tribunal.getSigla());
+		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_ENDPOINT_1G,
+				tribunal.getPje1gEndpoint());
+		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_ENDPOINT_2G,
+				tribunal.getPje2gEndpoint());
+		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_QTD_CONSULTAS,
+				0);
 
         return getWritableDatabase().insert(EAdvogadoContract.TribunalTable.TABLE_NAME, null, initialValues);
     }
@@ -87,6 +93,10 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
 				tribunal.getNome());
 		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_SIGLA,
 				tribunal.getSigla());
+		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_ENDPOINT_1G,
+				tribunal.getPje1gEndpoint());
+		initialValues.put(EAdvogadoContract.TribunalTable.COLUMN_NAME_ENDPOINT_2G,
+				tribunal.getPje2gEndpoint());
 		
 		String whereClause = EAdvogadoContract.TribunalTable.COLUMN_NAME_TRIBUNAL_ID + " = ?";
 		String[] whereArgs = new String[] {tribunal.getKey().getId().toString()};
@@ -104,6 +114,8 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
         		Tribunal exTrib = selectTribunalPorId(tribunal.getKey().getId());
         		if (exTrib == null) {
         			inserirTribunal(tribunal);
+        		} else {
+        			updateTribunal(tribunal);
         		}
     		}
     	}
@@ -178,7 +190,10 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     			EAdvogadoContract.TribunalTable._ID,
     			EAdvogadoContract.TribunalTable.COLUMN_NAME_TRIBUNAL_ID,
     			EAdvogadoContract.TribunalTable.COLUMN_NAME_NOME,
-    			EAdvogadoContract.TribunalTable.COLUMN_NAME_SIGLA
+    			EAdvogadoContract.TribunalTable.COLUMN_NAME_SIGLA,
+    			EAdvogadoContract.TribunalTable.COLUMN_NAME_ENDPOINT_1G,
+    			EAdvogadoContract.TribunalTable.COLUMN_NAME_ENDPOINT_2G,
+    			EAdvogadoContract.TribunalTable.COLUMN_NAME_QTD_CONSULTAS
     	};
     	String selection = EAdvogadoContract.TribunalTable.COLUMN_NAME_TRIBUNAL_ID + " = ?";
     	String[] columnValues = {
@@ -205,10 +220,34 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     		tribunal.getKey().setId(c.getLong(1));
 			tribunal.setNome(c.getString(2));
 			tribunal.setSigla(c.getString(3));
+			tribunal.setPje1gEndpoint(c.getString(4));
+			tribunal.setPje2gEndpoint(c.getString(5));
+			tribunal.set(EAdvogadoContract.TribunalTable.COLUMN_NAME_QTD_CONSULTAS, c.getInt(6));
     	}
     	c.close();
 
         return tribunal;
+    }
+    
+    public long selectTribunaisCount() {
+    	// Define a projection that specifies which columns from the database
+    	// you will actually use after this query.
+    	String[] projection = {
+    			EAdvogadoContract.TribunalTable._ID
+    	};
+
+    	Cursor c = getReadableDatabase().query(
+    			EAdvogadoContract.TribunalTable.TABLE_NAME,  // The table to query
+    	    projection,                               // The columns to return
+    	    null,                                // The columns for the WHERE clause
+    	    null,                            // The values for the WHERE clause
+    	    null,                                     // don't group the rows
+    	    null,                                     // don't filter by row groups
+    	    null                                 // The sort order
+    	    );
+    	long count = c.getCount();
+    	c.close();
+        return count;
     }
     
     public List<Tribunal> selectTribunais() {
@@ -218,11 +257,15 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     			EAdvogadoContract.TribunalTable._ID,
     			EAdvogadoContract.TribunalTable.COLUMN_NAME_TRIBUNAL_ID,
     			EAdvogadoContract.TribunalTable.COLUMN_NAME_NOME,
-    			EAdvogadoContract.TribunalTable.COLUMN_NAME_SIGLA
+    			EAdvogadoContract.TribunalTable.COLUMN_NAME_SIGLA,
+    			EAdvogadoContract.TribunalTable.COLUMN_NAME_ENDPOINT_1G,
+    			EAdvogadoContract.TribunalTable.COLUMN_NAME_ENDPOINT_2G,
+    			EAdvogadoContract.TribunalTable.COLUMN_NAME_QTD_CONSULTAS
     	};
 
     	// How you want the results sorted in the resulting Cursor
     	String sortOrder =
+    		EAdvogadoContract.TribunalTable.COLUMN_NAME_QTD_CONSULTAS + " DESC, " +
     		EAdvogadoContract.TribunalTable.COLUMN_NAME_SIGLA + " ASC";
 
     	Cursor c = getReadableDatabase().query(
@@ -237,12 +280,15 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     	List<Tribunal> tribunais = new ArrayList<Tribunal>();
     	if (c.moveToFirst()) {
     		do {
-    			Tribunal t = new Tribunal();
-        		t.setKey(new com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Key());
-        		t.getKey().setId(c.getLong(1));
-    			t.setNome(c.getString(2));
-    			t.setSigla(c.getString(3));
-    			tribunais.add(t);
+    			Tribunal tribunal = new Tribunal();
+        		tribunal.setKey(new com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Key());
+        		tribunal.getKey().setId(c.getLong(1));
+    			tribunal.setNome(c.getString(2));
+    			tribunal.setSigla(c.getString(3));
+    			tribunal.setPje1gEndpoint(c.getString(4));
+    			tribunal.setPje2gEndpoint(c.getString(5));
+    			tribunal.set(EAdvogadoContract.TribunalTable.COLUMN_NAME_QTD_CONSULTAS, c.getInt(6));
+    			tribunais.add(tribunal);
     		} while(c.moveToNext());
     	}
     	c.close();

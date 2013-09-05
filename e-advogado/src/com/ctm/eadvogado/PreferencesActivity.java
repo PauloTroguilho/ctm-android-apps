@@ -20,6 +20,10 @@ public class PreferencesActivity extends SherlockPreferenceActivity implements
 	public static final String PREFS_KEY_EMAIL = "email";
 	public static final String PREFS_KEY_SENHA = "senha";
 	public static final String PREFS_KEY_TIPO_CONTA = "tipoConta";
+	public static final String PREFS_KEY_RATE_THIS_APP = "rateThisApp";
+	public static final String PREFS_KEY_ULTIMA_RATE_THIS_APP = "ultimaRateThisApp";
+	public static final String PREFS_KEY_ULTIMA_ATUALIZACAO = "ultimaAtualizacao";
+	
 
 	@SuppressWarnings("deprecation")
 	@Override

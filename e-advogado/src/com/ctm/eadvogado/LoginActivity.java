@@ -1,15 +1,11 @@
 package com.ctm.eadvogado;
 
-import java.io.IOException;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -19,12 +15,11 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Window;
-import com.ctm.eadvogado.endpoints.usuarioEndpoint.UsuarioEndpoint;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.model.Usuario;
+import com.ctm.eadvogado.tasks.AutenticarUsuarioTask;
+import com.ctm.eadvogado.tasks.RecuperarSenhaTask;
 import com.ctm.eadvogado.util.Consts;
-import com.ctm.eadvogado.util.EndpointUtils;
 import com.ctm.eadvogado.util.MessageUtils;
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
 public class LoginActivity extends SherlockActivity {
 	
@@ -35,14 +30,13 @@ public class LoginActivity extends SherlockActivity {
 	
 	public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
 	
-	private UsuarioEndpoint usuarioEndpoint;
 	private SharedPreferences preferences;
 
 	/**
 	 * Keep track of the login task to ensure we can cancel it if requested.
 	 */
-	private UserLoginTask mAuthTask = null;
-	private RecuperaSenhaTask recuperaSenhaTask = null;
+	private AutenticarUsuarioTask autenticarTask = null;
+	private RecuperarSenhaTask recuperarSenhaTask = null;
 	
 	// Values for email and password at the time of the login attempt.
 	private String email;
@@ -63,8 +57,6 @@ public class LoginActivity extends SherlockActivity {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_login);
 		getSupportActionBar().setTitle(R.string.title_activity_login);
-		
-		usuarioEndpoint = EndpointUtils.initUsuarioEndpoint();
 		
 		/*accountManager = AccountManager.get(getApplicationContext());
         accounts = accountManager.getAccountsByType("com.google");
@@ -108,11 +100,11 @@ public class LoginActivity extends SherlockActivity {
 					new View.OnClickListener() {
 						@Override
 						public void onClick(View view) {
-							if (mAuthTask != null) {
-								mAuthTask.cancel(true);
+							if (autenticarTask != null) {
+								autenticarTask.cancel(true);
 							}
-							if (recuperaSenhaTask != null) {
-								recuperaSenhaTask.cancel(true);
+							if (recuperarSenhaTask != null) {
+								recuperarSenhaTask.cancel(true);
 							}
 						}
 					});
@@ -121,8 +113,8 @@ public class LoginActivity extends SherlockActivity {
 					new View.OnClickListener() {
 						@Override
 						public void onClick(View view) {
-							if (mAuthTask != null) {
-								mAuthTask.cancel(true);
+							if (autenticarTask != null) {
+								autenticarTask.cancel(true);
 							}
 							startActivity(new Intent(LoginActivity.this, RegistroActivity.class));
 							finish();
@@ -133,8 +125,8 @@ public class LoginActivity extends SherlockActivity {
 					new View.OnClickListener() {
 						@Override
 						public void onClick(View view) {
-							if (recuperaSenhaTask != null) {
-								recuperaSenhaTask.cancel(true);
+							if (recuperarSenhaTask != null) {
+								recuperarSenhaTask.cancel(true);
 							}
 							doRecuperarSenha();
 						}
@@ -153,7 +145,7 @@ public class LoginActivity extends SherlockActivity {
 	 * errors are presented and no actual login attempt is made.
 	 */
 	public void doLogin() {
-		if (mAuthTask != null) {
+		if (autenticarTask != null) {
 			return;
 		}
 		// Reset errors.
@@ -191,8 +183,41 @@ public class LoginActivity extends SherlockActivity {
 		} else {
 			setSupportProgressBarIndeterminateVisibility(true);
 			setControlsEnabled(false);
-			mAuthTask = new UserLoginTask();
-			mAuthTask.execute((Void) null);
+			autenticarTask = new AutenticarUsuarioTask(this) {
+				@Override
+				protected void onPostExecute(Usuario result) {
+					if (result != null) {
+						Editor editor = preferences.edit();
+						editor.putString(PreferencesActivity.PREFS_KEY_EMAIL, email);
+						editor.putString(PreferencesActivity.PREFS_KEY_SENHA, password);
+						editor.putString(PreferencesActivity.PREFS_KEY_TIPO_CONTA, 
+								result.getTipoConta());
+						editor.commit();
+						
+						startActivity(new Intent(LoginActivity.this, MainActivity.class));
+						finish();
+					} else {
+						if (getErrorMessage().length() == 0) {
+							alert(R.string.msg_erro_inesperado);
+						} else {
+							alert(getErrorMessage());
+						}
+					}
+					autenticarTask = null;
+					setSupportProgressBarIndeterminateVisibility(false);
+					setControlsEnabled(true);
+					email = "";
+					password = "";
+				}
+				
+				@Override
+				protected void onCancelled(Usuario result) {
+					autenticarTask = null;
+					setSupportProgressBarIndeterminateVisibility(false);
+					setControlsEnabled(true);
+				}
+			};
+			autenticarTask.execute(email, password);
 		}
 	}
 	
@@ -208,131 +233,8 @@ public class LoginActivity extends SherlockActivity {
 		registroBt.setEnabled(enabled);
 	}
 	
-	
-	/**
-	 * Represents an asynchronous login/registration task used to authenticate
-	 * the user.
-	 */
-	public class UserLoginTask extends AsyncTask<Void, Void, Usuario> {
-		
-		String mensagem = null;
-		
-		@Override
-		protected Usuario doInBackground(Void... params) {
-			Usuario usuario = null;
-			int tries = 3;
-			int attempt = 0;
-			while (attempt < tries) {
-				try {
-					usuario = usuarioEndpoint.autenticar(email, password).execute();
-					if (usuario != null)
-						break;
-				} catch(GoogleJsonResponseException e) {
-					Log.e(TAG, "Erro ao executar a operação!", e);
-					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
-							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
-				} catch (IOException e) {
-					Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
-					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
-				}
-				attempt++;
-			}
-			return usuario;
-		}
-
-		@Override
-		protected void onPostExecute(Usuario usuario) {
-			mAuthTask = null;
-			setSupportProgressBarIndeterminateVisibility(false);
-			setControlsEnabled(true);
-			if (usuario != null) {
-				Editor editor = preferences.edit();
-				editor.putString(PreferencesActivity.PREFS_KEY_EMAIL, email);
-				editor.putString(PreferencesActivity.PREFS_KEY_SENHA, password);
-				editor.putString(PreferencesActivity.PREFS_KEY_TIPO_CONTA, 
-						usuario.getTipoConta());
-				editor.commit();
-				
-				Intent intent = new Intent();
-				intent.setClass(LoginActivity.this, MainActivity.class);
-				startActivity(intent);
-				finish();
-			} else {
-				if (mensagem.length() == 0) {
-					MessageUtils.alert(getString(R.string.msg_erro_inesperado), LoginActivity.this);
-				} else {
-					MessageUtils.alert(mensagem, LoginActivity.this);
-				}
-			}
-		}
-
-		@Override
-		protected void onCancelled() {
-			mAuthTask = null;
-			setSupportProgressBarIndeterminateVisibility(false);
-			setControlsEnabled(true);
-		}
-	}
-	
-	public class RecuperaSenhaTask extends AsyncTask<Void, Void, Usuario> {
-		
-		String mensagem = null;
-		
-		@Override
-		protected Usuario doInBackground(Void... params) {
-			Usuario usuario = null;
-			int tries = 3;
-			int attempt = 0;
-			while (attempt < tries) {
-				try {
-					usuario = usuarioEndpoint.resetarSenha(email).execute();
-					if (usuario != null)
-						break;
-				} catch(GoogleJsonResponseException e) {
-					Log.e(TAG, "Erro ao executar a operação!", e);
-					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
-							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
-				} catch (IOException e) {
-					Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
-					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
-				}
-				attempt++;
-			}
-			return usuario;
-		}
-
-		@Override
-		protected void onPostExecute(Usuario usuario) {
-			recuperaSenhaTask = null;
-			setSupportProgressBarIndeterminateVisibility(false);
-			setControlsEnabled(true);
-			if (usuario != null) {
-				Editor editor = preferences.edit();
-				editor.remove(PreferencesActivity.PREFS_KEY_EMAIL);
-				editor.remove(PreferencesActivity.PREFS_KEY_SENHA);
-				editor.remove(PreferencesActivity.PREFS_KEY_TIPO_CONTA);
-				editor.commit();
-				emailEt.requestFocus();
-				MessageUtils.alert(getString(R.string.msg_email_nova_senha), LoginActivity.this);
-			} else {
-				if (mensagem.length() == 0) {
-					MessageUtils.alert(getString(R.string.msg_erro_inesperado), LoginActivity.this);
-				} else {
-					MessageUtils.alert(mensagem, LoginActivity.this);
-				}
-			}
-		}
-
-		@Override
-		protected void onCancelled() {
-			recuperaSenhaTask = null;
-			setSupportProgressBarIndeterminateVisibility(false);
-			setControlsEnabled(true);
-		}
-	}
-	
 	public void doRecuperarSenha() {
-		if (recuperaSenhaTask != null) {
+		if (recuperarSenhaTask != null) {
 			return;
 		}
 		boolean cancel = false;
@@ -351,8 +253,37 @@ public class LoginActivity extends SherlockActivity {
 		} else {
 			setSupportProgressBarIndeterminateVisibility(true);
 			setControlsEnabled(false);
-			recuperaSenhaTask = new RecuperaSenhaTask();
-			recuperaSenhaTask.execute((Void) null);
+			recuperarSenhaTask = new RecuperarSenhaTask(this) {
+				@Override
+				protected void onPostExecute(Usuario result) {
+					if (result != null) {
+						Editor editor = preferences.edit();
+						editor.remove(PreferencesActivity.PREFS_KEY_EMAIL);
+						editor.remove(PreferencesActivity.PREFS_KEY_SENHA);
+						editor.remove(PreferencesActivity.PREFS_KEY_TIPO_CONTA);
+						editor.commit();
+						emailEt.requestFocus();
+						MessageUtils.alert(getString(R.string.msg_email_nova_senha), getContext());
+					} else {
+						if (getErrorMessage().length() == 0) {
+							alert(R.string.msg_erro_inesperado);
+						} else {
+							alert(getErrorMessage());
+						}
+					}
+					recuperarSenhaTask = null;
+					setSupportProgressBarIndeterminateVisibility(false);
+					setControlsEnabled(true);
+					email = "";
+				}
+				@Override
+				protected void onCancelled(Usuario result) {
+					recuperarSenhaTask = null;
+					setSupportProgressBarIndeterminateVisibility(false);
+					setControlsEnabled(true);
+				}
+			};
+			recuperarSenhaTask.execute(email);
 		}
 	}
 

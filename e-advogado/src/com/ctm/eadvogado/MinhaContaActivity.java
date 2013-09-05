@@ -33,9 +33,9 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
 public class MinhaContaActivity extends SlidingActivity {
 	
-	private static Usuario USUARIO;
 	private UsuarioEndpoint usuarioEndpoint;
 	private CompraEndpoint compraEndpoint;
+	
 	private CarregarMinhaContaTask minhaContaTask = null;
 	private EfetuarCompraTask efetuarCompraTask = null;
 	private ConfirmarCompraTask confirmarCompraTask = null;
@@ -157,7 +157,7 @@ public class MinhaContaActivity extends SlidingActivity {
             boolean isThreadStarted = false;
             Log.d(TAG, "Consulta de produtos foi realizada com sucesso.");
 			// Do we have the premium account?
-			Purchase premiumPurchase = inventory.getPurchase(SKU_CONTA_PREMIUM);
+			/*Purchase premiumPurchase = inventory.getPurchase(SKU_CONTA_PREMIUM);
 			if (premiumPurchase != null && premiumPurchase.getPurchaseState() == IabHelper.BILLING_RESPONSE_RESULT_OK) {
 				// confirmar compra de conta premium
 				doConfirmarCompra(premiumPurchase);
@@ -168,7 +168,7 @@ public class MinhaContaActivity extends SlidingActivity {
 					doCancelarContaPremium();
 					isThreadStarted = true;
 				}
-			}
+			}*/
 			String[] skus = new String[] {SKU_PROCESSOS_10, SKU_PROCESSOS_25, SKU_PROCESSOS_100, SKU_PROCESSOS_ILIMITADOS};
 			for (String sku : skus) {
 				// Check for gas delivery -- if we own gas, we should fill up the tank immediately
@@ -223,6 +223,7 @@ public class MinhaContaActivity extends SlidingActivity {
     					PreferencesActivity.PREFS_KEY_TIPO_CONTA, Consts.TIPO_CONTA_PREMIUM).commit();
     				isContaPremium = true;
 				}
+				doCarregarMinhaConta();
 			} else {
             	complain("Houve um erro registrando a compra! Favor reiniciar o aplicativo." + result);
             }
@@ -237,7 +238,11 @@ public class MinhaContaActivity extends SlidingActivity {
         public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
         	isOnPurchase = false;
             Log.d(TAG, "Compra finalizada: " + result + ", purchase: " + purchase);
-            if (result.isFailure()) {
+            if (result.isSuccess()) {
+            	Log.i(TAG, "Compra realizada com sucesso: " + result);
+            	// Faz a confirmação e consume o item.
+                doConfirmarCompra(purchase);
+            } else {
             	Log.e(TAG, "Falha na realização da compra: " + result);
             	if (result.getResponse() == IabHelper.BILLING_RESPONSE_RESULT_USER_CANCELED) {
             		alert("O processo de compra foi cancelado!");
@@ -248,9 +253,6 @@ public class MinhaContaActivity extends SlidingActivity {
         		setControlsEnabled(true);
                 return;
             }
-            // Faz a confirmação e consume o item.
-            doConfirmarCompra(purchase);
-            Log.d(TAG, "Compra realizada com sucesso.");
         }
     };
     
@@ -413,16 +415,16 @@ public class MinhaContaActivity extends SlidingActivity {
 	    					|| purchase.getSku().equals(SKU_PROCESSOS_100)
 	    					|| purchase.getSku().equals(SKU_PROCESSOS_ILIMITADOS)) {
 	                	Log.d(TAG, String.format("Comprou o produto %s. Registrando compra", purchase.getSku()));
-	                	alert("Obrigado pela realização da compra!");
 	                	mHelper.consumeAsync(purchase, mConsumeFinishedListener);
-	                } else if (purchase.getSku().equals(SKU_CONTA_PREMIUM)) {
-	                    Log.d(TAG, "Fez o upgrade para conta premium.");
-	                    preferences.edit().putString(
-	    						PreferencesActivity.PREFS_KEY_TIPO_CONTA, USUARIO.getTipoConta()).commit();
-	    				isContaPremium = true;
-	                    alert("Obrigado por adquirir a conta premium!");
+	                	if (purchase.getSku().equals(SKU_PROCESSOS_ILIMITADOS)) {
+		                    alert("Obrigado por adquirir a conta premium!");
+		                } else {
+		                	alert("Obrigado pela realização da compra!");
+		                }
+	                } else {
+	                    Log.e(TAG, "SKU invalido");
+	                    throw new RuntimeException("Compra confirmada e SKU invalido");
 	                }
-					doCarregarMinhaConta();
 				} else {
 					alert("Desculpe! Não foi possível confirmar a compra. Tente novamente em alguns minutos.");
 				}
@@ -546,20 +548,27 @@ public class MinhaContaActivity extends SlidingActivity {
 	 */
 	public class CarregarMinhaContaTask extends AsyncTask<Void, Void, Usuario> {
 		
-		private int errorCode = -1;
+		String mensagem = null;
 		
 		@Override
 		protected Usuario doInBackground(Void... params) {
 			Usuario usuario = null;
-			try {
-				usuario = usuarioEndpoint.autenticar(getEmail(), getSenha()).execute();
-			} catch(GoogleJsonResponseException e) {
-				if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_UNAUTHORIZED)
-						|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("unauthorized"))) {
-					errorCode = HttpStatus.SC_UNAUTHORIZED;
+			int tries = 3;
+			int attempt = 0;
+			while (attempt < tries) {
+				try {
+					usuario = usuarioEndpoint.autenticar(getEmail(), getSenha()).execute();
+					if (usuario != null)
+						break;
+				} catch(GoogleJsonResponseException e) {
+					Log.e(TAG, "Erro ao executar a operação!", e);
+					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
+							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
+				} catch (IOException e) {
+					Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
+					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
 				}
-			} catch (Exception e) {
-				Log.e(TAG, "Falha ao realizar login.", e);
+				attempt++;
 			}
 			return usuario;
 		}
@@ -567,15 +576,14 @@ public class MinhaContaActivity extends SlidingActivity {
 		@Override
 		protected void onPostExecute(Usuario usuario) {
 			if (usuario != null) {
-				USUARIO = usuario;
 				tvCategoria.setText(usuario.getTipoConta());
 				tvQtdeCadastrados.setText(dbHelper.selectProcessosCount() + "");
 				tvQtdeDisponivel.setText(usuario.getSaldo().toString());
 			} else {
-				if (errorCode == HttpStatus.SC_UNAUTHORIZED) {
-					alert(getString(R.string.conta_erro_carregando_dados_nao_autorizado));
+				if (mensagem.length() == 0) {
+					alert(getString(R.string.msg_erro_inesperado));
 				} else {
-					alert(getString(R.string.conta_erro_carregando_dados));
+					alert(mensagem);
 				}
 			}
 			minhaContaTask = null;
