@@ -4,6 +4,7 @@
 package com.ctm.eadvogado.servlets;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -57,12 +58,11 @@ public class ConsultarProcessoAsyncServlet extends HttpServlet {
 		try {
 			processoNegocio.consultarProcesso(pNpu, 
 				Long.parseLong(pIdTribunal), TipoJuizo.valueOf(pTipoJuizo), true, false);
-			LOGGER.fine(String.format("Processo: %s, %s, %s foi atualizado com sucesso!", 
-					pNpu, pIdTribunal, pTipoJuizo));
+			log(String.format("Processo: %s, %s, %s foi atualizado com sucesso!", pNpu, pIdTribunal, pTipoJuizo));
 		} catch(ServiceUnavailableException e) {
-			log(String.format("Serviço temporariamente indisponível neste tribunal: %s, %s", pIdTribunal, pTipoJuizo));
+			LOGGER.warning(String.format("ServiÃ§o temporariamente indisponÃ­vel neste tribunal: %s, %s", pIdTribunal, pTipoJuizo));
 		} catch (Exception e) {
-			log(String.format("Erro inesperado consultando processo: %s, %s, %s", pNpu, pIdTribunal, pTipoJuizo), e);
+			LOGGER.log(Level.SEVERE, String.format("Erro inesperado consultando processo: %s, %s, %s", pNpu, pIdTribunal, pTipoJuizo), e);
 		}
 	}
 

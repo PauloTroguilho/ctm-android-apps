@@ -57,7 +57,7 @@ public class AtualizarTiposDocumentosServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		log("Atualização de tipos de documentos iniciada.");
+		log("AtualizaÃ§Ã£o de tipos de documentos iniciada.");
 		List<Tribunal> tribunais = tribunalNegocio.findAll(null, null);
 		for (Tribunal tribunal : tribunais) {
 			if (tribunal.getDataAtualizacao() == null

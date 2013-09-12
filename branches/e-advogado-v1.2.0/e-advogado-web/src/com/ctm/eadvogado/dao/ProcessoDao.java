@@ -57,13 +57,13 @@ public class ProcessoDao extends BaseDao<Processo> {
 		try {
 			processo = (Processo) query.getSingleResult();
 		} catch(NoResultException e) {
-			logger.info(String.format("Processo n„o encontrado. %s, %s, %s", npu, idTribunal, tipoJuizo.name()));
+			logger.info(String.format("Processo n√£o encontrado. %s, %s, %s", npu, idTribunal, tipoJuizo.name()));
 		}
 		return processo;
 	}
 	
 	/**
-	 * Busca os Processos do Usu·rio
+	 * Busca os Processos do Usu√°rio
 	 * @param usuario
 	 * @return
 	 * @throws PersistenceException
@@ -121,7 +121,7 @@ public class ProcessoDao extends BaseDao<Processo> {
 		Set<Key> processosKeysSet = new HashSet<Key>();
 		processosKeysSet.addAll(processosKeys);
 		if (!processosKeysSet.isEmpty()) {
-			logger.log(Level.INFO, String.format("Foram encontrados %s processos associados a usu·rios.", processosKeysSet.size()));
+			logger.log(Level.INFO, String.format("Foram encontrados %s processos associados a usu√°rios.", processosKeysSet.size()));
 			List<Key> list = Arrays.asList(processosKeysSet.toArray(new Key[0]));
 			resultList = findByKeys(list);
 		}

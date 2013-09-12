@@ -1,9 +1,9 @@
 package com.ctm.eadvogado.model;
 
 /**
- * Lipo de lançamento.
- * CREDITO - Crédito
- * DEBITO - Débito
+ * Lipo de lanÃ§amento.
+ * CREDITO - CrÃ©dito
+ * DEBITO - DÃ©bito
  * @author Cleber
  *
  */

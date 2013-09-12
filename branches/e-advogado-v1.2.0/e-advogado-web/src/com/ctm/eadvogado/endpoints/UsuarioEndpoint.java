@@ -44,9 +44,9 @@ public class UsuarioEndpoint extends BaseEndpoint<Usuario, UsuarioNegocio> {
 		try {
 			usuario = getNegocio().autenticar(email, senha);
 		} catch(NoResultException e) {
-			throw new NotFoundException("Usuário não encontrado!");
+			throw new NotFoundException("UsuÃ¡rio nÃ£o encontrado!");
 		} catch (SecurityException e) {
-			throw new UnauthorizedException("Usuário e/ou senha inválidos!");
+			throw new UnauthorizedException("UsuÃ¡rio e/ou senha invÃ¡lidos!");
 		}
 		return usuario;
 	}
@@ -73,7 +73,7 @@ public class UsuarioEndpoint extends BaseEndpoint<Usuario, UsuarioNegocio> {
 		if (usuario != null) {
 			getNegocio().enviarEmailParaUsuario(from, assunto, textContent, htmlContent, usuario);
 		} else {
-			throw new NotFoundException(String.format("Não foi encontrado usuário com e-mail: %s", email));
+			throw new NotFoundException(String.format("NÃ£o foi encontrado usuÃ¡rio com e-mail: %s", email));
 		}
 	}
 	
@@ -102,7 +102,7 @@ public class UsuarioEndpoint extends BaseEndpoint<Usuario, UsuarioNegocio> {
 				"Queue de notificacao criada para usuario %s", email));
 			
 		} else {
-			throw new NotFoundException(String.format("Não foi encontrado usuário com e-mail: %s", email));
+			throw new NotFoundException(String.format("NÃ£o foi encontrado usuÃ¡rio com e-mail: %s", email));
 		}
 	}
 	

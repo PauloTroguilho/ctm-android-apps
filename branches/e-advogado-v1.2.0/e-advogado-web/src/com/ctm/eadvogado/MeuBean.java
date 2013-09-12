@@ -63,7 +63,7 @@ public class MeuBean {
 		lancamento4.setUsuario(usuario.getKey());
 		lancamento4 = lancamentoNegocio.insert(lancamento4);*/
 		
-		return String.format("Ol· Mundo! Usuario id = %s, email = %s. Saldo = %s", usuario
+		return String.format("Ol√° Mundo! Usuario id = %s, email = %s. Saldo = %s", usuario
 				.getKey().getId(), usuario.getEmail(), lancamentoNegocio.getSaldoLancamentos(usuario));
 	}
 

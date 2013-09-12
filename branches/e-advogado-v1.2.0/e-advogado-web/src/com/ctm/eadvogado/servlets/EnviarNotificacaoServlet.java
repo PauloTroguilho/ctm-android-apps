@@ -63,11 +63,11 @@ public class EnviarNotificacaoServlet extends HttpServlet {
 				String paramName = object.toString();
 				paramsMap.put(paramName, req.getParameter(paramName));
 			}
-			log(String.format("Enviando notificaÁao para o usu·rio: %s, params: %s", pEmail, paramsMap));
+			log(String.format("Enviando notifica√ß√£o para o usu√°rio: %s, params: %s", pEmail, paramsMap));
 			try {
 				usuarioNegocio.enviarNotificacao(usuario, paramsMap);
 			} catch (Exception e) {
-				log(String.format("Falha ao enviar notificaÁao para o usu·rio: %s ", pEmail), e);
+				log(String.format("Falha ao enviar notifica√ß√£o para o usu√°rio: %s ", pEmail), e);
 			}
 		} else {
 			log(String.format("Nenhum usuario encontrado com o e-mail: %s", pEmail));

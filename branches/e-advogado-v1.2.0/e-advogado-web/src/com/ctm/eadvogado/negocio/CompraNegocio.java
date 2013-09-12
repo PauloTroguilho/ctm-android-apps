@@ -81,7 +81,7 @@ public class CompraNegocio extends BaseNegocio<Compra, CompraDao> {
 			}
 			return compra;
 		} else {
-			throw new NegocioException("O SKU informado È inv·lido.");
+			throw new NegocioException("O SKU informado √© inv√°lido.");
 		}
 	}
 	
@@ -116,7 +116,7 @@ public class CompraNegocio extends BaseNegocio<Compra, CompraDao> {
 					} else if (sku.equals(SKU_PROCESSOS_100)) {
 						lancamento.setQuantidade(100);
 					} else {
-						throw new NegocioException("O SKU informado È inv·lido");
+						throw new NegocioException("O SKU informado √© inv√°lido");
 					}
 					lancamento.setTipo(TipoLancamento.CREDITO);
 					lancamento.setUsuario(usuario.getKey());

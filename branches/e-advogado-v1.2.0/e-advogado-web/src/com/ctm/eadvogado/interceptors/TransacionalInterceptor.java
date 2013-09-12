@@ -47,20 +47,29 @@ public class TransacionalInterceptor implements Serializable{
 					"Excedeu o limite de Quota: %s, metodo: %s",
 					e.getMessage(), context.getMethod()), e);  
 			throw new ServiceUnavailableException(
-					"Desculpe! O serviÁo est· temporariamente em manutenÁ„o. Favor tentar novamente em algumas horas.");
+					"Desculpe! O servi√ßo est√° temporariamente em manuten√ß√£o. Favor tentar novamente em algumas horas.");
         } catch (Exception e) {  
-        	log.log(Level.SEVERE, "Chamando transaÁ„o no mÈtodo: " + context.getMethod(), e);  
+        	log.log(Level.SEVERE, "Chamando transa√ß√£o no m√©todo: " + context.getMethod(), e);  
             if (transaction != null) {  
                 transaction.rollback();  
             }  
             throw e;
-        } finally {  
-            commitTransaction(transaction, true);
+        } finally {
+        	try {
+        		commitTransaction(transaction, true);
+        	} catch(Throwable t) {
+        		if (t instanceof Exception) {
+        			throw (Exception)t;
+        		} else {
+        			throw new ServiceUnavailableException(
+        					"Desculpe! O servi√ßo est√° temporariamente em manuten√ß√£o. Favor tentar novamente em algumas horas.", t);
+        		}
+        	}
         }
         return result;
     }  
     
-    private void commitTransaction(EntityTransaction transaction, boolean retryIfError) throws ServiceUnavailableException {
+    private void commitTransaction(EntityTransaction transaction, boolean retryIfError) throws Throwable {
     	if (transaction != null && transaction.isActive()) {  
         	try {
         		transaction.commit();
@@ -69,16 +78,20 @@ public class TransacionalInterceptor implements Serializable{
 						String.format("Nao foi possivel comitar a transacao. Excedeu o limite de Quota: %s",
 								e.getMessage()), e);  
     			throw new ServiceUnavailableException(
-    					"Desculpe! O serviÁo est· temporariamente em manutenÁ„o. Favor tentar novamente em algumas horas.");
+    					"Desculpe! O servi√ßo est√° temporariamente em manuten√ß√£o. Favor tentar novamente em algumas horas.");
             } catch (RollbackException e) {
             	Throwable rootCause = ExceptionUtils.getRootCause(e);
             	if (rootCause instanceof ConcurrentModificationException && retryIfError) {
             		log.log(Level.SEVERE, "Nao foi possivel comitar a transacao... tentando novamente.", rootCause);
-            		commitTransaction(transaction, false);
+            		if (retryIfError) {
+            			commitTransaction(transaction, false);
+            		} else {
+            			throw rootCause;
+            		}
             	}
         	}
         } else {
-        	log.log(Level.SEVERE, String.format("N„o foi possivel comitar a transaÁ„o. isNull: %s, isActive: %s", transaction == null, transaction.isActive()));  
+        	log.log(Level.SEVERE, String.format("N√£o foi possivel comitar a transa√ß√£o. isNull: %s, isActive: %s", transaction == null, transaction.isActive()));  
         }
     }
 }

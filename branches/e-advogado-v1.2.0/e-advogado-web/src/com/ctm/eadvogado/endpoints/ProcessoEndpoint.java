@@ -87,10 +87,10 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 		try {
 			getNegocio().associarProcessoAoUsuario(idProcesso, email);
 		} catch(NegocioException e) {
-			throw new UnauthorizedException("Desculpe! VocÍ n„o possui saldo para inclus„o de processos!", e);
+			throw new UnauthorizedException("Desculpe! Voc√™ n√£o possui saldo para inclus√£o de processos!", e);
 		} catch (Exception e) {
 			throw new InternalServerErrorException(
-					"Falha ao associar processo ao usu·rio!", e);
+					"Falha ao associar processo ao usu√°rio!", e);
 		}
 	}
 	
@@ -102,14 +102,14 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 		try {
 			usuario = usuarioNegocio.findByEmail(email);
 		} catch (NoResultException e) {
-			throw new NotFoundException("Usu·rio n„o encontrado!");
+			throw new NotFoundException("Usu√°rio n√£o encontrado!");
 		}
 		if (usuario != null) {
 			Processo processo = getNegocio().findByID(idProcesso);
 			if (processo != null) {
 				getNegocio().removerProcessoDoUsuario(idProcesso, email);
 			} else {
-				throw new NotFoundException("Processo n„o encontrado!");
+				throw new NotFoundException("Processo n√£o encontrado!");
 			}
 		}
 	}
@@ -143,10 +143,10 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 				tipoDoc = PJeServiceUtil.consultarDocumento(endpoint, npu, idDocumento);
 			} catch(Exception e) {
 				logger.log(Level.SEVERE, String.format("Falha ao consultar documento %s, do processo %s, %s, %s no servico.", idDocumento, npu, idTribunal, tipoJuizo.name()), e);
-				throw new ServiceUnavailableException("N„o foi possÌvel consultar o documento neste momento!");
+				throw new ServiceUnavailableException("N√£o foi poss√≠vel consultar o documento neste momento!");
 			}
 		} else {
-			throw new ServiceUnavailableException("ServiÁo n„o disponivel para o Tipo de JuÌzo informado.");
+			throw new ServiceUnavailableException("Servi√ßo n√£o disponivel para o Tipo de Ju√≠zo informado.");
 		}
 		if (tipoDoc != null) {
 			if (tipoDoc.getNivelSigilo().equals(0)) {
@@ -156,10 +156,10 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 				documento.setMimeType(tipoDoc.getMimetype());
 				return documento;
 			} else {
-				throw new UnauthorizedException("Desculpe! O documento informado n„o pode ser acessado!");
+				throw new UnauthorizedException("Desculpe! O documento informado n√£o pode ser acessado!");
 			}
 		} else {
-			throw new NotFoundException("Desculpe! O documento informado n„o foi localizado!");
+			throw new NotFoundException("Desculpe! O documento informado n√£o foi localizado!");
 		}
 	}
 	
@@ -171,9 +171,9 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 		try {
 			usuario = usuarioNegocio.autenticar(email, senha);
 		} catch(NoResultException e) {
-			throw new NotFoundException("Usu·rio n„o encontrado!");
+			throw new NotFoundException("Usu√°rio n√£o encontrado!");
 		} catch (SecurityException e) {
-			throw new UnauthorizedException("Usu·rio e/ou senha inv·lidos!");
+			throw new UnauthorizedException("Usu√°rio e/ou senha inv√°lidos!");
 		}
 		List<ProcessoUsuario> processosList = new ArrayList<ProcessoUsuario>();
 		if (usuario != null) {

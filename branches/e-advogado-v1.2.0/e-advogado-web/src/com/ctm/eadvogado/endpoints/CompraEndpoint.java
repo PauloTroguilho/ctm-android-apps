@@ -40,9 +40,9 @@ public class CompraEndpoint {
 		try {
 			usuario = usuarioNegocio.autenticar(email, senha);
 		} catch(NoResultException e) {
-			throw new NotFoundException("Usuário não encontrado!");
+			throw new NotFoundException("UsuÃ¡rio nÃ£o encontrado!");
 		} catch (SecurityException e) {
-			throw new UnauthorizedException("Usuário e/ou senha inválidos!");
+			throw new UnauthorizedException("UsuÃ¡rio e/ou senha invÃ¡lidos!");
 		}
 		try {
 			return compraNegocio.gerarCompraPendente(usuario, sku);
@@ -68,9 +68,9 @@ public class CompraEndpoint {
 		try {
 			usuario = usuarioNegocio.autenticar(email, senha);
 		} catch(NoResultException e) {
-			throw new NotFoundException("Usuário não encontrado!");
+			throw new NotFoundException("UsuÃ¡rio nÃ£o encontrado!");
 		} catch (SecurityException e) {
-			throw new UnauthorizedException("Usuário e/ou senha inválidos!");
+			throw new UnauthorizedException("UsuÃ¡rio e/ou senha invÃ¡lidos!");
 		}
 		try {
 			return compraNegocio.confirmarCompraPendente(usuario, sku, payload, token, orderId);
@@ -91,9 +91,9 @@ public class CompraEndpoint {
 		try {
 			usuario = usuarioNegocio.autenticar(email, senha);
 		} catch(NoResultException e) {
-			throw new NotFoundException("Usuário não encontrado!");
+			throw new NotFoundException("UsuÃ¡rio nÃ£o encontrado!");
 		} catch (SecurityException e) {
-			throw new UnauthorizedException("Usuário e/ou senha inválidos!");
+			throw new UnauthorizedException("UsuÃ¡rio e/ou senha invÃ¡lidos!");
 		}
 		compraNegocio.cancelarCompraContaPremium(usuario);
 		return new WrappedBoolean(Boolean.TRUE);

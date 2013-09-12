@@ -50,7 +50,7 @@ public class DeviceDao extends BaseDao<Device> {
 		try {
 			devices = query.getResultList();
 		} catch(NoResultException e) {
-			logger.warning(String.format("Device n„o encontrado. %s, %s", usuario.getEmail(), registrationId));
+			logger.warning(String.format("Device n√£o encontrado. %s, %s", usuario.getEmail(), registrationId));
 		}
 		return devices;
 	}
@@ -72,7 +72,7 @@ public class DeviceDao extends BaseDao<Device> {
 		try {
 			devices = query.getResultList();
 		} catch(NoResultException e) {
-			logger.warning(String.format("Device n„o encontrado. %s, %s, %s", usuario.getEmail(), registrationId, status));
+			logger.warning(String.format("Device n√£o encontrado. %s, %s, %s", usuario.getEmail(), registrationId, status));
 		}
 		return devices;
 	}
@@ -90,7 +90,7 @@ public class DeviceDao extends BaseDao<Device> {
 		try {
 			devices = query.getResultList();
 		} catch(NoResultException e) {
-			logger.warning(String.format("Nenhum device encontrado para o usu·rio %s", usuario.getEmail()));
+			logger.warning(String.format("Nenhum device encontrado para o usu√°rio %s", usuario.getEmail()));
 		}
 		return devices;
 	}
@@ -110,7 +110,7 @@ public class DeviceDao extends BaseDao<Device> {
 		try {
 			devices = query.getResultList();
 		} catch(NoResultException e) {
-			logger.warning(String.format("Nenhum device encontrado para o usu·rio %s e status %s", usuario.getEmail(), status));
+			logger.warning(String.format("Nenhum device encontrado para o usu√°rio %s e status %s", usuario.getEmail(), status));
 		}
 		return devices;
 	}
