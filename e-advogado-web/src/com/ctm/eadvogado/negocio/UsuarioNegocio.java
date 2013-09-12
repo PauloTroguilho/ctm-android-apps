@@ -90,7 +90,7 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 						DigestUtils.sha256Hex(senha))) {
 			usuario.setSaldo(lancamentoDao.getSaldoLancamentos(usuario));
 			logger.info(String.format(
-					"Usu·rio %s autenticado. Tipo Conta: %s. Saldo: %s",
+					"Usu√°rio %s autenticado. Tipo Conta: %s. Saldo: %s",
 					usuario.getEmail(), usuario.getTipoConta(),
 					usuario.getSaldo()));
 			try {
@@ -149,10 +149,10 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 			emailRecup.append("<p>Equipe e-Advogado.</p>");
 			emailRecup.append("</body></html>");
 			
-			enviarEmailParaUsuario("contato.eadvogado@gmail.com", "RecuperaÁ„o de senha", emailRecup.toString(), emailRecup.toString(), usuario);
+			enviarEmailParaUsuario("contato.eadvogado@gmail.com", "Recupera√ß√£o de senha", emailRecup.toString(), emailRecup.toString(), usuario);
 		} else {
-			logger.warning(String.format("Nenhum usu·rio encontrado com email: %s", email));
-			throw new NotFoundException("Usu·rio n„o encontrado!");
+			logger.warning(String.format("Nenhum usu√°rio encontrado com email: %s", email));
+			throw new NotFoundException("Usu√°rio n√£o encontrado!");
 		}
 		return usuario;
 	}
@@ -204,10 +204,10 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 				logger.log(Level.SEVERE, "Falha ao registrar lancamento gratuito", e);
 				throw e;
 			} catch (Exception e) {
-				throw new NegocioException("Desculpe! O serviÁo est· temporariamente em manutenÁ„o. Favor tentar novamente em algumas horas.");
+				throw new NegocioException("Desculpe! O servi√ßo est√° temporariamente em manuten√ß√£o. Favor tentar novamente em algumas horas.");
 			}
 		} else {
-			throw new NegocioException("Este e-mail j· est· cadastrado no sistema!");
+			throw new NegocioException("Este e-mail j√° est√° cadastrado no sistema!");
 		}
 		return usuario;
 	}
@@ -265,7 +265,7 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 				enviarEmailParaUsuario(from, assunto, textContent, htmlContent, usuario);
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, 
-					String.format("Falha ao enviar email para o usu·rio: %s", usuario.getEmail()), e);
+					String.format("Falha ao enviar email para o usu√°rio: %s", usuario.getEmail()), e);
 			}
 		}
 	}
@@ -298,15 +298,15 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 					}
 				} catch (IOException e) {
 					logger.log(Level.SEVERE, String.format(
-							"Falha ao enviar GCM para dispositivo %s, usu·rio %s",
+							"Falha ao enviar GCM para dispositivo %s, usu√°rio %s",
 							device.getRegistrationId(), usuario.getEmail()), e);
 				} catch (PersistenceException e) {
 					logger.log(Level.SEVERE, String.format(
-							"Falha ao atualizar dispositivo %s, usu·rio %s",
+							"Falha ao atualizar dispositivo %s, usu√°rio %s",
 							device.getRegistrationId(), usuario.getEmail()), e);
 				} catch (Exception e) {
 					logger.log(Level.SEVERE, String.format(
-							"Falha inesperada ao atualizar dispositivo %s, usu·rio %s",
+							"Falha inesperada ao atualizar dispositivo %s, usu√°rio %s",
 							device.getRegistrationId(), usuario.getEmail()), e);
 				}
 			}

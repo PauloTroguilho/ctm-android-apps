@@ -29,7 +29,7 @@ public abstract class BaseDao<E extends BaseEntity> implements Serializable {
 	protected static Logger logger = Logger.getLogger(BaseDao.class.getSimpleName());
 
 	/**
-	 * Tipo de ordenação.
+	 * Tipo de ordenaÃ§Ã£o.
 	 * @author Cleber
 	 *
 	 */

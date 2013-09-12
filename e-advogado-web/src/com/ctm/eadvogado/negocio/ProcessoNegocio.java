@@ -89,7 +89,7 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	}
 	
 	/**
-	 * Busca os processos do Usu·rio.
+	 * Busca os processos do Usu√°rio.
 	 * @param usuario
 	 * @return
 	 * @throws PersistenceException
@@ -99,7 +99,7 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	}
 	
 	/**
-	 * Retorna os processos associados a usu·rios.
+	 * Retorna os processos associados a usu√°rios.
 	 * @return
 	 * @throws PersistenceException
 	 */
@@ -194,9 +194,9 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	 * @param idTribunal
 	 * @param tipoJuizo
 	 * @param ignorarCache
-	 * 	true - ignora a cache de processos e busca diretamente no serviÁo. Caso o serviÁo esteja indisponÌvel, busca na cache e bd.
+	 * 	true - ignora a cache de processos e busca diretamente no servi√ßo. Caso o servi√ßo esteja indispon√≠vel, busca na cache e bd.
 	 * @param incluirDocumentos
-	 *  true - inclui os documentos na busca do processo no serviÁo. 
+	 *  true - inclui os documentos na busca do processo no servi√ßo. 
 	 * @return
 	 * @throws NotFoundException
 	 * @throws UnauthorizedException
@@ -217,8 +217,16 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 			processo = findByNpuTribunalTipoJuizo(npu, idTribunal, tipoJuizo);
 		}
 		if (processo == null || (processo != null && ignorarCache)) {
-			TipoProcessoJudicial processoJudicial = consultarProcessoJudicial(
-					npu, idTribunal, tipoJuizo, incluirDocumentos);
+			TipoProcessoJudicial processoJudicial = null;
+			try {
+				processoJudicial = consultarProcessoJudicial(
+						npu, idTribunal, tipoJuizo, incluirDocumentos);
+			} catch(Exception e) {
+				logger.log(Level.SEVERE, String.format("Erro ao consultar atualizacao do processo/tribunal/tipoJuizo: %s/%s/%s. Message: %s", npu,idTribunal,tipoJuizo, e.getMessage()), e);
+			}
+			if (processoJudicial == null) {
+				processoJudicial = consultarProcessoJudicial(npu, idTribunal, tipoJuizo, false);
+			}
 			if (processoJudicial != null) {
 				Collections.sort(processoJudicial.getMovimento(), 
 						Collections.reverseOrder(new TipoMovimentoProcessualComparator()));
@@ -245,14 +253,15 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 						}
 					}
 				} else {
-					logger.log(Level.WARNING, String.format("N„o È permitido acessar o processo %s, idTribunal %s, tipoJuizo %s, ", npu, idTribunal, tipoJuizo));
-					throw new UnauthorizedException("O nivel de sigilo deste processo n„o permite consult·-lo!");
+					logger.log(Level.WARNING, String.format("N√£o √© permitido acessar o processo %s, idTribunal %s, tipoJuizo %s, ", npu, idTribunal, tipoJuizo));
+					throw new UnauthorizedException("O nivel de sigilo deste processo n√£o permite consult√°-lo!");
 				}
 			} else {
 				if (ignorarCache) {
 					processo = CacheUtils.getInstance().getProcessoFromCache(npu, tipoJuizo, idTribunal);
 					if (processo == null) {
 						processo = findByNpuTribunalTipoJuizo(npu, idTribunal, tipoJuizo);
+						fixDocumentosNulos(processo.getProcessoJudicial());
 					}
 				}
 			}
@@ -265,11 +274,11 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 			}
 		} else {
 			if (falhaNoServico) {
-				logger.log(Level.WARNING, String.format("ServiÁo indisponÌvel para o processo %s, idTribunal %s, tipoJuizo %s, ", npu, idTribunal, tipoJuizo));
-				throw new ServiceUnavailableException("O sistema PJ-e deste tribunal est· tempor·riamente indisponÌvel!");
+				logger.log(Level.WARNING, String.format("Servi√ßo indispon√≠vel para o processo %s, idTribunal %s, tipoJuizo %s, ", npu, idTribunal, tipoJuizo));
+				throw new ServiceUnavailableException("O sistema PJ-e deste tribunal est√° tempor√°riamente indispon√≠vel!");
 			} else {
-				logger.log(Level.WARNING, String.format("N„o foi possÌvel localizar o processo %s, idTribunal %s, tipoJuizo %s, ", npu, idTribunal, tipoJuizo));
-				throw new NotFoundException("O processo informado n„o foi localizado no PJ-e!");
+				logger.log(Level.WARNING, String.format("N√£o foi poss√≠vel localizar o processo %s, idTribunal %s, tipoJuizo %s, ", npu, idTribunal, tipoJuizo));
+				throw new NotFoundException("O processo informado n√£o foi localizado no PJ-e!");
 			}
 		}
 		return processo;
@@ -352,7 +361,7 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	
 	
 	/**
-	 * Consulta um {@link TipoProcessoJudicial} no serviÁo do tribunal.
+	 * Consulta um {@link TipoProcessoJudicial} no servi√ßo do tribunal.
 	 * 
 	 * @param npu
 	 * @param idTribunal
@@ -382,14 +391,15 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 			try {
 				processoJudicial = PJeServiceUtil.consultarProcessoJudicial(endpoint,
 						npu, null, Boolean.TRUE, incluirDocumentos, null);
+				fixDocumentosNulos(processoJudicial);
 			} catch(WebServiceException e) {
-				logger.log(Level.SEVERE, String.format("ServiÁo temporariamente indisponÌvel no tribunal %s, %s", idTribunal, tipoJuizo.name()), e);
-				throw new ServiceUnavailableException("O serviÁo de consulta neste tribunal est· temporariamente indisponÌvel!");
+				logger.log(Level.SEVERE, String.format("Servi√ßo temporariamente indispon√≠vel no tribunal %s, %s", idTribunal, tipoJuizo.name()), e);
+				throw new ServiceUnavailableException("O servi√ßo de consulta neste tribunal est√° temporariamente indispon√≠vel!");
 			} catch(Exception e) {
 				logger.log(Level.SEVERE, String.format("Falha ao consultar processo %s, %s, %s no servico", npu, idTribunal, tipoJuizo.name()), e);
 			}
 		} else {
-			throw new NotFoundException("ServiÁo n„o disponivel para o Tipo de JuÌzo informado.");
+			throw new NotFoundException("Servi√ßo n√£o disponivel para o Tipo de Ju√≠zo informado.");
 		}
 		return processoJudicial;
 	}
@@ -434,8 +444,9 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 				Queue queue = QueueFactory.getDefaultQueue();
 				queue.add(TaskOptions.Builder.withUrl("/enviarNotificacao")
 						.method(Method.POST)
+						.param("tipoNotificacao", "movimentacao")
 						.param("email", usuario.getEmail())
-						.param("titulo", "Processo atualizado!")
+						.param("titulo", "e-Advogado: Movimenta√ß√£o")
 						.param("mensagem", String.format("%s: %s", tribunal.getSigla(), npu))
 						.param("npu", npu)
 						.param("idTribunal", idTribunal.toString())
@@ -444,12 +455,21 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 						"Queue /enviarNotificacao criada para o email %s", usuario.getEmail()));
 			}
 		} else {
-			throw new NotFoundException("Processo n„o encontrado!");
+			throw new NotFoundException("Processo n√£o encontrado!");
+		}
+	}
+	
+	private void fixDocumentosNulos(TipoProcessoJudicial processoJudicial) {
+		if (processoJudicial != null && !processoJudicial.getDocumento().isEmpty()) {
+			ArrayList<TipoDocumento> listaNula = new ArrayList<TipoDocumento>();
+			listaNula.add(null);
+			processoJudicial.getDocumento().removeAll(listaNula);
 		}
 	}
 
 	public static void main(String[] args) {
-		TipoProcessoJudicial processoJudicial = PJeServiceUtil.consultarProcessoJudicial("http://pje.trt23.jus.br/primeirograu/intercomunicacao?wsdl", "00001061820135230041", null, true, true, null);
+		//TipoProcessoJudicial processoJudicial = PJeServiceUtil.consultarProcessoJudicial("http://pje.trt23.jus.br/primeirograu/intercomunicacao?wsdl", "00001061820135230041", null, true, true, null);
+		TipoProcessoJudicial processoJudicial = PJeServiceUtil.consultarProcessoJudicial("http://pje.trt1.jus.br/primeirograu/intercomunicacao?wsdl", "00103519620135010204", null, true, true, null);
 		setBinariosToNullBeforePersist(processoJudicial);
 	}
 }

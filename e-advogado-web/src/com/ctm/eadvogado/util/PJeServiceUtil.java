@@ -31,7 +31,7 @@ public class PJeServiceUtil {
 	private static final String SENHA_CONSULTANTE = "123";
 	
 	/**
-	 * Consulta um processo no endereço wsdl informado.
+	 * Consulta um processo no endereÃ§o wsdl informado.
 	 * 
 	 * @param wsdlURL
 	 * @param idConsultante
@@ -64,11 +64,11 @@ public class PJeServiceUtil {
 					incluirDocumentos, documento, sucesso, mensagem, processo);
 		} catch(WebServiceException e) {
 			log.log(Level.WARNING, 
-				"Falha no serviço ao consultar processo no endpoint: " + wsdlURL, e);
+				"Falha no serviÃ§o ao consultar processo no endpoint: " + wsdlURL, e);
 			throw e;
 		} catch(Exception e) {
 			log.log(Level.WARNING, 
-				"Erro ao consultar processo com endereço do endpoint: " + wsdlURL, e);
+				"Erro ao consultar processo com endereÃ§o do endpoint: " + wsdlURL, e);
 			servico = getPortFromURL(wsdlURL);
 			try {
 				servico.consultarProcesso(idConsultante, senhaConsultante,
@@ -76,7 +76,7 @@ public class PJeServiceUtil {
 						incluirDocumentos, documento, sucesso, mensagem, processo);
 			} catch(WebServiceException e1) {
 				log.log(Level.WARNING, 
-						"Falha no serviço ao consultar processo com wsdlURL: " + wsdlURL, e1);
+						"Falha no serviÃ§o ao consultar processo com wsdlURL: " + wsdlURL, e1);
 					throw e1;
 			} catch(Exception e1) {
 				log.log(Level.WARNING, "Erro ao consultar processo com wsdlURL: " + wsdlURL, e);
@@ -87,7 +87,7 @@ public class PJeServiceUtil {
 	}
 	
 	/**
-	 * Consulta um processo no endereço wsdl informado.
+	 * Consulta um processo no endereÃ§o wsdl informado.
 	 * 
 	 * @param wsdlURL
 	 * @param numeroProcesso
@@ -108,7 +108,7 @@ public class PJeServiceUtil {
 	}
 	
 	/**
-	 * Consulta um processo no endereço wsdl informado.
+	 * Consulta um processo no endereÃ§o wsdl informado.
 	 * 
 	 * @param wsdlURL
 	 * @param idConsultante
@@ -127,7 +127,7 @@ public class PJeServiceUtil {
 	
 	
 	/**
-	 * Consulta um processo no endereço wsdl informado.
+	 * Consulta um processo no endereÃ§o wsdl informado.
 	 * 
 	 * @param wsdlURL
 	 * @param numeroProcesso
@@ -309,17 +309,17 @@ public class PJeServiceUtil {
 			result = servico.consultarTiposDocumentoProcessual(param);
 		} catch(WebServiceException e) {
 			log.log(Level.WARNING, 
-				"Falha no serviço ao consultar tiposDocumentos no endpoint: " + wsdlURL, e);
+				"Falha no serviÃ§o ao consultar tiposDocumentos no endpoint: " + wsdlURL, e);
 			throw e;
 		} catch(Exception e) {
 			log.log(Level.WARNING, 
-				"Erro ao consultar tiposDocumentos com endereço do endpoint: " + wsdlURL, e);
+				"Erro ao consultar tiposDocumentos com endereÃ§o do endpoint: " + wsdlURL, e);
 			servico = getPortConsultaFromURL(wsdlURL);
 			try {
 				result = servico.consultarTiposDocumentoProcessual(param);
 			} catch(WebServiceException e1) {
 				log.log(Level.WARNING, 
-						"Falha no serviço ao consultar tiposDocumentos com wsdlURL: " + wsdlURL, e1);
+						"Falha no serviÃ§o ao consultar tiposDocumentos com wsdlURL: " + wsdlURL, e1);
 					throw e1;
 			} catch(Exception e1) {
 				log.log(Level.WARNING, "Erro ao consultar tiposDocumentos com wsdlURL: " + wsdlURL, e);

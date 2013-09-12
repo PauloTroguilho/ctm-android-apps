@@ -77,7 +77,7 @@ public class ConsultarTiposDocumentosServlet extends HttpServlet {
 			if (pje2gEndpoint != null && !pje2gEndpoint.trim().isEmpty()) {
 				inserirTiposDocumentos(pje2gEndpoint, tribunal, TipoJuizo.SEGUNDO_GRAU);
 			}
-			log("Atualização de tipos de documentos finalizada para o tribunal: " + tribunal.getSigla());
+			log("AtualizaÃ§Ã£o de tipos de documentos finalizada para o tribunal: " + tribunal.getSigla());
 		} else {
 			log(String.format("Nao foi encontrado tribunal com id: %s", pIdTribunal));
 		}

@@ -35,9 +35,9 @@ public class DeviceEndpoint extends BaseEndpoint<Device, DeviceNegocio> {
 		try {
 			usuario = usuarioNegocio.autenticar(email, senha);
 		} catch(NoResultException e) {
-			throw new NotFoundException("Usuário não encontrado!");
+			throw new NotFoundException("UsuÃ¡rio nÃ£o encontrado!");
 		} catch (SecurityException e) {
-			throw new UnauthorizedException("Usuário e/ou senha inválidos!");
+			throw new UnauthorizedException("UsuÃ¡rio e/ou senha invÃ¡lidos!");
 		}
 		try {
 			getNegocio().registrar(usuario, registrationId, deviceInfo);
@@ -45,7 +45,7 @@ public class DeviceEndpoint extends BaseEndpoint<Device, DeviceNegocio> {
 			logger.log(
 					Level.SEVERE,
 					String.format(
-							"Erro ao registrar dispositivo do usuário %s. RegId: %s DevInfo: %s",
+							"Erro ao registrar dispositivo do usuÃ¡rio %s. RegId: %s DevInfo: %s",
 							email, registrationId, deviceInfo), e);
 			throw new InternalServerErrorException("Houve uma falha ao registrar o dispositivo!", e);
 		}
@@ -66,9 +66,9 @@ public class DeviceEndpoint extends BaseEndpoint<Device, DeviceNegocio> {
 		try {
 			usuario = usuarioNegocio.autenticar(email, senha);
 		} catch(NoResultException e) {
-			throw new NotFoundException("Usuário não encontrado!");
+			throw new NotFoundException("UsuÃ¡rio nÃ£o encontrado!");
 		} catch (SecurityException e) {
-			throw new UnauthorizedException("Usuário e/ou senha inválidos!");
+			throw new UnauthorizedException("UsuÃ¡rio e/ou senha invÃ¡lidos!");
 		}
 		try {
 			getNegocio().desregistrar(usuario, registrationId);

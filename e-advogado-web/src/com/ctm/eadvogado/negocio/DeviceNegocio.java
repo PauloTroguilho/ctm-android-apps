@@ -48,7 +48,7 @@ public class DeviceNegocio extends BaseNegocio<Device, DeviceDao> {
 			getDao().insert(device);
 		} else {
 			logger.warning(String.format(
-				"Usu·rio %s, j· possui este dispositivo registrado. %s", usuario.getEmail(), registrationId));
+				"Usu√°rio %s, j√° possui este dispositivo registrado. %s", usuario.getEmail(), registrationId));
 			if (devices.size() == 1) {
 				Device device = devices.iterator().next();
 				if (device.getStatus().equals(StatusDevice.INATIVO)) {
@@ -59,7 +59,7 @@ public class DeviceNegocio extends BaseNegocio<Device, DeviceDao> {
 				}
 			} else {
 				logger.severe(String.format(
-					"Devices duplicados para Usu·rio %s, regId %s", usuario.getEmail(), registrationId));
+					"Devices duplicados para Usu√°rio %s, regId %s", usuario.getEmail(), registrationId));
 			}
 		}
 	}
@@ -70,7 +70,7 @@ public class DeviceNegocio extends BaseNegocio<Device, DeviceDao> {
 		if (devices != null && !devices.isEmpty()) {
 			if (devices.size() > 1) {
 				logger.warning(String.format(
-						"Removendo devices duplicados para Usu·rio %s, regId %s", usuario.getEmail(), registrationId));
+						"Removendo devices duplicados para Usu√°rio %s, regId %s", usuario.getEmail(), registrationId));
 				for (int i = 1; i < devices.size(); i++) {
 					Device device = devices.get(i);
 					getDao().remove(device);
@@ -84,7 +84,7 @@ public class DeviceNegocio extends BaseNegocio<Device, DeviceDao> {
 			}
 		} else {
 			logger.warning(String.format(
-					"O device %s do usu·rio %s j· est· desativado",
+					"O device %s do usu√°rio %s j√° est√° desativado",
 					registrationId, usuario.getEmail()));
 		}
 	}

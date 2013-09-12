@@ -50,7 +50,7 @@ public class UsuarioDao extends BaseDao<Usuario> {
 			usuario = (Usuario) query.getSingleResult();
 		} catch(NonUniqueResultException e) {
 			logger.log(Level.WARNING, 
-				String.format("Foram encontrados mais de um usu·rio com o email: %s", email));
+				String.format("Foram encontrados mais de um usu√°rio com o email: %s", email));
 			query.setMaxResults(1);
 			usuario = (Usuario) query.getResultList().get(0);
 		}
