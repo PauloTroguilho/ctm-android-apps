@@ -1,0 +1,459 @@
+<definitions name="ConsultaPJeService" 
+	targetNamespace="http://ws.pje.cnj.jus.br/"
+	xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:tns="http://ws.pje.cnj.jus.br/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<types>
+		<xs:schema targetNamespace="http://ws.pje.cnj.jus.br/"
+			version="1.0" xmlns:tns="http://ws.pje.cnj.jus.br/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+			<xs:element name="consultarAssuntosJudiciais" nillable="true"
+				type="tns:consultarAssuntosJudiciais" />
+			<xs:element name="consultarAssuntosJudiciaisResponse"
+				nillable="true" type="tns:consultarAssuntosJudiciaisResponse" />
+			<xs:element name="consultarClassesJudiciais" nillable="true"
+				type="tns:consultarClassesJudiciais" />
+			<xs:element name="consultarClassesJudiciaisResponse"
+				nillable="true" type="tns:consultarClassesJudiciaisResponse" />
+			<xs:element name="consultarCompetencias" nillable="true"
+				type="tns:consultarCompetencias" />
+			<xs:element name="consultarCompetenciasResponse" nillable="true"
+				type="tns:consultarCompetenciasResponse" />
+			<xs:element name="consultarJurisdicoes" nillable="true"
+				type="tns:consultarJurisdicoes" />
+			<xs:element name="consultarJurisdicoesResponse" nillable="true"
+				type="tns:consultarJurisdicoesResponse" />
+			<xs:element name="consultarOrgaosJulgadores" nillable="true"
+				type="tns:consultarOrgaosJulgadores" />
+			<xs:element name="consultarOrgaosJulgadoresColegiados"
+				nillable="true" type="tns:consultarOrgaosJulgadoresColegiados" />
+			<xs:element name="consultarOrgaosJulgadoresColegiadosResponse"
+				nillable="true" type="tns:consultarOrgaosJulgadoresColegiadosResponse" />
+			<xs:element name="consultarOrgaosJulgadoresResponse"
+				nillable="true" type="tns:consultarOrgaosJulgadoresResponse" />
+			<xs:element name="consultarSalasAudiencia" nillable="true"
+				type="tns:consultarSalasAudienciaOrgaoJulgador" />
+			<xs:element name="consultarSalasAudienciaResponse"
+				nillable="true" type="tns:consultarSalasAudienciaOrgaoJulgadorResponse" />
+			<xs:element name="consultarTiposAudiencia" nillable="true"
+				type="tns:consultarTiposAudiencia" />
+			<xs:element name="consultarTiposAudienciaResponse"
+				nillable="true" type="tns:consultarTiposAudienciaResponse" />
+			<xs:element name="consultarTiposDocumentoProcessual"
+				nillable="true" type="tns:consultarTiposDocumentoProcessual" />
+			<xs:element name="consultarTiposDocumentoProcessualResponse"
+				nillable="true" type="tns:consultarTiposDocumentoProcessualResponse" />
+			<xs:element name="recuperarInformacoesFluxo" nillable="true"
+				type="tns:recuperarInformacoesFluxo" />
+			<xs:element name="recuperarInformacoesFluxoResponse"
+				nillable="true" type="tns:recuperarInformacoesFluxoResponse" />
+			<xs:complexType name="consultarJurisdicoes">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:complexType name="consultarJurisdicoesResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="return"
+						type="tns:jurisdicao" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="jurisdicao">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="descricao" type="xs:string" />
+					<xs:element minOccurs="0" name="id" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="consultarOrgaosJulgadores">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:complexType name="consultarOrgaosJulgadoresResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="return"
+						type="tns:orgaoJulgador" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="orgaoJulgador">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="descricao" type="xs:string" />
+					<xs:element minOccurs="0" name="id" type="xs:int" />
+					<xs:element maxOccurs="unbounded" minOccurs="0"
+						name="cargosJudiciais" nillable="true" type="tns:cargoJudicial" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="cargoJudicial">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="id" type="xs:int" />
+					<xs:element minOccurs="0" name="descricao" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="consultarOrgaosJulgadoresColegiados">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:complexType name="consultarOrgaosJulgadoresColegiadosResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="return"
+						type="tns:orgaoJulgadorColegiado" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="orgaoJulgadorColegiado">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="descricao" type="xs:string" />
+					<xs:element minOccurs="0" name="id" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="consultarClassesJudiciais">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="arg0" type="tns:jurisdicao" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="consultarClassesJudiciaisResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="return"
+						type="tns:classeJudicial" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="classeJudicial">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="codigo" type="xs:string" />
+					<xs:element minOccurs="0" name="descricao" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="consultarAssuntosJudiciais">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="arg0" type="tns:jurisdicao" />
+					<xs:element minOccurs="0" name="arg1" type="tns:classeJudicial" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="consultarAssuntosJudiciaisResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="return"
+						type="tns:assuntoJudicial" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="assuntoJudicial">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="codigo" type="xs:string" />
+					<xs:element minOccurs="0" name="descricao" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="consultarCompetencias">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="arg0" type="tns:jurisdicao" />
+					<xs:element minOccurs="0" name="arg1" type="tns:classeJudicial" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="arg2"
+						nillable="true" type="tns:assuntoJudicial" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="consultarCompetenciasResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="return"
+						type="tns:competencia" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="competencia">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="descricao" type="xs:string" />
+					<xs:element minOccurs="0" name="id" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="consultarTiposAudiencia">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:complexType name="consultarTiposAudienciaResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="return"
+						type="tns:tipoAudiencia" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="tipoAudiencia">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="descricao" type="xs:string" />
+					<xs:element minOccurs="0" name="id" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="consultarTiposDocumentoProcessual">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="arg0" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="consultarTiposDocumentoProcessualResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="return"
+						type="tns:tipoDocumentoProcessual" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="tipoDocumentoProcessual">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="codigo" type="xs:string" />
+					<xs:element minOccurs="0" name="descricao" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="recuperarInformacoesFluxo">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="arg0" type="tns:classeJudicial" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="recuperarInformacoesFluxoResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="tns:fluxo" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="fluxo">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="codClasseJudicial" type="xs:string" />
+					<xs:element minOccurs="0" name="id" type="xs:int" />
+					<xs:element minOccurs="0" name="xml" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="consultarSalasAudienciaOrgaoJulgador">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="orgaoJulgador" type="tns:orgaoJulgador" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="consultarSalasAudienciaOrgaoJulgadorResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="return"
+						type="tns:salaAudiencia" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="salaAudiencia">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="id" type="xs:int" />
+					<xs:element minOccurs="0" name="ignoraFeriado" type="xs:boolean" />
+					<xs:element minOccurs="0" name="nome" type="xs:string" />
+					<xs:element minOccurs="0" name="orgaoJulgador" type="tns:orgaoJulgador" />
+					<xs:element maxOccurs="unbounded" minOccurs="0"
+						name="salaHorarioList" nillable="true" type="tns:salaHorario" />
+					<xs:element maxOccurs="unbounded" minOccurs="0"
+						name="tipoAudienciaList" nillable="true" type="tns:tipoAudiencia" />
+					<xs:element minOccurs="0" name="tipoSala" type="tns:salaEnum" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="salaHorario">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="diaSemama" type="tns:diaSemanaEnum" />
+					<xs:element minOccurs="0" name="horaFinal" type="xs:dateTime" />
+					<xs:element minOccurs="0" name="horaInicial" type="xs:dateTime" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="diaSemanaEnum">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="DOMINGO" />
+					<xs:enumeration value="SEGUNDA" />
+					<xs:enumeration value="TERCA" />
+					<xs:enumeration value="QUARTA" />
+					<xs:enumeration value="QUINTA" />
+					<xs:enumeration value="SEXTA" />
+					<xs:enumeration value="SABADO" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="salaEnum">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="A" />
+					<xs:enumeration value="S" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:schema>
+	</types>
+	<message name="ConsultaPJe_recuperarInformacoesFluxo">
+		<part element="tns:recuperarInformacoesFluxo" name="recuperarInformacoesFluxo"></part>
+	</message>
+	<message name="ConsultaPJe_consultarClassesJudiciaisResponse">
+		<part element="tns:consultarClassesJudiciaisResponse" name="consultarClassesJudiciaisResponse"></part>
+	</message>
+	<message name="ConsultaPJe_consultarJurisdicoesResponse">
+		<part element="tns:consultarJurisdicoesResponse" name="consultarJurisdicoesResponse"></part>
+	</message>
+	<message name="ConsultaPJe_consultarOrgaosJulgadoresColegiados">
+		<part element="tns:consultarOrgaosJulgadoresColegiados" name="consultarOrgaosJulgadoresColegiados"></part>
+	</message>
+	<message name="ConsultaPJe_consultarAssuntosJudiciais">
+		<part element="tns:consultarAssuntosJudiciais" name="consultarAssuntosJudiciais"></part>
+	</message>
+	<message name="ConsultaPJe_consultarAssuntosJudiciaisResponse">
+		<part element="tns:consultarAssuntosJudiciaisResponse" name="consultarAssuntosJudiciaisResponse"></part>
+	</message>
+	<message name="ConsultaPJe_consultarCompetencias">
+		<part element="tns:consultarCompetencias" name="consultarCompetencias"></part>
+	</message>
+	<message name="ConsultaPJe_consultarCompetenciasResponse">
+		<part element="tns:consultarCompetenciasResponse" name="consultarCompetenciasResponse"></part>
+	</message>
+	<message name="ConsultaPJe_consultarOrgaosJulgadoresResponse">
+		<part element="tns:consultarOrgaosJulgadoresResponse" name="consultarOrgaosJulgadoresResponse"></part>
+	</message>
+	<message name="ConsultaPJe_consultarClassesJudiciais">
+		<part element="tns:consultarClassesJudiciais" name="consultarClassesJudiciais"></part>
+	</message>
+	<message name="ConsultaPJe_consultarTiposDocumentoProcessual">
+		<part element="tns:consultarTiposDocumentoProcessual" name="consultarTiposDocumentoProcessual"></part>
+	</message>
+	<message name="ConsultaPJe_consultarTiposAudienciaResponse">
+		<part element="tns:consultarTiposAudienciaResponse" name="consultarTiposAudienciaResponse"></part>
+	</message>
+	<message name="ConsultaPJe_recuperarInformacoesFluxoResponse">
+		<part element="tns:recuperarInformacoesFluxoResponse" name="recuperarInformacoesFluxoResponse"></part>
+	</message>
+	<message name="ConsultaPJe_consultarTiposAudiencia">
+		<part element="tns:consultarTiposAudiencia" name="consultarTiposAudiencia"></part>
+	</message>
+	<message name="ConsultaPJe_consultarJurisdicoes">
+		<part element="tns:consultarJurisdicoes" name="consultarJurisdicoes"></part>
+	</message>
+	<message name="ConsultaPJe_consultarTiposDocumentoProcessualResponse">
+		<part element="tns:consultarTiposDocumentoProcessualResponse"
+			name="consultarTiposDocumentoProcessualResponse"></part>
+	</message>
+	<message name="ConsultaPJe_consultarOrgaosJulgadores">
+		<part element="tns:consultarOrgaosJulgadores" name="consultarOrgaosJulgadores"></part>
+	</message>
+	<message name="ConsultaPJe_consultarOrgaosJulgadoresColegiadosResponse">
+		<part element="tns:consultarOrgaosJulgadoresColegiadosResponse"
+			name="consultarOrgaosJulgadoresColegiadosResponse"></part>
+	</message>
+	<message name="ConsultaPJe_consultarSalasAudienciaResponse">
+		<part element="tns:consultarSalasAudienciaResponse" name="consultarSalasAudienciaResponse"></part>
+	</message>
+	<message name="ConsultaPJe_consultarSalasAudiencia">
+		<part element="tns:consultarSalasAudiencia" name="consultarSalasAudiencia"></part>
+	</message>
+	<portType name="ConsultaPJe">
+		<operation name="consultarAssuntosJudiciais" parameterOrder="consultarAssuntosJudiciais">
+			<input message="tns:ConsultaPJe_consultarAssuntosJudiciais"></input>
+			<output message="tns:ConsultaPJe_consultarAssuntosJudiciaisResponse"></output>
+		</operation>
+		<operation name="consultarClassesJudiciais" parameterOrder="consultarClassesJudiciais">
+			<input message="tns:ConsultaPJe_consultarClassesJudiciais"></input>
+			<output message="tns:ConsultaPJe_consultarClassesJudiciaisResponse"></output>
+		</operation>
+		<operation name="consultarCompetencias" parameterOrder="consultarCompetencias">
+			<input message="tns:ConsultaPJe_consultarCompetencias"></input>
+			<output message="tns:ConsultaPJe_consultarCompetenciasResponse"></output>
+		</operation>
+		<operation name="consultarJurisdicoes" parameterOrder="consultarJurisdicoes">
+			<input message="tns:ConsultaPJe_consultarJurisdicoes"></input>
+			<output message="tns:ConsultaPJe_consultarJurisdicoesResponse"></output>
+		</operation>
+		<operation name="consultarOrgaosJulgadores" parameterOrder="consultarOrgaosJulgadores">
+			<input message="tns:ConsultaPJe_consultarOrgaosJulgadores"></input>
+			<output message="tns:ConsultaPJe_consultarOrgaosJulgadoresResponse"></output>
+		</operation>
+		<operation name="consultarOrgaosJulgadoresColegiados"
+			parameterOrder="consultarOrgaosJulgadoresColegiados">
+			<input message="tns:ConsultaPJe_consultarOrgaosJulgadoresColegiados"></input>
+			<output message="tns:ConsultaPJe_consultarOrgaosJulgadoresColegiadosResponse"></output>
+		</operation>
+		<operation name="consultarSalasAudiencia" parameterOrder="consultarSalasAudiencia">
+			<input message="tns:ConsultaPJe_consultarSalasAudiencia"></input>
+			<output message="tns:ConsultaPJe_consultarSalasAudienciaResponse"></output>
+		</operation>
+		<operation name="consultarTiposAudiencia" parameterOrder="consultarTiposAudiencia">
+			<input message="tns:ConsultaPJe_consultarTiposAudiencia"></input>
+			<output message="tns:ConsultaPJe_consultarTiposAudienciaResponse"></output>
+		</operation>
+		<operation name="consultarTiposDocumentoProcessual"
+			parameterOrder="consultarTiposDocumentoProcessual">
+			<input message="tns:ConsultaPJe_consultarTiposDocumentoProcessual"></input>
+			<output message="tns:ConsultaPJe_consultarTiposDocumentoProcessualResponse"></output>
+		</operation>
+		<operation name="recuperarInformacoesFluxo" parameterOrder="recuperarInformacoesFluxo">
+			<input message="tns:ConsultaPJe_recuperarInformacoesFluxo"></input>
+			<output message="tns:ConsultaPJe_recuperarInformacoesFluxoResponse"></output>
+		</operation>
+	</portType>
+	<binding name="ConsultaPJeBinding" type="tns:ConsultaPJe">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<operation name="consultarAssuntosJudiciais">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="consultarClassesJudiciais">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="consultarCompetencias">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="consultarJurisdicoes">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="consultarOrgaosJulgadores">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="consultarOrgaosJulgadoresColegiados">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="consultarSalasAudiencia">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="consultarTiposAudiencia">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="consultarTiposDocumentoProcessual">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="recuperarInformacoesFluxo">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+	</binding>
+	<service name="ConsultaPJeService">
+		<port binding="tns:ConsultaPJeBinding" name="ConsultaPJePort">
+		</port>
+	</service>
+</definitions>
