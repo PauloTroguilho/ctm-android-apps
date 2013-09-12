@@ -1,0 +1,28 @@
+<resources>
+
+    <string name="title_activity_login">e-Advogado</string>
+    <string name="title_activity_registro">Registre-se</string>
+    
+    <string name="msg_login_ou_registro">Efetue login para entrar no aplicativo ou registre-se em caso de primeiro acesso:</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">E-mail</string>
+    <string name="prompt_password">Senha</string>
+    <string name="prompt_repassword">Repita a Senha</string>
+    <string name="login_entrar">Entrar</string>
+    <string name="login_cancelar">Cancelar</string>
+    <string name="action_sign_in_register"><b>Entre</b> ou registre-se</string>
+    <string name="action_sign_in_short">Entre</string>
+    <string name="action_forgot_password">Recuperar senha</string>
+    <string name="login_progress_signing_in">Efetuando login&#8230;</string>
+    <string name="registro_progress">Registrando usuário&#8230;</string>
+    <string name="error_invalid_email">Este endereço de e-mail está inválido</string>
+    <string name="error_invalid_password">Esta senha é muito curta</string>
+    <string name="error_invalid_passwords">As senhas não conferem.</string>
+    <string name="error_incorrect_password">A senha está incorreta</string>
+    <string name="error_login_fail">Falha no login. Verifique os dados e tente novamente.</string>
+    <string name="error_cadastro_fail">Falha ao criar conta. Verifique os dados e tente novamente.</string>
+    <string name="error_communication">Erro de comunicacao com o servidor</string>
+    <string name="error_field_required">Este campo é obrigatório</string>
+
+</resources>

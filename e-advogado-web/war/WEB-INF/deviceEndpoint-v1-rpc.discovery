@@ -1,0 +1,290 @@
+{
+ "kind": "discovery#rpcDescription",
+ "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/Q2tyWAODUNvr_VtlySIhlJFZLHE\"",
+ "discoveryVersion": "v1",
+ "id": "deviceEndpoint:v1",
+ "name": "deviceEndpoint",
+ "version": "v1",
+ "description": "This is an API",
+ "ownerDomain": "eadvogado.ctm.com",
+ "ownerName": "eadvogado.ctm.com",
+ "packagePath": "endpoints",
+ "icons": {
+  "x16": "http://www.google.com/images/icons/product/search-16.gif",
+  "x32": "http://www.google.com/images/icons/product/search-32.gif"
+ },
+ "protocol": "rpc",
+ "rootUrl": "https://e-advogado-web.appspot.com/_ah/api/",
+ "rpcUrl": "https://e-advogado-web.appspot.com/_ah/api/rpc",
+ "rpcPath": "/_ah/api/rpc",
+ "parameters": {
+  "alt": {
+   "type": "string",
+   "description": "Data format for the response.",
+   "default": "json",
+   "enum": [
+    "json"
+   ],
+   "enumDescriptions": [
+    "Responses with Content-Type of application/json"
+   ],
+   "location": "query"
+  },
+  "fields": {
+   "type": "string",
+   "description": "Selector specifying which fields to include in a partial response.",
+   "location": "query"
+  },
+  "key": {
+   "type": "string",
+   "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+   "location": "query"
+  },
+  "oauth_token": {
+   "type": "string",
+   "description": "OAuth 2.0 token for the current user.",
+   "location": "query"
+  },
+  "prettyPrint": {
+   "type": "boolean",
+   "description": "Returns response with indentations and line breaks.",
+   "default": "true",
+   "location": "query"
+  },
+  "quotaUser": {
+   "type": "string",
+   "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.",
+   "location": "query"
+  },
+  "userIp": {
+   "type": "string",
+   "description": "IP address of the site where the request originates. Use this if you want to enforce per-user limits.",
+   "location": "query"
+  }
+ },
+ "schemas": {
+  "CollectionResponse_Device": {
+   "id": "CollectionResponse_Device",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "Device"
+     }
+    },
+    "nextPageToken": {
+     "type": "string"
+    }
+   }
+  },
+  "Device": {
+   "id": "Device",
+   "type": "object",
+   "properties": {
+    "deviceInfo": {
+     "type": "string"
+    },
+    "key": {
+     "$ref": "Key"
+    },
+    "registrationId": {
+     "type": "string"
+    },
+    "status": {
+     "$ref": "StatusDevice"
+    },
+    "timestamp": {
+     "type": "string",
+     "format": "int64"
+    },
+    "usuario": {
+     "$ref": "Key"
+    }
+   }
+  },
+  "Key": {
+   "id": "Key",
+   "type": "object",
+   "properties": {
+    "appId": {
+     "type": "string"
+    },
+    "complete": {
+     "type": "boolean"
+    },
+    "id": {
+     "type": "string",
+     "format": "int64"
+    },
+    "kind": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "namespace": {
+     "type": "string"
+    },
+    "parent": {
+     "$ref": "Key"
+    }
+   }
+  },
+  "StatusDevice": {
+   "id": "StatusDevice",
+   "type": "string",
+   "enum": [
+    "ATIVO",
+    "INATIVO"
+   ],
+   "enumDescriptions": [
+    "",
+    ""
+   ]
+  }
+ },
+ "methods": {
+  "deviceEndpoint.desregistrarDispositivo": {
+   "id": "deviceEndpoint.desregistrarDispositivo",
+   "parameters": {
+    "email": {
+     "type": "string",
+     "required": true
+    },
+    "registrationId": {
+     "type": "string",
+     "required": true
+    },
+    "senha": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "email",
+    "senha",
+    "registrationId"
+   ]
+  },
+  "deviceEndpoint.getByID": {
+   "id": "deviceEndpoint.getByID",
+   "allowGet": true,
+   "parameters": {
+    "id": {
+     "type": "string",
+     "required": true,
+     "format": "int64"
+    }
+   },
+   "parameterOrder": [
+    "id"
+   ],
+   "returns": {
+    "$ref": "Device"
+   }
+  },
+  "deviceEndpoint.insert": {
+   "id": "deviceEndpoint.insert",
+   "parameters": {
+    "resource": {
+     "$ref": "Device"
+    }
+   },
+   "parameterOrder": [
+    "resource"
+   ],
+   "returns": {
+    "$ref": "Device"
+   }
+  },
+  "deviceEndpoint.listAll": {
+   "id": "deviceEndpoint.listAll",
+   "allowGet": true,
+   "parameters": {
+    "firstReault": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "maxResults": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "sortField": {
+     "type": "string"
+    },
+    "sortOrder": {
+     "type": "string",
+     "enum": [
+      "ASC",
+      "DESC"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   },
+   "returns": {
+    "$ref": "CollectionResponse_Device"
+   }
+  },
+  "deviceEndpoint.registrarDispositivo": {
+   "id": "deviceEndpoint.registrarDispositivo",
+   "parameters": {
+    "deviceInfo": {
+     "type": "string",
+     "required": true
+    },
+    "email": {
+     "type": "string",
+     "required": true
+    },
+    "registrationId": {
+     "type": "string",
+     "required": true
+    },
+    "senha": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "email",
+    "senha",
+    "registrationId",
+    "deviceInfo"
+   ]
+  },
+  "deviceEndpoint.remove": {
+   "id": "deviceEndpoint.remove",
+   "parameters": {
+    "id": {
+     "type": "string",
+     "required": true,
+     "format": "int64"
+    }
+   },
+   "parameterOrder": [
+    "id"
+   ],
+   "returns": {
+    "$ref": "Device"
+   }
+  },
+  "deviceEndpoint.update": {
+   "id": "deviceEndpoint.update",
+   "parameters": {
+    "resource": {
+     "$ref": "Device"
+    }
+   },
+   "parameterOrder": [
+    "resource"
+   ],
+   "returns": {
+    "$ref": "Device"
+   }
+  }
+ }
+}

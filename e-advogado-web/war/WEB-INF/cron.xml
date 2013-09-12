@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+  <cron>
+    <url>/atualizarProcessos</url>
+    <description>Atualiza os processos a cada 6 horas</description>
+    <schedule>every 6 hours synchronized</schedule>
+  </cron>
+  <cron>
+    <url>/atualizarTiposDocumentos</url>
+    <description>Atualiza os tipos de documentos</description>
+    <schedule>every mon,wed,fri,sun 00:00</schedule>
+  </cron>
+</cronentries>

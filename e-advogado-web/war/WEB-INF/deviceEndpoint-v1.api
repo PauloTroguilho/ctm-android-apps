@@ -1,0 +1,313 @@
+{
+  "extends" : "thirdParty.api",
+  "abstract" : false,
+  "root" : "https://e-advogado-web.appspot.com/_ah/api",
+  "name" : "deviceEndpoint",
+  "version" : "v1",
+  "defaultVersion" : false,
+  "adapter" : {
+    "bns" : "https://e-advogado-web.appspot.com/_ah/spi",
+    "deadline" : 10.0,
+    "type" : "lily"
+  },
+  "auth" : {
+    "allowCookieAuth" : false
+  },
+  "frontendLimits" : {
+    "unregisteredUserQps" : -1,
+    "unregisteredQps" : -1,
+    "unregisteredDaily" : -1,
+    "rules" : [ ]
+  },
+  "cacheControl" : {
+    "type" : "no-cache",
+    "maxAge" : 0
+  },
+  "ownerDomain" : "eadvogado.ctm.com",
+  "ownerName" : "eadvogado.ctm.com",
+  "packagePath" : "endpoints",
+  "methods" : {
+    "deviceEndpoint.update" : {
+      "path" : "device",
+      "httpMethod" : "PUT",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.DeviceEndpoint.update",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "deviceEndpoint.registrarDispositivo" : {
+      "path" : "registrarDispositivo/{email}/{senha}/{registrationId}/{deviceInfo}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.DeviceEndpoint.registrarDispositivo",
+      "request" : {
+        "parameters" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          },
+          "senha" : {
+            "type" : "string",
+            "required" : true
+          },
+          "registrationId" : {
+            "type" : "string",
+            "required" : true
+          },
+          "deviceInfo" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
+    "deviceEndpoint.desregistrarDispositivo" : {
+      "path" : "desregistrarDispositivo/{email}/{senha}/{registrationId}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.DeviceEndpoint.desregistrarDispositivo",
+      "request" : {
+        "parameters" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          },
+          "senha" : {
+            "type" : "string",
+            "required" : true
+          },
+          "registrationId" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
+    "deviceEndpoint.insert" : {
+      "path" : "device",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.DeviceEndpoint.insert",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "deviceEndpoint.remove" : {
+      "path" : "remove/{id}",
+      "httpMethod" : "DELETE",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.DeviceEndpoint.remove",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "deviceEndpoint.listAll" : {
+      "path" : "device",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.DeviceEndpoint.listAll",
+      "request" : {
+        "parameters" : {
+          "firstReault" : {
+            "type" : "int32",
+            "required" : false
+          },
+          "maxResults" : {
+            "type" : "int32",
+            "required" : false
+          },
+          "sortField" : {
+            "type" : "string",
+            "required" : false
+          },
+          "sortOrder" : {
+            "enum" : {
+              "ASC" : {
+              },
+              "DESC" : {
+              }
+            },
+            "type" : "string",
+            "required" : false
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "deviceEndpoint.getByID" : {
+      "path" : "device/{id}",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.DeviceEndpoint.getByID",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    }
+  },
+  "descriptor" : {
+    "schemas" : {
+      "Device" : {
+        "id" : "Device",
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "$ref" : "Key"
+          },
+          "registrationId" : {
+            "type" : "string"
+          },
+          "deviceInfo" : {
+            "type" : "string"
+          },
+          "timestamp" : {
+            "type" : "string",
+            "format" : "int64"
+          },
+          "usuario" : {
+            "$ref" : "Key"
+          },
+          "status" : {
+            "$ref" : "StatusDevice"
+          }
+        }
+      },
+      "Key" : {
+        "id" : "Key",
+        "type" : "object",
+        "properties" : {
+          "kind" : {
+            "type" : "string"
+          },
+          "appId" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "int64"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "parent" : {
+            "$ref" : "Key"
+          },
+          "namespace" : {
+            "type" : "string"
+          },
+          "complete" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "StatusDevice" : {
+        "id" : "StatusDevice",
+        "type" : "string",
+        "enum" : [ "ATIVO", "INATIVO" ]
+      },
+      "CollectionResponse_Device" : {
+        "id" : "CollectionResponse_Device",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "Device"
+            }
+          },
+          "nextPageToken" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "methods" : {
+      "com.ctm.eadvogado.endpoints.DeviceEndpoint.update" : {
+        "request" : {
+          "$ref" : "Device"
+        },
+        "response" : {
+          "$ref" : "Device"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.DeviceEndpoint.registrarDispositivo" : {
+      },
+      "com.ctm.eadvogado.endpoints.DeviceEndpoint.desregistrarDispositivo" : {
+      },
+      "com.ctm.eadvogado.endpoints.DeviceEndpoint.insert" : {
+        "request" : {
+          "$ref" : "Device"
+        },
+        "response" : {
+          "$ref" : "Device"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.DeviceEndpoint.remove" : {
+        "response" : {
+          "$ref" : "Device"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.DeviceEndpoint.listAll" : {
+        "response" : {
+          "$ref" : "CollectionResponse_Device"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.DeviceEndpoint.getByID" : {
+        "response" : {
+          "$ref" : "Device"
+        }
+      }
+    }
+  }
+}
