@@ -3,12 +3,16 @@
  */
 package com.ctm.eadvogado.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Transient;
 
 import br.jus.cnj.pje.v1.TipoProcessoJudicial;
 
@@ -39,6 +43,8 @@ public class Processo extends BaseEntity {
 	
 	@Lob @Basic(fetch = FetchType.EAGER)
 	private TipoProcessoJudicial processoJudicial;
+	
+	private List<Documento> documentos = new ArrayList<Documento>();
 
 	/**
 	 * 
@@ -78,4 +84,14 @@ public class Processo extends BaseEntity {
 		this.processoJudicial = processoJudicial;
 	}
 
+	@Transient
+	public List<Documento> getDocumentos() {
+		return documentos;
+	}
+
+	public void setDocumentos(List<Documento> documentos) {
+		this.documentos = documentos;
+	}
+
+	
 }

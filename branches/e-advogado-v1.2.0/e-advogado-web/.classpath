@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/weld-servlet-1.1.13.Final.jar" sourcepath="F:/DesenvolvimentoJ2EE/localRepository/org/jboss/weld/servlet/weld-servlet/1.1.13.Final/weld-servlet-1.1.13.Final-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-codec-1.8.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gcm-server.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-lang-2.6.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

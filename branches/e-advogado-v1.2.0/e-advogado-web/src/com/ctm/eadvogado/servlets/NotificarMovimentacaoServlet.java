@@ -48,10 +48,11 @@ public class NotificarMovimentacaoServlet extends HttpServlet {
 		String pNpu = req.getParameter("npu");
 		String pIdTribunal = req.getParameter("idTribunal");
 		String pTipoJuizo = req.getParameter("tipoJuizo");
+		log(String.format("Enviando notificacao de movimentacao: %s, %s, %s", pNpu, pIdTribunal, pTipoJuizo));
 		try {
 			processoNegocio.notificarMovimentacaoProcessual(pNpu, Long.parseLong(pIdTribunal), TipoJuizo.valueOf(pTipoJuizo));
 		} catch (Exception e) {
-			log(String.format("Erro ao enviar notificação do processo %s.", pNpu), e);
+			log(String.format("Erro ao enviar notificacao de movimentacao: %s, %s, %s", pNpu, pIdTribunal, pTipoJuizo), e);
 		}
 	}
 

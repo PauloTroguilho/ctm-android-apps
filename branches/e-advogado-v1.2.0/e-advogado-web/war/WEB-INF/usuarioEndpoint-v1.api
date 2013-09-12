@@ -257,6 +257,58 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "usuarioEndpoint.getByID" : {
+      "path" : "usuario/{id}",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.getByID",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "usuarioEndpoint.enviarNotificacao" : {
+      "path" : "enviarNotificacao/{email}/{titulo}/{mensagem}/{tipoNotificacao}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarNotificacao",
+      "request" : {
+        "parameters" : {
+          "email" : {
+            "type" : "string",
+            "required" : true
+          },
+          "titulo" : {
+            "type" : "string",
+            "required" : true
+          },
+          "mensagem" : {
+            "type" : "string",
+            "required" : true
+          },
+          "tipoNotificacao" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
     "usuarioEndpoint.enviarEmailParaTodosUsuarios" : {
       "path" : "enviarEmailParaTodosUsuarios/{from}/{assunto}/{firstRecord}/{maxRecords}",
       "httpMethod" : "POST",
@@ -295,58 +347,6 @@
       },
       "response" : {
         "body" : "empty"
-      }
-    },
-    "usuarioEndpoint.enviarNotificacao" : {
-      "path" : "enviarNotificacao/{email}/{titulo}/{mensagem}/{tipoNotificacao}",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarNotificacao",
-      "request" : {
-        "parameters" : {
-          "email" : {
-            "type" : "string",
-            "required" : true
-          },
-          "titulo" : {
-            "type" : "string",
-            "required" : true
-          },
-          "mensagem" : {
-            "type" : "string",
-            "required" : true
-          },
-          "tipoNotificacao" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "empty"
-      }
-    },
-    "usuarioEndpoint.getByID" : {
-      "path" : "usuario/{id}",
-      "httpMethod" : "GET",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.UsuarioEndpoint.getByID",
-      "request" : {
-        "parameters" : {
-          "id" : {
-            "type" : "int64",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
       }
     }
   },
@@ -417,11 +417,11 @@
           "parent" : {
             "$ref" : "Key"
           },
-          "complete" : {
-            "type" : "boolean"
-          },
           "namespace" : {
             "type" : "string"
+          },
+          "complete" : {
+            "type" : "boolean"
           }
         }
       },
@@ -489,14 +489,14 @@
           "$ref" : "CollectionResponse_Usuario"
         }
       },
-      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaTodosUsuarios" : {
-      },
-      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarNotificacao" : {
-      },
       "com.ctm.eadvogado.endpoints.UsuarioEndpoint.getByID" : {
         "response" : {
           "$ref" : "Usuario"
         }
+      },
+      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarNotificacao" : {
+      },
+      "com.ctm.eadvogado.endpoints.UsuarioEndpoint.enviarEmailParaTodosUsuarios" : {
       }
     }
   }

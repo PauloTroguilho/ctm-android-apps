@@ -3,11 +3,16 @@
  */
 package com.ctm.eadvogado.model;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.jdo.annotations.Persistent;
 import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -16,6 +21,16 @@ import com.google.appengine.api.datastore.Key;
  * 
  */
 @Entity
+@NamedQueries({
+	@NamedQuery(
+		name = "tribunaisNaoAtualizadosDataAtualizacaoNull",
+		query = "select t from Tribunal as t where t.dataAtualizacao is null"
+	),
+	@NamedQuery(
+		name = "tribunaisNaoAtualizadosDataAtualizacaoIntervalo",
+		query = "select t from Tribunal as t where t.dataAtualizacao <= :intervalo"
+	)
+})
 public class Tribunal extends BaseEntity {
 	
 	private static final long serialVersionUID = 1L;
@@ -24,6 +39,7 @@ public class Tribunal extends BaseEntity {
 	private String sigla;
 	private String pje1gEndpoint;
 	private String pje2gEndpoint;
+	private Date dataAtualizacao;
 	private Set<Key> processos = new HashSet<Key>();
 
 	/**
@@ -73,6 +89,15 @@ public class Tribunal extends BaseEntity {
 
 	public void setProcessos(Set<Key> processos) {
 		this.processos = processos;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDataAtualizacao() {
+		return dataAtualizacao;
+	}
+
+	public void setDataAtualizacao(Date dataAtualizacao) {
+		this.dataAtualizacao = dataAtualizacao;
 	}
 
 }

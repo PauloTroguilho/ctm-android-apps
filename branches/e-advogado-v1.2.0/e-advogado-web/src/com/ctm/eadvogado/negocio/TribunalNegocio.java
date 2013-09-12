@@ -43,4 +43,11 @@ public class TribunalNegocio extends BaseNegocio<Tribunal, TribunalDao> {
 		return super.findAll(sortField, sortOrder);
 	}
 
+	/**
+	 * @return
+	 *//*
+	public List<Tribunal> findTribunaisNaoAtualizados() {
+		return getDao().findTribunaisNaoAtualizados();
+		
+	}*/
 }

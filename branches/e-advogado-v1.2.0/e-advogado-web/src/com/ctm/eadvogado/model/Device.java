@@ -14,6 +14,10 @@ import com.google.appengine.api.datastore.Key;
 		query = "select d from Device as d where d.usuario = :idUsuario"
 	),
 	@NamedQuery(
+		name = "devicePorUsuarioEStatus",
+		query = "select d from Device as d where d.usuario = :idUsuario and d.status = :status"
+	),
+	@NamedQuery(
 		name = "devicePorUsuarioERegId",
 		query = "select d from Device as d where d.usuario = :idUsuario and d.registrationId = :registrationId"
 	),

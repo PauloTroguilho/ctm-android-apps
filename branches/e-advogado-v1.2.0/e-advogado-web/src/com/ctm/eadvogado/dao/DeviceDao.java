@@ -41,17 +41,18 @@ public class DeviceDao extends BaseDao<Device> {
 	 * @return
 	 * @throws PersistenceException
 	 */
-	public Device findByUsuarioERegId(Usuario usuario, String registrationId) throws PersistenceException {
+	@SuppressWarnings("unchecked")
+	public List<Device> findByUsuarioERegId(Usuario usuario, String registrationId) throws PersistenceException {
 		Query query = entityManager.createNamedQuery("devicePorUsuarioERegId");
 		query.setParameter("idUsuario", usuario.getKey());
 		query.setParameter("registrationId", registrationId);
-		Device device = null;
+		List<Device> devices = new ArrayList<Device>();
 		try {
-			device = (Device) query.getSingleResult();
+			devices = query.getResultList();
 		} catch(NoResultException e) {
-			logger.info(String.format("Device não encontrado. %s, %s", usuario.getEmail(), registrationId));
+			logger.warning(String.format("Device não encontrado. %s, %s", usuario.getEmail(), registrationId));
 		}
-		return device;
+		return devices;
 	}
 	
 	/**
@@ -61,19 +62,19 @@ public class DeviceDao extends BaseDao<Device> {
 	 * @return
 	 * @throws PersistenceException
 	 */
-	public Device findByUsuarioRegIdEStatus(Usuario usuario, String registrationId, StatusDevice status) throws PersistenceException {
+	@SuppressWarnings("unchecked")
+	public List<Device> findByUsuarioRegIdEStatus(Usuario usuario, String registrationId, StatusDevice status) throws PersistenceException {
 		Query query = entityManager.createNamedQuery("devicePorUsuarioRegIdEStatus");
 		query.setParameter("idUsuario", usuario.getKey());
 		query.setParameter("registrationId", registrationId);
 		query.setParameter("status", status);
-		
-		Device device = null;
+		List<Device> devices = new ArrayList<Device>();
 		try {
-			device = (Device) query.getSingleResult();
+			devices = query.getResultList();
 		} catch(NoResultException e) {
-			logger.info(String.format("Device não encontrado. %s, %s, %s", usuario.getEmail(), registrationId, status));
+			logger.warning(String.format("Device não encontrado. %s, %s, %s", usuario.getEmail(), registrationId, status));
 		}
-		return device;
+		return devices;
 	}
 	
 	/**
@@ -89,9 +90,30 @@ public class DeviceDao extends BaseDao<Device> {
 		try {
 			devices = query.getResultList();
 		} catch(NoResultException e) {
-			logger.info(String.format("Nenhum device encontrado para o usuário %s", usuario.getEmail()));
+			logger.warning(String.format("Nenhum device encontrado para o usuário %s", usuario.getEmail()));
+		}
+		return devices;
+	}
+	
+	/**
+	 * @param usuario
+	 * @param status
+	 * @return
+	 * @throws PersistenceException
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Device> findByUsuarioEStatus(Usuario usuario, StatusDevice status) throws PersistenceException {
+		Query query = entityManager.createNamedQuery("devicePorUsuarioEStatus");
+		query.setParameter("idUsuario", usuario.getKey());
+		query.setParameter("status", status);
+		List<Device> devices = new ArrayList<Device>();
+		try {
+			devices = query.getResultList();
+		} catch(NoResultException e) {
+			logger.warning(String.format("Nenhum device encontrado para o usuário %s e status %s", usuario.getEmail(), status));
 		}
 		return devices;
 	}
 
+	
 }

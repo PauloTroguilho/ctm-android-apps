@@ -54,7 +54,22 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 			@Named("idTribunal") Long idTribunal,
 			@Named("tipoJuizo") TipoJuizo tipoJuizo,
 			@Named("ignorarCache") Boolean ignorarCache) throws NotFoundException, ServiceUnavailableException, UnauthorizedException {
-		return getNegocio().consultarProcesso(npu, idTribunal, tipoJuizo, ignorarCache, false);
+		return getNegocio().consultarProcessoComDocumentos(npu, idTribunal, tipoJuizo, ignorarCache, false);
+	}
+	
+	/**
+	 * Faz a consulta de um processo.
+	 * @param npu
+	 * @param idTribunal
+	 * @param tipoJuizo
+	 * @return
+	 */
+	@ApiMethod(name = "consultarProcessoComDocumentos")
+	public Processo consultarProcessoComDocumentos(@Named("npu") String npu,
+			@Named("idTribunal") Long idTribunal,
+			@Named("tipoJuizo") TipoJuizo tipoJuizo,
+			@Named("ignorarCache") Boolean ignorarCache) throws NotFoundException, ServiceUnavailableException, UnauthorizedException {
+		return getNegocio().consultarProcessoComDocumentos(npu, idTribunal, tipoJuizo, ignorarCache, true);
 	}
 
 	

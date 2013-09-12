@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/PcGCRF9QnKtKtO3xzMTROa64Q3s\"",
+ "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/eSTUH34HWmOvXguRXeTkjJ08Rc0\"",
  "discoveryVersion": "v1",
  "id": "tribunalEndpoint:v1",
  "name": "tribunalEndpoint",
@@ -110,6 +110,10 @@
    "id": "Tribunal",
    "type": "object",
    "properties": {
+    "dataAtualizacao": {
+     "type": "string",
+     "format": "date-time"
+    },
     "key": {
      "$ref": "Key"
     },

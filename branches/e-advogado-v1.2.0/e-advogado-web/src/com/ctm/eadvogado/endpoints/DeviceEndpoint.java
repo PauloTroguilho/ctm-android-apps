@@ -1,5 +1,7 @@
 package com.ctm.eadvogado.endpoints;
 
+import java.util.logging.Level;
+
 import javax.inject.Named;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
@@ -40,6 +42,11 @@ public class DeviceEndpoint extends BaseEndpoint<Device, DeviceNegocio> {
 		try {
 			getNegocio().registrar(usuario, registrationId, deviceInfo);
 		} catch (PersistenceException e) {
+			logger.log(
+					Level.SEVERE,
+					String.format(
+							"Erro ao registrar dispositivo do usuário %s. RegId: %s DevInfo: %s",
+							email, registrationId, deviceInfo), e);
 			throw new InternalServerErrorException("Houve uma falha ao registrar o dispositivo!", e);
 		}
 	}
