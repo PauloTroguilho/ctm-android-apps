@@ -157,6 +157,10 @@
           "pje2gEndpoint" : {
             "type" : "string"
           },
+          "dataAtualizacao" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
           "processos" : {
             "type" : "array",
             "items" : {
@@ -185,11 +189,11 @@
           "parent" : {
             "$ref" : "Key"
           },
-          "complete" : {
-            "type" : "boolean"
-          },
           "namespace" : {
             "type" : "string"
+          },
+          "complete" : {
+            "type" : "boolean"
           }
         }
       },

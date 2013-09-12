@@ -3,8 +3,9 @@
  */
 package com.ctm.eadvogado.negocio;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -14,19 +15,23 @@ import javax.inject.Named;
 import javax.persistence.PersistenceException;
 import javax.xml.ws.WebServiceException;
 
-import br.jus.cnj.pje.v1.TipoMovimentoProcessual;
+import org.apache.commons.codec.binary.Hex;
+
+import br.jus.cnj.pje.v1.TipoDocumento;
 import br.jus.cnj.pje.v1.TipoProcessoJudicial;
 
 import com.ctm.eadvogado.comparators.TipoMovimentoProcessualComparator;
 import com.ctm.eadvogado.dao.DeviceDao;
 import com.ctm.eadvogado.dao.LancamentoDao;
 import com.ctm.eadvogado.dao.ProcessoDao;
+import com.ctm.eadvogado.dao.TipoDocumentoDao;
 import com.ctm.eadvogado.dao.TribunalDao;
 import com.ctm.eadvogado.dao.UsuarioDao;
 import com.ctm.eadvogado.dao.UsuarioProcessoDao;
 import com.ctm.eadvogado.exception.DAOException;
 import com.ctm.eadvogado.exception.NegocioException;
 import com.ctm.eadvogado.interceptors.Transacional;
+import com.ctm.eadvogado.model.Documento;
 import com.ctm.eadvogado.model.Lancamento;
 import com.ctm.eadvogado.model.Processo;
 import com.ctm.eadvogado.model.TipoConta;
@@ -69,6 +74,8 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	private TribunalDao tribunalDao;
 	@Inject
 	private UsuarioProcessoDao usuarioProcessoDao;
+	@Inject
+	private TipoDocumentoDao tipoDocumentoDao;
 	
 	@Override
 	@Inject
@@ -108,7 +115,40 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 		if (p != null) {
 			throw new DAOException("processo.erro.npu.jaExiste");
 		}
+		setBinariosToNullBeforePersist(entity);
 		return super.insert(entity);
+	}
+	
+	@Override
+	@Transacional
+	public Processo update(Processo entity) throws PersistenceException {
+		setBinariosToNullBeforePersist(entity);
+		return super.update(entity);
+	}
+	
+	private static void setBinariosToNullBeforePersist(Processo processo) {
+		if (processo != null) {
+			setBinariosToNullBeforePersist(processo.getProcessoJudicial());
+		}
+	}
+	
+	/**
+	 * @param processoJudicial
+	 */
+	private static void setBinariosToNullBeforePersist(TipoProcessoJudicial processoJudicial) {
+		if (processoJudicial != null && processoJudicial.getDocumento() != null
+					&& !processoJudicial.getDocumento().isEmpty()) {
+			for (TipoDocumento doc : processoJudicial.getDocumento()) {
+				if (doc != null) {
+					if (doc.getConteudo() != null) {
+						doc.setConteudo((byte[]) null);
+					}
+					if (doc.getAssinatura() != null) {
+						doc.getAssinatura().clear();
+					}
+				}
+			}
+		}
 	}
 	
 	/**
@@ -145,7 +185,7 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 		}
 	}
 	
-	public static Comparator<TipoMovimentoProcessual> movimentoReverseComparator = Collections.reverseOrder(new TipoMovimentoProcessualComparator());
+	//public static Comparator<TipoMovimentoProcessual> movimentoReverseComparator = Collections.reverseOrder(new TipoMovimentoProcessualComparator());
 	
 	/**
 	 * Consulta um processo
@@ -167,6 +207,7 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 			TipoJuizo tipoJuizo, boolean ignorarCache, boolean incluirDocumentos)
 			throws NotFoundException, UnauthorizedException,
 			ServiceUnavailableException {
+		logger.fine(String.format("Consultando Processo: NPU: %s, Trib: %s, TpJ: %s, IgnC: %s, IncD: %s", npu, idTribunal, tipoJuizo, ignorarCache, incluirDocumentos));
 		boolean falhaNoServico = false;
 		Processo processo = null;
 		if (!ignorarCache) {
@@ -179,12 +220,17 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 			TipoProcessoJudicial processoJudicial = consultarProcessoJudicial(
 					npu, idTribunal, tipoJuizo, incluirDocumentos);
 			if (processoJudicial != null) {
-				Collections.sort(processoJudicial.getMovimento(), movimentoReverseComparator);
+				Collections.sort(processoJudicial.getMovimento(), 
+						Collections.reverseOrder(new TipoMovimentoProcessualComparator()));
 				if (processoJudicial.getDadosBasicos().getNivelSigilo() == 0) {
 					if (processo != null) {
 						verificaAtualizacaoENotifica(processo, processoJudicial);
 						processo.setProcessoJudicial(processoJudicial);
-						getDao().update(processo);
+						try {
+							update(processo);
+						} catch(Exception e) {
+							logger.log(Level.SEVERE, String.format("Erro ao atualizar o processo/tribunal/tipoJuizo: %s/%s/%s. Message: %s", npu,idTribunal,tipoJuizo, e.getMessage()), e);
+						}
 					} else {
 						processo = new Processo();
 						processo.setNpu(npu);
@@ -192,11 +238,15 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 						processo.setTribunal(KeyFactory.createKey(
 								Tribunal.class.getSimpleName(), idTribunal));
 						processo.setProcessoJudicial(processoJudicial);
-						getDao().insert(processo);
+						try {
+							insert(processo);
+						} catch(Exception e) {
+							logger.log(Level.SEVERE, String.format("Erro ao inserir o processo/tribunal/tipoJuizo: %s/%s/%s. Message: %s", npu,idTribunal,tipoJuizo, e.getMessage()), e);
+						}
 					}
 				} else {
 					logger.log(Level.WARNING, String.format("Não é permitido acessar o processo %s, idTribunal %s, tipoJuizo %s, ", npu, idTribunal, tipoJuizo));
-					throw new UnauthorizedException("Desculpe! O processo informado não pode ser acessado!");
+					throw new UnauthorizedException("O nivel de sigilo deste processo não permite consultá-lo!");
 				}
 			} else {
 				if (ignorarCache) {
@@ -216,13 +266,49 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 		} else {
 			if (falhaNoServico) {
 				logger.log(Level.WARNING, String.format("Serviço indisponível para o processo %s, idTribunal %s, tipoJuizo %s, ", npu, idTribunal, tipoJuizo));
-				throw new ServiceUnavailableException("Desculpe! Serviço de consulta processual temporáriamente indisponível neste tribunal.");
+				throw new ServiceUnavailableException("O sistema PJ-e deste tribunal está temporáriamente indisponível!");
 			} else {
 				logger.log(Level.WARNING, String.format("Não foi possível localizar o processo %s, idTribunal %s, tipoJuizo %s, ", npu, idTribunal, tipoJuizo));
-				throw new NotFoundException("Desculpe! O Processo informado não foi localizado.");
+				throw new NotFoundException("O processo informado não foi localizado no PJ-e!");
 			}
 		}
 		return processo;
+	}
+	
+	@Transacional
+	public Processo consultarProcessoComDocumentos(String npu, Long idTribunal,
+			TipoJuizo tipoJuizo, boolean ignorarCache, boolean incluirDocumentos)
+			throws NotFoundException, UnauthorizedException,
+			ServiceUnavailableException {
+		logger.fine(String.format("Consultando Processo com Documentos: NPU: %s, Trib: %s, TpJ: %s, IgnC: %s, IncD: %s", npu, idTribunal, tipoJuizo, ignorarCache, incluirDocumentos));
+		Processo processo = consultarProcesso(npu, idTribunal, tipoJuizo, ignorarCache, incluirDocumentos);
+		if (processo != null) {
+			Tribunal tribunal = tribunalDao.findByID(idTribunal);
+			List<TipoDocumento> documentosPJ = processo.getProcessoJudicial().getDocumento();
+			List<Documento> documentos = new ArrayList<Documento>();
+			for (TipoDocumento docPJe : documentosPJ) {
+				Documento documento = new Documento();
+				documento.setIdDocumento(docPJe.getIdDocumento());
+				documento.setMimeType(docPJe.getMimetype());
+				com.ctm.eadvogado.model.TipoDocumento tipoDoc = 
+						tipoDocumentoDao.findPorTribunalETipoJuizoECodigo(
+								tribunal, tipoJuizo, docPJe.getTipoDocumento());
+				if (tipoDoc == null) {
+					tipoDoc = new com.ctm.eadvogado.model.TipoDocumento();
+					tipoDoc.setCodigo(docPJe.getTipoDocumento());
+					tipoDoc.setDescricao(docPJe.getTipoDocumento());
+					tipoDoc.setTribunal(tribunal.getKey());
+					tipoDoc.setTipoJuizo(tipoJuizo);
+				}
+				documento.setTipoDocumento(tipoDoc);
+				if (incluirDocumentos && docPJe.getConteudo() != null) {
+					documento.setConteudo(Hex.encodeHexString(docPJe.getConteudo()));
+				}
+				documentos.add(documento);
+			}
+			processo.setDocumentos(documentos);
+		}
+		return processo;		
 	}
 	
 	/**
@@ -230,10 +316,12 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 	 * @param processoJudicial
 	 */
 	public void verificaAtualizacaoENotifica(Processo processo, TipoProcessoJudicial processoJudicial) {
-		Collections.sort(processo.getProcessoJudicial().getMovimento(), movimentoReverseComparator);
+		Collections.sort(processo.getProcessoJudicial().getMovimento(), 
+				Collections.reverseOrder(new TipoMovimentoProcessualComparator()));
+		SimpleDateFormat movimentoDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		Date dataUltimoMovAnterior = null;
 		try {
-			dataUltimoMovAnterior = TipoMovimentoProcessualComparator.movimentoDateFormat.parse(
+			dataUltimoMovAnterior = movimentoDateFormat.parse(
 					processo.getProcessoJudicial().getMovimento().get(0).getDataHora());
 			logger.info(String.format("NPU: %s, Data ultimo movimento anterior: %s", processo.getNpu(), dataUltimoMovAnterior));
 		} catch (Exception e1) {
@@ -241,7 +329,7 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 		}
 		Date dataUltimoMovAtual = null;
 		try {
-			dataUltimoMovAtual = TipoMovimentoProcessualComparator.movimentoDateFormat.parse(
+			dataUltimoMovAtual = movimentoDateFormat.parse(
 					processoJudicial.getMovimento().get(0).getDataHora());
 			logger.info(String.format("NPU: %s, Data ultimo movimento atual: %s", processo.getNpu(), dataUltimoMovAtual));
 		} catch (Exception e1) {
@@ -359,5 +447,9 @@ public class ProcessoNegocio extends BaseNegocio<Processo, ProcessoDao> {
 			throw new NotFoundException("Processo não encontrado!");
 		}
 	}
-	
+
+	public static void main(String[] args) {
+		TipoProcessoJudicial processoJudicial = PJeServiceUtil.consultarProcessoJudicial("http://pje.trt23.jus.br/primeirograu/intercomunicacao?wsdl", "00001061820135230041", null, true, true, null);
+		setBinariosToNullBeforePersist(processoJudicial);
+	}
 }

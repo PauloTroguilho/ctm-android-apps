@@ -84,7 +84,7 @@
 		<servlet-class>com.ctm.eadvogado.servlets.NotificarMovimentacaoServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>AtualizarProcessosServlet</servlet-name>
+		<servlet-name>NotificarMovimentacaoServlet</servlet-name>
 		<url-pattern>/notificarMovimentacao</url-pattern>
 	</servlet-mapping>
 	
@@ -104,6 +104,33 @@
 	<servlet-mapping>
 		<servlet-name>EnviarNotificacaoServlet</servlet-name>
 		<url-pattern>/enviarNotificacao</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ConsultarTiposDocumentosServlet</servlet-name>
+		<servlet-class>com.ctm.eadvogado.servlets.ConsultarTiposDocumentosServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ConsultarTiposDocumentosServlet</servlet-name>
+		<url-pattern>/consultarTiposDocumentos</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>AtualizarTiposDocumentosServlet</servlet-name>
+		<servlet-class>com.ctm.eadvogado.servlets.AtualizarTiposDocumentosServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AtualizarTiposDocumentosServlet</servlet-name>
+		<url-pattern>/atualizarTiposDocumentos</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ResetTiposDocumentosServlet</servlet-name>
+		<servlet-class>com.ctm.eadvogado.servlets.ResetTiposDocumentosServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ResetTiposDocumentosServlet</servlet-name>
+		<url-pattern>/resetTiposDocumentos</url-pattern>
 	</servlet-mapping>
 	
 

@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/E5a72RF70s6qOuvr1B82IAAwG8M\"",
+ "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/YOzEVzRehayZU2DL3dghqo130F8\"",
  "discoveryVersion": "v1",
  "id": "processoEndpoint:v1",
  "name": "processoEndpoint",
@@ -90,6 +90,9 @@
     },
     "mimeType": {
      "type": "string"
+    },
+    "tipoDocumento": {
+     "$ref": "TipoDocumento"
     }
    }
   },
@@ -273,6 +276,12 @@
    "id": "Processo",
    "type": "object",
    "properties": {
+    "documentos": {
+     "type": "array",
+     "items": {
+      "$ref": "Documento"
+     }
+    },
     "key": {
      "$ref": "Key"
     },
@@ -899,6 +908,45 @@
   },
   "processoEndpoint.consultarProcesso": {
    "id": "processoEndpoint.consultarProcesso",
+   "parameters": {
+    "idTribunal": {
+     "type": "string",
+     "required": true,
+     "format": "int64"
+    },
+    "ignorarCache": {
+     "type": "boolean",
+     "required": true
+    },
+    "npu": {
+     "type": "string",
+     "required": true
+    },
+    "tipoJuizo": {
+     "type": "string",
+     "required": true,
+     "enum": [
+      "PRIMEIRO_GRAU",
+      "SEGUNDO_GRAU"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   },
+   "parameterOrder": [
+    "npu",
+    "idTribunal",
+    "tipoJuizo",
+    "ignorarCache"
+   ],
+   "returns": {
+    "$ref": "Processo"
+   }
+  },
+  "processoEndpoint.consultarProcessoComDocumentos": {
+   "id": "processoEndpoint.consultarProcessoComDocumentos",
    "parameters": {
     "idTribunal": {
      "type": "string",

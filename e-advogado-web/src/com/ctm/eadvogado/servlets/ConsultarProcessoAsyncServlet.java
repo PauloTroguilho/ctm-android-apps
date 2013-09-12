@@ -4,7 +4,6 @@
 package com.ctm.eadvogado.servlets;
 
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -16,9 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.ctm.eadvogado.model.TipoJuizo;
 import com.ctm.eadvogado.negocio.ProcessoNegocio;
 import com.ctm.eadvogado.util.WeldUtils;
-import com.google.api.server.spi.response.NotFoundException;
 import com.google.api.server.spi.response.ServiceUnavailableException;
-import com.google.api.server.spi.response.UnauthorizedException;
 
 /**
  * @author Cleber
@@ -56,19 +53,16 @@ public class ConsultarProcessoAsyncServlet extends HttpServlet {
 		String pNpu = req.getParameter("npu");
 		String pIdTribunal = req.getParameter("idTribunal");
 		String pTipoJuizo = req.getParameter("tipoJuizo");
+		log(String.format("Consultando processo: %s, %s, %s", pNpu, pIdTribunal, pTipoJuizo));
 		try {
 			processoNegocio.consultarProcesso(pNpu, 
 				Long.parseLong(pIdTribunal), TipoJuizo.valueOf(pTipoJuizo), true, false);
 			LOGGER.fine(String.format("Processo: %s, %s, %s foi atualizado com sucesso!", 
 					pNpu, pIdTribunal, pTipoJuizo));
-		} catch (NumberFormatException e) {
-			LOGGER.log(Level.SEVERE, "Falha na conversao de parametros", e);
-		} catch (NotFoundException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
-		} catch (UnauthorizedException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
-		} catch (ServiceUnavailableException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		} catch(ServiceUnavailableException e) {
+			log(String.format("Serviço temporariamente indisponível neste tribunal: %s, %s", pIdTribunal, pTipoJuizo));
+		} catch (Exception e) {
+			log(String.format("Erro inesperado consultando processo: %s, %s, %s", pNpu, pIdTribunal, pTipoJuizo), e);
 		}
 	}
 

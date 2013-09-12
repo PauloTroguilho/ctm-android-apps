@@ -15,6 +15,9 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceException;
 
+import br.jus.cnj.pje.consulta.v1.ConsultaPJe;
+import br.jus.cnj.pje.consulta.v1.ConsultaPJeService;
+import br.jus.cnj.pje.consulta.v1.TipoDocumentoProcessual;
 import br.jus.cnj.pje.v1.IntercomunicacaoService;
 import br.jus.cnj.pje.v1.ServicoIntercomunicacao21;
 import br.jus.cnj.pje.v1.TipoDocumento;
@@ -245,6 +248,40 @@ public class PJeServiceUtil {
 		return port;
 	}
 	
+	private static ConsultaPJe getPortConsultaFromEndpoint(String wsdlURL) {
+		String endpoint = null;
+		if (wsdlURL.toLowerCase().endsWith("?wsdl")) {
+			endpoint = wsdlURL.substring(0, 
+					wsdlURL.toLowerCase().indexOf("?wsdl"));
+		}
+		ConsultaPJeService service = new ConsultaPJeService();
+		ConsultaPJe port = service.getPort(ConsultaPJe.class);
+		BindingProvider bp = (BindingProvider) port;
+		setupBindingProvider(bp, endpoint);
+		return port;
+	}
+	
+	private static ConsultaPJe getPortConsultaFromURL(String wsdlURL) {
+		String endpoint = null;
+		if (wsdlURL.toLowerCase().endsWith("?wsdl")) {
+			endpoint = wsdlURL.substring(0, 
+					wsdlURL.toLowerCase().indexOf("?wsdl"));
+		}
+		URL url = null;
+		try {
+			url = new URL(wsdlURL);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		ConsultaPJeService service = new ConsultaPJeService(
+				url, new QName("http://ws.pje.cnj.jus.br/", "ConsultaPJeService"));
+		ConsultaPJe port = service
+				.getPort(ConsultaPJe.class);
+		BindingProvider bp = (BindingProvider) port;
+		setupBindingProvider(bp, endpoint);
+		return port;
+	}
+	
 	/**
 	 * @param bp
 	 * @param endpoint
@@ -256,11 +293,46 @@ public class PJeServiceUtil {
 		bp.getRequestContext().put("com.sun.xml.internal.ws.request.timeout", 60000 * 3);
 		bp.getRequestContext().put("com.sun.xml.internal.ws.connect.timeout", 60000 * 3);
 	}
+	
+	
+	
+	/**
+	 * @param wsdlURL
+	 * @param param
+	 * @return
+	 * @throws WebServiceException
+	 */
+	public static List<TipoDocumentoProcessual> consultarTiposDocumentoProcessual(String wsdlURL, String param) throws WebServiceException {
+		ConsultaPJe servico = getPortConsultaFromEndpoint(wsdlURL);
+		List<TipoDocumentoProcessual> result = null;
+		try {
+			result = servico.consultarTiposDocumentoProcessual(param);
+		} catch(WebServiceException e) {
+			log.log(Level.WARNING, 
+				"Falha no serviço ao consultar tiposDocumentos no endpoint: " + wsdlURL, e);
+			throw e;
+		} catch(Exception e) {
+			log.log(Level.WARNING, 
+				"Erro ao consultar tiposDocumentos com endereço do endpoint: " + wsdlURL, e);
+			servico = getPortConsultaFromURL(wsdlURL);
+			try {
+				result = servico.consultarTiposDocumentoProcessual(param);
+			} catch(WebServiceException e1) {
+				log.log(Level.WARNING, 
+						"Falha no serviço ao consultar tiposDocumentos com wsdlURL: " + wsdlURL, e1);
+					throw e1;
+			} catch(Exception e1) {
+				log.log(Level.WARNING, "Erro ao consultar tiposDocumentos com wsdlURL: " + wsdlURL, e);
+				throw new RuntimeException("Falha ao consultar processo.", e1);
+			}
+		}
+		return result;
+	}
 
 
 	public static void main(String[] args) {
-		List<TipoDocumento> documentos = consultarDocumentos("https://www.tjpe.jus.br/pje/intercomunicacao?WSDL", "00004663820118178124", Arrays.asList("6751"));
-		System.out.println(documentos);
+		List<TipoDocumentoProcessual> tipos = consultarTiposDocumentoProcessual("http://pje.trt5.jus.br/primeirograu/ConsultaPJe?wsdl", null);
+		System.out.println(tipos);
 	}
 
 }

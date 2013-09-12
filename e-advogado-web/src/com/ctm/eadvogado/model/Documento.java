@@ -16,6 +16,7 @@ public class Documento implements Serializable {
 	private String idDocumento;
 	private String mimeType;
 	private String conteudo;
+	private TipoDocumento tipoDocumento;
 
 	/**
 	 * 
@@ -47,5 +48,13 @@ public class Documento implements Serializable {
 	public void setConteudo(String conteudo) {
 		this.conteudo = conteudo;
 	}
-	
+
+	public TipoDocumento getTipoDocumento() {
+		return tipoDocumento;
+	}
+
+	public void setTipoDocumento(TipoDocumento tipoDocumento) {
+		this.tipoDocumento = tipoDocumento;
+	}
+
 }

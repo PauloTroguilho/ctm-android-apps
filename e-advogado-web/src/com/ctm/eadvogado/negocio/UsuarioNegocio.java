@@ -203,6 +203,8 @@ public class UsuarioNegocio extends BaseNegocio<Usuario, UsuarioDao> {
 			} catch (PersistenceException e) {
 				logger.log(Level.SEVERE, "Falha ao registrar lancamento gratuito", e);
 				throw e;
+			} catch (Exception e) {
+				throw new NegocioException("Desculpe! O serviço está temporariamente em manutenção. Favor tentar novamente em algumas horas.");
 			}
 		} else {
 			throw new NegocioException("Este e-mail já está cadastrado no sistema!");

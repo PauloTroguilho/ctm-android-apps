@@ -62,6 +62,12 @@ public class AtualizarProcessosServlet extends HttpServlet {
 					"Queue de consulta criada para o processo %s, %s, %s",
 					processo.getNpu(), processo.getTribunal().getId(),
 					processo.getTipoJuizo()));
+			/*try {
+				log(String.format("Esperando o intervalo de %s millis para iniciar proxima Queue.", 100));
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				log("Erro ao executar Thread.sleep()", e);
+			}*/
 		}
 	}
 

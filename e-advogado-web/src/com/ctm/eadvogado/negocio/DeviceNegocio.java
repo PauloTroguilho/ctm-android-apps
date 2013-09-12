@@ -37,9 +37,9 @@ public class DeviceNegocio extends BaseNegocio<Device, DeviceDao> {
 	@Transacional
 	public void registrar(Usuario usuario, String registrationId,
 			String deviceInfo) throws NegocioException {
-		Device device = getDao().findByUsuarioRegIdEStatus(usuario, registrationId, StatusDevice.ATIVO);
-		if (device == null) {
-			device = new Device();
+		List<Device> devices = getDao().findByUsuarioERegId(usuario, registrationId);
+		if (devices == null || devices.isEmpty()) {
+			Device device = new Device();
 			device.setDeviceInfo(deviceInfo);
 			device.setRegistrationId(registrationId);
 			device.setTimestamp(System.currentTimeMillis());
@@ -48,22 +48,40 @@ public class DeviceNegocio extends BaseNegocio<Device, DeviceDao> {
 			getDao().insert(device);
 		} else {
 			logger.warning(String.format(
-					"Usuário %s, já possui este dispositivo registrado. %s",
-					usuario.getEmail(), registrationId));
-			if (device.getStatus().equals(StatusDevice.INATIVO)) {
-				device.setStatus(StatusDevice.ATIVO);
-				getDao().update(device);
-				logger.info(String.format("Reativando device %s do usuario %s", registrationId, usuario.getEmail()));
+				"Usuário %s, já possui este dispositivo registrado. %s", usuario.getEmail(), registrationId));
+			if (devices.size() == 1) {
+				Device device = devices.iterator().next();
+				if (device.getStatus().equals(StatusDevice.INATIVO)) {
+					device.setStatus(StatusDevice.ATIVO);
+					getDao().update(device);
+					logger.warning(
+						String.format("Reativando o device %s do usuario %s", registrationId, usuario.getEmail()));
+				}
+			} else {
+				logger.severe(String.format(
+					"Devices duplicados para Usuário %s, regId %s", usuario.getEmail(), registrationId));
 			}
 		}
 	}
 	
 	@Transacional
 	public void desregistrar(Usuario usuario, String registrationId) throws NegocioException {
-		Device device = getDao().findByUsuarioRegIdEStatus(usuario, registrationId, StatusDevice.ATIVO);
-		if (device != null) {
-			device.setStatus(StatusDevice.INATIVO);
-			getDao().update(device);
+		List<Device> devices = getDao().findByUsuarioERegId(usuario, registrationId);
+		if (devices != null && !devices.isEmpty()) {
+			if (devices.size() > 1) {
+				logger.warning(String.format(
+						"Removendo devices duplicados para Usuário %s, regId %s", usuario.getEmail(), registrationId));
+				for (int i = 1; i < devices.size(); i++) {
+					Device device = devices.get(i);
+					getDao().remove(device);
+				}
+			}
+			Device device = devices.get(0);
+			if (device.getStatus().equals(StatusDevice.ATIVO)) {
+				device.setStatus(StatusDevice.INATIVO);
+				getDao().update(device);
+				logger.info(String.format("Desativando o device %s do usuario %s", registrationId, usuario.getEmail()));
+			}
 		} else {
 			logger.warning(String.format(
 					"O device %s do usuário %s já está desativado",
@@ -78,6 +96,15 @@ public class DeviceNegocio extends BaseNegocio<Device, DeviceDao> {
 	 */
 	public List<Device> findByUsuario(Usuario usuario) throws PersistenceException {
 		return getDao().findByUsuario(usuario);
+	}
+	
+	/**
+	 * @param usuario
+	 * @return
+	 * @throws PersistenceException
+	 */
+	public List<Device> findAtivosByUsuario(Usuario usuario) throws PersistenceException {
+		return getDao().findByUsuarioEStatus(usuario, StatusDevice.ATIVO);
 	}
 
 }
