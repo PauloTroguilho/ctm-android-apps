@@ -8,10 +8,16 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.Key;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoPessoa;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoPoloProcessual;
+import com.ctm.eadvogado.endpoints.processoEndpoint.model.TipoProcessoJudicial;
 import com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Tribunal;
+import com.ctm.eadvogado.util.ConverterUtil;
+import com.ctm.eadvogado.util.JsonUtils;
 
 public class EAdvogadoDbHelper extends SQLiteOpenHelper {
 	// If you change the database schema, you must increment the database
@@ -52,15 +58,107 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
      */
     public long inserirProcesso(Processo processo) {
         ContentValues initialValues = new ContentValues();
+        initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_PROCESSO,
+				processo.getKey().getId());
 		initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_NPU,
 				processo.getNpu());
 		initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_TRIBUNAL,
 				processo.getTribunal().getId());
 		initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_TIPO_JUIZO,
 				processo.getTipoJuizo());
-
+		
+		String poloAtivo = (String) processo.get(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_ATIVO);
+		if (poloAtivo != null) {
+			initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_ATIVO,
+					poloAtivo);
+		}
+		String poloPassivo = (String) processo.get(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_PASSIVO);
+		if (poloPassivo != null) {
+			initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_PASSIVO,
+					poloPassivo);
+		}
+		TipoProcessoJudicial processoJudicial = processo.getProcessoJudicial();
+		if (processoJudicial != null) {
+			initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_CONTEUDO, 
+					processoJudicial.toString());
+			if (poloAtivo == null && poloPassivo == null) {
+				List<TipoPoloProcessual> ativos = new ArrayList<TipoPoloProcessual>();
+				List<TipoPoloProcessual> passivos = new ArrayList<TipoPoloProcessual>();
+				ConverterUtil.fillPolosProcessuais(processo.getProcessoJudicial(), ativos, passivos);
+				try {
+					if (!ativos.isEmpty()) {
+						TipoPessoa pessoa = ConverterUtil.getTipoPessoa(ativos.iterator().next());
+						poloAtivo = pessoa.getNome().toUpperCase();
+						initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_ATIVO,
+								poloAtivo);
+					}
+				} catch(NullPointerException e) {
+					Log.e("e-Advogado", "Erro ao preencher polo ativo no processo: " + processo.getKey().getId());
+				}
+				try {
+					if (!passivos.isEmpty()) {
+						TipoPessoa pessoa = ConverterUtil.getTipoPessoa(passivos.iterator().next());
+						poloPassivo = pessoa.getNome().toUpperCase();
+						initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_PASSIVO,
+								poloPassivo);
+					}
+				} catch(NullPointerException e) {
+					Log.e("e-Advogado", "Erro ao preencher polo passivo no processo: " + processo.getKey().getId());
+				}
+			}
+		}
+		
         return getWritableDatabase().insert(EAdvogadoContract.ProcessoTable.TABLE_NAME, null, initialValues);
     }
+    
+    /**
+     * @param processo
+     * @return
+     */
+    public long updateProcesso(Processo processo) {
+        ContentValues initialValues = new ContentValues();
+		initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_NPU,
+				processo.getNpu());
+		initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_TRIBUNAL,
+				processo.getTribunal().getId());
+		initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_TIPO_JUIZO,
+				processo.getTipoJuizo());
+		TipoProcessoJudicial processoJudicial = processo.getProcessoJudicial();
+		if (processoJudicial != null) {
+			initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_CONTEUDO, 
+					processoJudicial.toString());
+		}
+		String poloAtivo = (String) processo.get(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_ATIVO);
+		if (poloAtivo != null) {
+			initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_ATIVO,
+					poloAtivo);
+		}
+		String poloPassivo = (String) processo.get(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_PASSIVO);
+		if (poloPassivo != null) {
+			initialValues.put(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_PASSIVO,
+					poloPassivo);
+		}
+		
+		String whereClause = EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_PROCESSO + " = ?";
+		String[] whereArgs = new String[] {processo.getKey().getId().toString()};
+
+        return getWritableDatabase().update(EAdvogadoContract.ProcessoTable.TABLE_NAME, initialValues, whereClause, 
+        		whereArgs);
+    }
+    
+	/**
+	 * @param processo
+	 * @return
+	 */
+	public long deleteProcesso(Processo processo) {
+		String whereClause = EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_PROCESSO
+				+ " = ?";
+		String[] whereArgs = new String[] { processo.getKey().getId()
+				.toString() };
+		return getWritableDatabase().delete(
+				EAdvogadoContract.ProcessoTable.TABLE_NAME, whereClause,
+				whereArgs);
+	}
     
     /**
      * Insere um {@link Tribunal} no banco de dados
@@ -129,12 +227,12 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     /**
      * @param processo
      */
-    public void insertProcessoSeNaoExiste(Processo processo) {
-    	Processo eProcesso = selectProcesso(processo.getNpu(),
-				processo.getTribunal().getId(),
-				processo.getTipoJuizo());
+    public void insertOrUpdateProcesso(Processo processo) {
+    	Processo eProcesso = selectProcesso(processo.getKey().getId(), false);
 		if (eProcesso == null) {
 			inserirProcesso(processo);
+		} else {
+			updateProcesso(processo);
 		}
     }
     
@@ -144,14 +242,17 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
      * @param tipoJuizo
      * @return
      */
-    public Processo selectProcesso(String npu, Long idTribunal, String tipoJuizo) {
+    public Processo selectProcesso(String npu, Long idTribunal, String tipoJuizo, boolean loadJson) {
     	// Define a projection that specifies which columns from the database
     	// you will actually use after this query.
     	String[] projection = {
-    			EAdvogadoContract.ProcessoTable._ID,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_PROCESSO,
     			EAdvogadoContract.ProcessoTable.COLUMN_NAME_NPU,
     			EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_TRIBUNAL,
-    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_TIPO_JUIZO
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_TIPO_JUIZO,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_CONTEUDO,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_ATIVO,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_PASSIVO
     	};
     	String selection = EAdvogadoContract.ProcessoTable.COLUMN_NAME_NPU + " = ? AND "
     			 + EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_TRIBUNAL + " = ? AND "
@@ -182,9 +283,94 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
 			processo.setTribunal(new Key());
 			processo.getTribunal().setId(c.getLong(2));
 			processo.setTipoJuizo(c.getString(3));
+			if (loadJson) {
+				String processoJudicial = c.getString(4);
+				if (processoJudicial != null && processoJudicial.length() > 0){
+					processo.setProcessoJudicial(JsonUtils.parseQuietly(processoJudicial,
+							TipoProcessoJudicial.class));
+				}
+			}
+			processo.set(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_ATIVO, c.getString(5));
+			processo.set(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_PASSIVO, c.getString(6));
     	}
     	c.close();
 
+        return processo;
+    }
+    
+    public Processo selectProcesso(Long idProcesso, boolean loadJson) {
+    	// Define a projection that specifies which columns from the database
+    	// you will actually use after this query.
+    	String[] projection = {
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_PROCESSO,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_NPU,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_TRIBUNAL,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_TIPO_JUIZO,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_CONTEUDO
+    	};
+    	String selection = EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_PROCESSO + " = ?";
+    	String[] columnValues = { idProcesso.toString() };
+
+    	// How you want the results sorted in the resulting Cursor
+    	String sortOrder =
+    		EAdvogadoContract.ProcessoTable._ID + " DESC";
+
+    	Cursor c = getReadableDatabase().query(
+    			EAdvogadoContract.ProcessoTable.TABLE_NAME,  // The table to query
+    	    projection,                               // The columns to return
+    	    selection,                                // The columns for the WHERE clause
+    	    columnValues,                            // The values for the WHERE clause
+    	    null,                                     // don't group the rows
+    	    null,                                     // don't filter by row groups
+    	    sortOrder                                 // The sort order
+    	    );
+    	Processo processo = null;
+    	if (c.moveToFirst()) {
+    		processo = new Processo();
+    		processo.setKey(new Key()); 
+    		processo.getKey().setId(c.getLong(0));
+			processo.setNpu(c.getString(1));
+			processo.setTribunal(new Key());
+			processo.getTribunal().setId(c.getLong(2));
+			processo.setTipoJuizo(c.getString(3));
+			if (loadJson) {
+				String processoJudicial = c.getString(4);
+				if (processoJudicial != null && processoJudicial.length() > 0){
+					processo.setProcessoJudicial(JsonUtils.parseQuietly(processoJudicial,
+							TipoProcessoJudicial.class));
+				}
+			}
+    	}
+    	c.close();
+
+        return processo;
+    }
+    
+    
+    public TipoProcessoJudicial selectProcessoJudicial(Long idProcesso) {
+    	// Define a projection that specifies which columns from the database
+    	// you will actually use after this query.
+    	String[] projection = {
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_CONTEUDO
+    	};
+    	String selection = EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_PROCESSO + " = ?";
+    	String[] columnValues = { idProcesso.toString() };
+
+    	Cursor c = getReadableDatabase().query(
+    			EAdvogadoContract.ProcessoTable.TABLE_NAME,  // The table to query
+    	    projection,                               // The columns to return
+    	    selection,                                // The columns for the WHERE clause
+    	    columnValues,                            // The values for the WHERE clause
+    	    null,                                     // don't group the rows
+    	    null,                                     // don't filter by row groups
+    	    null                                 // The sort order
+    	    );
+    	TipoProcessoJudicial processo = null;
+    	if (c.moveToFirst()) {
+    		processo = JsonUtils.parseQuietly(c.getString(0),
+					TipoProcessoJudicial.class);
+    	}
+    	c.close();
         return processo;
     }
     
@@ -323,14 +509,17 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     }
     
     
-    public List<Processo> selectProcessos() {
+    public List<Processo> selectProcessos(boolean loadJson) {
     	// Define a projection that specifies which columns from the database
     	// you will actually use after this query.
     	String[] projection = {
-    			EAdvogadoContract.ProcessoTable._ID,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_PROCESSO,
     			EAdvogadoContract.ProcessoTable.COLUMN_NAME_NPU,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_TRIBUNAL,
     			EAdvogadoContract.ProcessoTable.COLUMN_NAME_TIPO_JUIZO,
-    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_ID_TRIBUNAL
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_CONTEUDO,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_ATIVO,
+    			EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_PASSIVO
     	};
 
     	// How you want the results sorted in the resulting Cursor
@@ -350,15 +539,21 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
     	if (c.moveToFirst()) {
     		do {
     			Processo processo = new Processo();
-    			processo.setKey(new Key());
-    			processo.getKey().setId(c.getLong(0));
+        		processo.setKey(new Key()); 
+        		processo.getKey().setId(c.getLong(0));
     			processo.setNpu(c.getString(1));
-        		processo.setTipoJuizo(c.getString(2));
-        		Tribunal tribunal = this.selectTribunalPorId(c.getLong(3));
-        		if (tribunal != null) {
-        			processo.put("tribunal.sigla", tribunal.getSigla());
-            		processo.put("tribunal.nome", tribunal.getNome());
-        		}
+    			processo.setTribunal(new Key());
+    			processo.getTribunal().setId(c.getLong(2));
+    			processo.setTipoJuizo(c.getString(3));
+    			if (loadJson) {
+    				String processoJudicial = c.getString(4);
+    				if (processoJudicial != null && processoJudicial.length() > 0){
+    					processo.setProcessoJudicial(JsonUtils.parseQuietly(processoJudicial,
+    							TipoProcessoJudicial.class));
+    				}
+    			}
+    			processo.set(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_ATIVO, c.getString(5));
+    			processo.set(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_PASSIVO, c.getString(6));
     			processos.add(processo);
     		} while(c.moveToNext());
     	}
@@ -366,4 +561,5 @@ public class EAdvogadoDbHelper extends SQLiteOpenHelper {
 
         return processos;
     }
+    
 }

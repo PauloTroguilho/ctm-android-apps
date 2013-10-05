@@ -79,6 +79,7 @@
         <item >25 Processos</item>
         <item >100 Processos</item>
     </string-array>
+    <string name="qtd_ilimitada">ILIMITADA</string>
     <string name="mov_documento_vinculado">Documento Vinculado:</string>
     <string name="mov_documento">Documento:</string>
     <string name="btn_download">Download</string>
@@ -87,4 +88,10 @@
     <string name="reg_bt_cadastrar">Cadastrar</string>
     <string name="btn_esqueci_senha">Esqueceu sua senha?</string>
     <string name="btn_clique_aqui">Clique aqui!</string>
+    <string name="processo_npu2">NPU:</string>
+    <string name="processo_tribunal2">Tribunal:</string>
+    <string name="processo_tipoJuizo2">Tipo de juízo:</string>
+    <string name="processo_polo_ativo2">Polo ativo:</string>
+    <string name="processo_polo_passivo2">Polo passivo:</string>
+    <string name="msg_carregando">Carregando...</string>
 </resources>

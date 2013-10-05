@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/YOzEVzRehayZU2DL3dghqo130F8\"",
+ "etag": "\"_SAkL5LfohOjTvNX8memTU9s4HI/vo1JrUFfsTsvsq16Hutl6_Sv8YY\"",
  "discoveryVersion": "v1",
  "id": "processoEndpoint:v1",
  "name": "processoEndpoint",
@@ -303,11 +303,21 @@
    "id": "ProcessoUsuario",
    "type": "object",
    "properties": {
+    "idProcesso": {
+     "type": "string",
+     "format": "int64"
+    },
     "idTribunal": {
      "type": "string",
      "format": "int64"
     },
     "npu": {
+     "type": "string"
+    },
+    "poloAtivo": {
+     "type": "string"
+    },
+    "poloPassivo": {
      "type": "string"
     },
     "tipoJuizo": {

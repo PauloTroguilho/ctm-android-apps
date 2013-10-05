@@ -23,7 +23,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/tvNPU"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/term_de_uso_1"
@@ -47,14 +47,14 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/tvTipoJuizo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/term_do_objeto_1"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/tvTribunal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="5dp"

@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/xGZRbdt2r7HXCz-addKTQif78Pg\"",
+ "etag": "\"_SAkL5LfohOjTvNX8memTU9s4HI/xGZRbdt2r7HXCz-addKTQif78Pg\"",
  "discoveryVersion": "v1",
  "id": "compraEndpoint:v1",
  "name": "compraEndpoint",

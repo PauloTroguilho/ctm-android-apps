@@ -292,12 +292,12 @@ public class RegistroActivity extends SherlockActivity {
 					usuarioResult = usuarioEndpoint.insert(usuario).execute();
 					isSuccess = true;
 				} catch(GoogleJsonResponseException e) {
-					Log.e("e-Advogado", "Erro ao executar a operação!", e);
+					Log.e("e-Advogado", "Erro ao executar a operaÃ§Ã£o!", e);
 					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
 							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
 					break;
 				} catch (IOException e) {
-					Log.e("e-Advogado", "Erro de comunicação ao executar a operação!", e);
+					Log.e("e-Advogado", "Erro de comunicaÃ§Ã£o ao executar a operaÃ§Ã£o!", e);
 					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
 				}
 				attempt++;

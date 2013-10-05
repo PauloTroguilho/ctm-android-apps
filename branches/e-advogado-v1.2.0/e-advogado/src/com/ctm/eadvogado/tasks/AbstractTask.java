@@ -11,10 +11,8 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.ctm.eadvogado.PreferencesActivity;
 import com.ctm.eadvogado.R;
 import com.ctm.eadvogado.db.EAdvogadoDbHelper;
-import com.ctm.eadvogado.util.Consts;
 import com.ctm.eadvogado.util.MessageUtils;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
@@ -53,13 +51,13 @@ public abstract class AbstractTask<Params, Progress, Result> extends
 			try {
 				result = executeTask(params);
 			} catch (GoogleJsonResponseException e) {
-				Log.e(TAG, "Erro ao executar a operação!", e);
+				Log.e(TAG, "Erro ao executar a operaÃ§Ã£o!", e);
 				errorMessage = 
 					(e.getDetails() != null && e.getDetails().getMessage() != null) 
 						? e.getDetails().getMessage()
 						: getContext().getString(R.string.msg_erro_operacao_nao_realizada);
 			} catch (IOException e) {
-				Log.e(TAG, "Erro de comunicação ao executar a operação!", e);
+				Log.e(TAG, "Erro de comunicaÃ§Ã£o ao executar a operaÃ§Ã£o!", e);
 				errorMessage = getContext().getString(
 						R.string.msg_erro_comunicacao_op_nao_realizada);
 			}
@@ -69,7 +67,7 @@ public abstract class AbstractTask<Params, Progress, Result> extends
 	}
 	
 	/**
-	 * Implementação da Task.
+	 * ImplementaÃ§Ã£o da Task.
 	 * 
 	 * @param params
 	 * @return
@@ -105,25 +103,6 @@ public abstract class AbstractTask<Params, Progress, Result> extends
 		return preferences;
 	}
 
-	protected String getEmail() {
-		return preferences.getString(PreferencesActivity.PREFS_KEY_EMAIL, "");
-	}
-
-	protected String getSenha() {
-		return preferences.getString(PreferencesActivity.PREFS_KEY_SENHA, "");
-	}
-
-	protected boolean isAppRated() {
-		return preferences.getBoolean(
-				PreferencesActivity.PREFS_KEY_RATE_THIS_APP, false);
-	}
-
-	protected boolean isContaPremium() {
-		return preferences.getString(PreferencesActivity.PREFS_KEY_TIPO_CONTA,
-				Consts.TIPO_CONTA_BASICA).equals(Consts.TIPO_CONTA_PREMIUM);
-	}
-	
-	
 	protected EAdvogadoDbHelper getDbHelper() {
 		return dbHelper;
 	}

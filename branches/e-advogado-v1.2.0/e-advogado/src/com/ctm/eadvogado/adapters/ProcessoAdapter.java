@@ -10,8 +10,11 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.ctm.eadvogado.R;
+import com.ctm.eadvogado.db.EAdvogadoContract;
+import com.ctm.eadvogado.db.EAdvogadoDbHelper;
 import com.ctm.eadvogado.dto.TipoJuizo;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
+import com.ctm.eadvogado.endpoints.tribunalEndpoint.model.Tribunal;
 
 public class ProcessoAdapter extends ArrayAdapter<Processo> {
 
@@ -19,6 +22,8 @@ public class ProcessoAdapter extends ArrayAdapter<Processo> {
 	private LayoutInflater inflator;
 	// Your custom values for the spinner (User)
 	private List<Processo> values;
+	
+	private EAdvogadoDbHelper dbHelper;
 
 	/**
 	 * @param context
@@ -28,6 +33,7 @@ public class ProcessoAdapter extends ArrayAdapter<Processo> {
 	public ProcessoAdapter(Context context, int textViewResourceId,
 			List<Processo> values) {
 		super(context, textViewResourceId, values);
+		dbHelper = new EAdvogadoDbHelper(context);
 		this.values = values;
 		inflator = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -59,12 +65,21 @@ public class ProcessoAdapter extends ArrayAdapter<Processo> {
 		tvNPU.setText(String.format("%s-%s.%s.%s.%s.%s", npu.substring(0, 7),
 				npu.substring(7, 9), npu.substring(9, 13), npu.substring(13, 14),
 				npu.substring(14, 16), npu.substring(16)));
-		tvTribunal.setText(item.get("tribunal.sigla").toString());
+		Tribunal tribunal = dbHelper.selectTribunalPorId(item.getTribunal().getId());
+		if (tribunal != null) {
+			tvTribunal.setText(tribunal.getSigla());
+		}
 		if (item.getTipoJuizo().equals(TipoJuizo.PRIMEIRO_GRAU.name())) {
 			tvTipoJuizo.setText(R.string.processo_tipoJuizo_1g);
 		} else {
 			tvTipoJuizo.setText(R.string.processo_tipoJuizo_2g);
 		}
+		TextView tvPoloAtivo = (TextView) view.findViewById(R.id.textViewPoloAtivo);
+		String poloAtivo = (String) item.get(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_ATIVO);
+		tvPoloAtivo.setText(poloAtivo != null ? poloAtivo : "");
+		TextView tvPoloPassivo = (TextView) view.findViewById(R.id.textViewPoloPassivo);
+		String poloPassivo = (String) item.get(EAdvogadoContract.ProcessoTable.COLUMN_NAME_POLO_PASSIVO);
+		tvPoloPassivo.setText(poloPassivo != null ? poloPassivo : "");
 		return view;
 	}
 

@@ -14,7 +14,7 @@ import android.widget.ExpandableListView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.ctm.eadvogado.PreferencesActivity;
-import com.ctm.eadvogado.ProcessoTabsPagerFragment;
+import com.ctm.eadvogado.ProcessoRootFragment;
 import com.ctm.eadvogado.R;
 import com.ctm.eadvogado.adapters.MovimentoExpandableAdapter;
 import com.ctm.eadvogado.endpoints.processoEndpoint.model.Processo;
@@ -38,7 +38,7 @@ public class TabProcessoMovimentoFragment extends SherlockFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		processo = ProcessoTabsPagerFragment.processoResult;
+		processo = ProcessoRootFragment.PROCESSO;
 	}
 	
 	/**

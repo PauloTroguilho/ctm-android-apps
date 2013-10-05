@@ -73,15 +73,15 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 	 */
 	public void doConsultarProcessos() {
 		if (consultarProcessoTask != null) {
-			alert("Por favor, aguarde! Sua consulta est· sendo processada.");
+			alert("Por favor, aguarde! Sua consulta est√° sendo processada.");
 			return;
 		}
 		if (mSpinnerTribunais.getAdapter().isEmpty()) {
-			alert("N„o foi possÌvel carregar a lista de tribunais! Por favor, tente novamente.");
+			alert("N√£o foi poss√≠vel carregar a lista de tribunais! Por favor, tente novamente.");
 			return;
 		}
 		if (mEditTextNPU.getText().toString().trim().length() != 25){
-			alert("O NPU informado est· inv·lido ou incompleto! Por favor, tente novamente.");
+			alert("O NPU informado est√° inv√°lido ou incompleto! Por favor, tente novamente.");
 			return;
 		}
 		Tribunal tribunal = (Tribunal) mSpinnerTribunais.getAdapter().getItem(
@@ -92,12 +92,12 @@ public class ConsultarProcessoActivity extends SlidingActivity {
 		if (tipoJuizo.equals(TipoJuizo.PRIMEIRO_GRAU)
 				&& (tribunal.getPje1gEndpoint() == null || tribunal
 						.getPje1gEndpoint().trim().length() == 0)) {
-			alert("Este tribunal n„o disponibiliza a consulta processual para o 1∫ Grau!");
+			alert("Este tribunal n√£o disponibiliza a consulta processual para o 1¬∫ Grau!");
 			return;
 		} else if (tipoJuizo.equals(TipoJuizo.SEGUNDO_GRAU)
 				&& (tribunal.getPje2gEndpoint() == null || tribunal
 						.getPje2gEndpoint().trim().length() == 0)) {
-			alert("Este tribunal n„o disponibiliza a consulta processual para o 2∫ Grau!");
+			alert("Este tribunal n√£o disponibiliza a consulta processual para o 2¬∫ Grau!");
 			return;
 		}
 		// Show a progress spinner, and kick off a background task to

@@ -42,7 +42,7 @@
             android:src="@drawable/ic_download_inverse" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/tvNPU"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btn_download"

@@ -15,5 +15,13 @@ public class MessageUtils {
         bld.setNeutralButton("OK", null);
         bld.create().show();
     }
+	
+	/**
+	 * @param resId
+	 * @param context
+	 */
+	public static void alert(int resId, Context context) {
+        alert(context.getString(resId), context);
+    }
 
 }

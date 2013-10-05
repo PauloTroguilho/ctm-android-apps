@@ -75,6 +75,10 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 
 			mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
 			mTabsAdapter.addTab(
+					mTabHost.newTabSpec("movimento").setIndicator(
+							getString(R.string.processo_tab_movimento)),
+					TabProcessoMovimentoFragment.class, null);
+			mTabsAdapter.addTab(
 					mTabHost.newTabSpec("dados").setIndicator(
 							getString(R.string.processo_tab_dados)),
 					TabProcessoDadosFragment.class, null);
@@ -82,10 +86,6 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 					mTabHost.newTabSpec("polos").setIndicator(
 							getString(R.string.processo_tab_polos)),
 					TabProcessoPolosFragment.class, null);
-			mTabsAdapter.addTab(
-					mTabHost.newTabSpec("movimento").setIndicator(
-							getString(R.string.processo_tab_movimento)),
-					TabProcessoMovimentoFragment.class, null);
 			
 			mTabsAdapter.onTabChanged("dados");
 		}
@@ -241,7 +241,7 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 	 */
 	public void doSalvarProcesso(final Processo processo) {
 		if (associarProcessoTask != null) {
-			MessageUtils.alert("Por favor, aguarde! Já estamos processando sua solicitação.", this);
+			MessageUtils.alert("Por favor, aguarde! JÃ¡ estamos processando sua solicitaÃ§Ã£o.", this);
 			return;
 		}
 		setSupportProgressBarIndeterminateVisibility(true);
@@ -252,7 +252,7 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 			protected void onPostExecute(Boolean result) {
 				if (result != null) {
 					if (result.booleanValue()) {
-						dbHelper.insertProcessoSeNaoExiste(processo);
+						dbHelper.insertOrUpdateProcesso(processo);
 						alert(R.string.msg_processo_inserido_sucesso);
 						isProcessoSalvo = true;
 					} else {
@@ -285,7 +285,7 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 	
 	public void doAtualizarProcesso(String npu, Long idTribunal, String tipoJuizo) {
 		if (atualizarProcessoTask != null) {
-			MessageUtils.alert("Por favor, aguarde! Já existe uma atualização em andamento.", this);
+			MessageUtils.alert("Por favor, aguarde! JÃ¡ existe uma atualizaÃ§Ã£o em andamento.", this);
 			return;
 		}
 		setSupportProgressBarIndeterminateVisibility(true);
@@ -364,7 +364,7 @@ public class ProcessoTabsPagerFragment extends SherlockFragmentActivity {
 	private void updateButtons() {
 		if (processoResult != null && menuSalvar != null) {
         	Processo selectProcesso = dbHelper.selectProcesso(processoResult.getNpu(),
-    				processoResult.getTribunal().getId(), processoResult.getTipoJuizo());
+    				processoResult.getTribunal().getId(), processoResult.getTipoJuizo(), false);
     		if (selectProcesso != null) {
     			menuSalvar.setVisible(false);
     		}
