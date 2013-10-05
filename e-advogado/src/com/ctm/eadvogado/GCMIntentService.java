@@ -172,7 +172,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 			} catch(GoogleJsonResponseException e) {
 				Log.e(TAG, "Falha ao registrar device no endpoint!", e);
 			} catch (IOException e) {
-				Log.e(TAG, "Erro de comunicação ao tentar registrar device no endpoint!", e);
+				Log.e(TAG, "Erro de comunicaÃ§Ã£o ao tentar registrar device no endpoint!", e);
 				break;
 			}
 			attempt++;
@@ -204,7 +204,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 				} catch(GoogleJsonResponseException e) {
 					Log.e(TAG, "Falha ao desregistrar device no endpoint!", e);
 				} catch (IOException e) {
-					Log.e(TAG, "Erro de comunicação ao tentar desregistrar device no endpoint!", e);
+					Log.e(TAG, "Erro de comunicaÃ§Ã£o ao tentar desregistrar device no endpoint!", e);
 					break;
 				}
 				attempt++;

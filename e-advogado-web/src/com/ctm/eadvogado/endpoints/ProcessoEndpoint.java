@@ -10,6 +10,8 @@ import javax.persistence.NoResultException;
 import org.apache.commons.codec.binary.Hex;
 
 import br.jus.cnj.pje.v1.TipoDocumento;
+import br.jus.cnj.pje.v1.TipoPessoa;
+import br.jus.cnj.pje.v1.TipoPoloProcessual;
 
 import com.ctm.eadvogado.exception.NegocioException;
 import com.ctm.eadvogado.model.Documento;
@@ -20,6 +22,7 @@ import com.ctm.eadvogado.model.Usuario;
 import com.ctm.eadvogado.negocio.ProcessoNegocio;
 import com.ctm.eadvogado.negocio.TribunalNegocio;
 import com.ctm.eadvogado.negocio.UsuarioNegocio;
+import com.ctm.eadvogado.util.ConverterUtil;
 import com.ctm.eadvogado.util.PJeServiceUtil;
 import com.ctm.eadvogado.util.WeldUtils;
 import com.google.api.server.spi.config.Api;
@@ -183,6 +186,26 @@ public class ProcessoEndpoint extends BaseEndpoint<Processo, ProcessoNegocio> {
 				pu.setNpu(processo.getNpu());
 				pu.setIdTribunal(processo.getTribunal().getId());
 				pu.setTipoJuizo(processo.getTipoJuizo());
+				pu.setIdProcesso(processo.getKey().getId());
+				List<TipoPoloProcessual> ativos = new ArrayList<TipoPoloProcessual>();
+				List<TipoPoloProcessual> passivos = new ArrayList<TipoPoloProcessual>();
+				ConverterUtil.fillPolosProcessuais(processo.getProcessoJudicial(), ativos, passivos);
+				try {
+					if (!ativos.isEmpty()) {
+						TipoPessoa pessoa = ConverterUtil.getTipoPessoa(ativos.iterator().next());
+						pu.setPoloAtivo(pessoa.getNome().toUpperCase());
+					}
+				} catch(NullPointerException e) {
+					logger.severe("Erro ao preencher polo ativo no processo: " + processo.getKey().getId());
+				}
+				try {
+					if (!passivos.isEmpty()) {
+						TipoPessoa pessoa = ConverterUtil.getTipoPessoa(passivos.iterator().next());
+						pu.setPoloPassivo(pessoa.getNome().toUpperCase());
+					}
+				} catch(NullPointerException e) {
+					logger.severe("Erro ao preencher polo passivo no processo: " + processo.getKey().getId());
+				}
 				processosList.add(pu);
 			}
 		}

@@ -25,16 +25,15 @@ import com.ctm.eadvogado.db.EAdvogadoDbHelper;
 import com.ctm.eadvogado.endpoints.compraEndpoint.CompraEndpoint;
 import com.ctm.eadvogado.endpoints.compraEndpoint.model.Compra;
 import com.ctm.eadvogado.endpoints.compraEndpoint.model.WrappedBoolean;
-import com.ctm.eadvogado.endpoints.usuarioEndpoint.UsuarioEndpoint;
 import com.ctm.eadvogado.endpoints.usuarioEndpoint.model.Usuario;
 import com.ctm.eadvogado.tasks.AutenticarUsuarioTask;
 import com.ctm.eadvogado.util.Consts;
 import com.ctm.eadvogado.util.EndpointUtils;
+import com.ctm.eadvogado.util.MessageUtils;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
 public class MinhaContaActivity extends SlidingActivity {
 	
-	private UsuarioEndpoint usuarioEndpoint;
 	private CompraEndpoint compraEndpoint;
 	
 	private AutenticarUsuarioTask carregarMinhaContaTask = null;
@@ -77,7 +76,6 @@ public class MinhaContaActivity extends SlidingActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_minha_conta);
 		dbHelper = new EAdvogadoDbHelper(this);
-		usuarioEndpoint = EndpointUtils.initUsuarioEndpoint();
 		compraEndpoint = EndpointUtils.initCompraEndpoint();
 		
 		spinnerPacotes = (Spinner) findViewById(R.id.spinnerPacotes);
@@ -240,14 +238,14 @@ public class MinhaContaActivity extends SlidingActivity {
             Log.d(TAG, "Compra finalizada: " + result + ", purchase: " + purchase);
             if (result.isSuccess()) {
             	Log.i(TAG, "Compra realizada com sucesso: " + result);
-            	// Faz a confirmaÁ„o e consume o item.
+            	// Faz a confirma√ß√£o e consume o item.
                 doConfirmarCompra(purchase);
             } else {
-            	Log.e(TAG, "Falha na realizaÁ„o da compra: " + result);
+            	Log.e(TAG, "Falha na realiza√ß√£o da compra: " + result);
             	if (result.getResponse() == IabHelper.BILLING_RESPONSE_RESULT_USER_CANCELED) {
             		alert("O processo de compra foi cancelado!");
             	} else {
-            		alert("Desculpe! N„o foi possÌvel realizar a compra neste momento!");
+            		alert("Desculpe! N√£o foi poss√≠vel realizar a compra neste momento!");
             	}
                 setSupportProgressBarIndeterminateVisibility(false);
         		setControlsEnabled(true);
@@ -261,11 +259,11 @@ public class MinhaContaActivity extends SlidingActivity {
      */
     private void doEfetuarCompra(String sku) {
     	if (efetuarCompraTask != null){
-    		complain("Desculpe! J· existe um processo de compra em andamento. Aguarde alguns instantes.");
+    		complain("Desculpe! J√° existe um processo de compra em andamento. Aguarde alguns instantes.");
     		return;
     	}
-    	if (isContaPremium) {
-            complain("VocÍ j· possui a conta PREMIUM! Pode cadastrar processos ilimitados.");
+    	if (PreferencesActivity.isContaPremium(this)) {
+            complain("Voc√™ j√° possui a conta PREMIUM! Pode cadastrar processos ilimitados.");
             return;
         }
     	setSupportProgressBarIndeterminateVisibility(true);
@@ -301,11 +299,11 @@ public class MinhaContaActivity extends SlidingActivity {
 					if (compra != null)
 						break;
 				} catch(GoogleJsonResponseException e) {
-					Log.e(TAG, "Erro ao executar a operaÁ„o!", e);
+					Log.e(TAG, "Erro ao executar a opera√ß√£o!", e);
 					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
 							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
 				} catch (IOException e) {
-					Log.e(TAG, "Erro de comunicaÁ„o ao executar a operaÁ„o!", e);
+					Log.e(TAG, "Erro de comunica√ß√£o ao executar a opera√ß√£o!", e);
 					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
 				}
 				attempt++;
@@ -349,7 +347,7 @@ public class MinhaContaActivity extends SlidingActivity {
      */
     private void doConfirmarCompra(Purchase purchase) {
     	if (confirmarCompraTask != null){
-    		complain("Desculpe! J· existe um processo de confirmaÁ„o de compra em andamento. Aguarde alguns instantes.");
+    		complain("Desculpe! J√° existe um processo de confirma√ß√£o de compra em andamento. Aguarde alguns instantes.");
     		return;
     	}
     	setSupportProgressBarIndeterminateVisibility(true);
@@ -363,7 +361,7 @@ public class MinhaContaActivity extends SlidingActivity {
      */
     private void doCancelarContaPremium() {
     	if (cancelarContaPremiumTask != null){
-    		complain("Desculpe! J· existe um processo de cancelamento de compra em andamento. Aguarde alguns instantes.");
+    		complain("Desculpe! J√° existe um processo de cancelamento de compra em andamento. Aguarde alguns instantes.");
     		return;
     	}
     	setSupportProgressBarIndeterminateVisibility(true);
@@ -407,11 +405,11 @@ public class MinhaContaActivity extends SlidingActivity {
 					if (compra != null)
 						break;
 				} catch(GoogleJsonResponseException e) {
-					Log.e(TAG, "Erro ao executar a operaÁ„o!", e);
+					Log.e(TAG, "Erro ao executar a opera√ß√£o!", e);
 					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
 							e.getDetails().getMessage() : getString(R.string.msg_erro_operacao_nao_realizada);
 				} catch (IOException e) {
-					Log.e(TAG, "Erro de comunicaÁ„o ao executar a operaÁ„o!", e);
+					Log.e(TAG, "Erro de comunica√ß√£o ao executar a opera√ß√£o!", e);
 					mensagem = getString(R.string.msg_erro_comunicacao_op_nao_realizada);
 				}
 				attempt++;
@@ -430,25 +428,22 @@ public class MinhaContaActivity extends SlidingActivity {
 	                	Log.d(TAG, String.format("Comprou o produto %s. Registrando compra", purchase.getSku()));
 	                	mHelper.consumeAsync(purchase, mConsumeFinishedListener);
 	                	if (purchase.getSku().equals(SKU_PROCESSOS_ILIMITADOS)) {
-		                    alert("Obrigado por adquirir a conta premium!");
+		                    MessageUtils.alert("Obrigado por adquirir a conta premium!", MinhaContaActivity.this);
 		                } else {
-		                	alert("Obrigado pela realizaÁ„o da compra!");
+		                	MessageUtils.alert("Obrigado pela realiza√ß√£o da compra!", MinhaContaActivity.this);
 		                }
 	                } else {
 	                    Log.e(TAG, "SKU invalido");
 	                    throw new RuntimeException("Compra confirmada e SKU invalido");
 	                }
 				} else {
-					alert("Desculpe! N„o foi possÌvel confirmar a compra. Tente novamente em alguns minutos.");
+					MessageUtils.alert("Desculpe! N√£o foi poss√≠vel confirmar a compra. Tente novamente em alguns minutos.", MinhaContaActivity.this);
 				}
             } else {
             	if (mensagem.length() == 0) {
-					Toast.makeText(MinhaContaActivity.this,
-							R.string.msg_erro_inesperado,
-							Toast.LENGTH_LONG).show();
+            		MessageUtils.alert(R.string.msg_erro_inesperado, MinhaContaActivity.this);
 				} else {
-					Toast.makeText(MinhaContaActivity.this,
-							mensagem, Toast.LENGTH_LONG).show();
+					MessageUtils.alert(mensagem, MinhaContaActivity.this);
 				}
             }
 			confirmarCompraTask = null;
@@ -480,7 +475,7 @@ public class MinhaContaActivity extends SlidingActivity {
 						PreferencesActivity.getSenha(MinhaContaActivity.this))
 						.execute();
 			} catch(GoogleJsonResponseException e) {
-				Log.e(TAG, "Falha na comunicaÁ„o com o server.", e);
+				Log.e(TAG, "Falha na comunica√ß√£o com o server.", e);
 				if ((e.getDetails() != null && e.getDetails().getCode() == HttpStatus.SC_NOT_FOUND)
 						|| (e.getContent() != null && e.getContent().toLowerCase(Locale.ENGLISH).contains("not found"))) {
 					errorCode = HttpStatus.SC_NOT_FOUND;
@@ -506,13 +501,13 @@ public class MinhaContaActivity extends SlidingActivity {
             	String msg = null;
 	        	switch (errorCode) {
 					case HttpStatus.SC_NOT_FOUND:
-						msg = "Desculpe! Os dados informados n„o foram encontrados no servidor.";
+						msg = "Desculpe! Os dados informados n√£o foram encontrados no servidor.";
 						break;
 					case HttpStatus.SC_UNAUTHORIZED:
-						msg = "Usu·rio e/ou senha inv·lidos.";
+						msg = "Usu√°rio e/ou senha inv√°lidos.";
 						break;
 					default:
-						msg = "Desculpe! N„o foi possivel se comunicar com nossos servidores. Verifique seu acesso a internet!";
+						msg = "Desculpe! N√£o foi possivel se comunicar com nossos servidores. Verifique seu acesso a internet!";
 						break;
 				}
 	        	alert(msg);
@@ -537,6 +532,13 @@ public class MinhaContaActivity extends SlidingActivity {
         Log.e(TAG, "**** MinhaConta Error: " + message);
         alert(message);
     }
+	
+	/**
+	 * @return
+	 */
+	private boolean isContaPremium() {
+		return PreferencesActivity.isContaPremium(this);
+	}
 
 	/**
 	 * Carrega os dados da minha conta.
@@ -556,7 +558,12 @@ public class MinhaContaActivity extends SlidingActivity {
 					}
 					tvCategoria.setText(result.getTipoConta());
 					tvQtdeCadastrados.setText(dbHelper.selectProcessosCount() + "");
-					tvQtdeDisponivel.setText(result.getSaldo().toString());
+					if (isContaPremium()){
+						tvQtdeDisponivel.setText(getString(R.string.qtd_ilimitada));
+						btContaPremium.setEnabled(false);
+					} else {
+						tvQtdeDisponivel.setText(result.getSaldo().toString());
+					}
 				} else {
 					if (getErrorMessage().length() == 0) {
 						alert(R.string.msg_erro_inesperado);

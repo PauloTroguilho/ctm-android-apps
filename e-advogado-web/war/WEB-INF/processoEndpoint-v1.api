@@ -104,44 +104,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "processoEndpoint.consultarDocumento" : {
-      "path" : "consultarDocumento/{npu}/{idTribunal}/{tipoJuizo}/{idDocumento}",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.consultarDocumento",
-      "request" : {
-        "parameters" : {
-          "npu" : {
-            "type" : "string",
-            "required" : true
-          },
-          "idTribunal" : {
-            "type" : "int64",
-            "required" : true
-          },
-          "tipoJuizo" : {
-            "enum" : {
-              "PRIMEIRO_GRAU" : {
-              },
-              "SEGUNDO_GRAU" : {
-              }
-            },
-            "type" : "string",
-            "required" : true
-          },
-          "idDocumento" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "processoEndpoint.consultarProcessoComDocumentos" : {
       "path" : "consultarProcessoComDocumentos/{npu}/{idTribunal}/{tipoJuizo}/{ignorarCache}",
       "httpMethod" : "POST",
@@ -171,6 +133,44 @@
           },
           "ignorarCache" : {
             "type" : "boolean",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "processoEndpoint.consultarDocumento" : {
+      "path" : "consultarDocumento/{npu}/{idTribunal}/{tipoJuizo}/{idDocumento}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.consultarDocumento",
+      "request" : {
+        "parameters" : {
+          "npu" : {
+            "type" : "string",
+            "required" : true
+          },
+          "idTribunal" : {
+            "type" : "int64",
+            "required" : true
+          },
+          "tipoJuizo" : {
+            "enum" : {
+              "PRIMEIRO_GRAU" : {
+              },
+              "SEGUNDO_GRAU" : {
+              }
+            },
+            "type" : "string",
+            "required" : true
+          },
+          "idDocumento" : {
+            "type" : "string",
             "required" : true
           }
         },
@@ -277,26 +277,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "processoEndpoint.getByID" : {
-      "path" : "processo/{id}",
-      "httpMethod" : "GET",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.getByID",
-      "request" : {
-        "parameters" : {
-          "id" : {
-            "type" : "int64",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "processoEndpoint.removerProcessoDoUsuario" : {
       "path" : "rprocessodousuario/{email}/{idProcesso}",
       "httpMethod" : "DELETE",
@@ -319,6 +299,26 @@
       },
       "response" : {
         "body" : "empty"
+      }
+    },
+    "processoEndpoint.getByID" : {
+      "path" : "processo/{id}",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ctm.eadvogado.endpoints.ProcessoEndpoint.getByID",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
       }
     }
   },
@@ -371,11 +371,11 @@
           "parent" : {
             "$ref" : "Key"
           },
-          "namespace" : {
-            "type" : "string"
-          },
           "complete" : {
             "type" : "boolean"
+          },
+          "namespace" : {
+            "type" : "string"
           }
         }
       },
@@ -934,6 +934,16 @@
           },
           "tipoJuizo" : {
             "$ref" : "TipoJuizo"
+          },
+          "idProcesso" : {
+            "type" : "string",
+            "format" : "int64"
+          },
+          "poloAtivo" : {
+            "type" : "string"
+          },
+          "poloPassivo" : {
+            "type" : "string"
           }
         }
       },
@@ -984,14 +994,14 @@
           "$ref" : "ProcessoUsuarioCollection"
         }
       },
-      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.consultarDocumento" : {
-        "response" : {
-          "$ref" : "Documento"
-        }
-      },
       "com.ctm.eadvogado.endpoints.ProcessoEndpoint.consultarProcessoComDocumentos" : {
         "response" : {
           "$ref" : "Processo"
+        }
+      },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.consultarDocumento" : {
+        "response" : {
+          "$ref" : "Documento"
         }
       },
       "com.ctm.eadvogado.endpoints.ProcessoEndpoint.insert" : {
@@ -1014,12 +1024,12 @@
           "$ref" : "CollectionResponse_Processo"
         }
       },
+      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.removerProcessoDoUsuario" : {
+      },
       "com.ctm.eadvogado.endpoints.ProcessoEndpoint.getByID" : {
         "response" : {
           "$ref" : "Processo"
         }
-      },
-      "com.ctm.eadvogado.endpoints.ProcessoEndpoint.removerProcessoDoUsuario" : {
       }
     }
   }

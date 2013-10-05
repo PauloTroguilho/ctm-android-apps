@@ -1,4 +1,4 @@
-	<classpathentry kind="lib" path="libs/google-api-services-processoEndpoint-v1-rev20130902014827-1.15.0-rc.jar" sourcepath="libs-sources/google-api-services-processoEndpoint-v1-rev20130902014827-1.15.0-rc-sources.jar"/>
+	<classpathentry kind="lib" path="libs/google-api-services-processoEndpoint-v1-rev20131005193236-1.15.0-rc.jar" sourcepath="libs-sources/google-api-services-processoEndpoint-v1-rev20131005193236-1.15.0-rc-sources.jar"/>
 	<classpathentry kind="lib" path="libs/google-api-client-1.15.0-rc.jar" sourcepath="libs-sources/google-api-client-1.15.0-rc-sources.jar"/>
 	<classpathentry kind="lib" path="libs/google-api-client-android-1.15.0-rc.jar" sourcepath="libs-sources/google-api-client-android-1.15.0-rc-sources.jar"/>
 	<classpathentry kind="lib" path="libs/google-api-client-appengine-1.15.0-rc.jar" sourcepath="libs-sources/google-api-client-appengine-1.15.0-rc-sources.jar"/>

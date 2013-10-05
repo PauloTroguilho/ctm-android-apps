@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/mcot04FTl8FZ_15pRrtb1LHWYVo\"",
+ "etag": "\"_SAkL5LfohOjTvNX8memTU9s4HI/mcot04FTl8FZ_15pRrtb1LHWYVo\"",
  "discoveryVersion": "v1",
  "id": "usuarioEndpoint:v1",
  "name": "usuarioEndpoint",

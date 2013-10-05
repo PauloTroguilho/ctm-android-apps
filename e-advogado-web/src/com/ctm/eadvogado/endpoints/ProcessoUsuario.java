@@ -18,12 +18,23 @@ public class ProcessoUsuario implements Serializable {
 	private String npu;
 	private Long idTribunal;
 	private TipoJuizo tipoJuizo;
+	private Long idProcesso;
+	private String poloAtivo;
+	private String poloPassivo;
 
 	/**
 	 * 
 	 */
 	public ProcessoUsuario() {
 
+	}
+
+	public Long getIdProcesso() {
+		return idProcesso;
+	}
+
+	public void setIdProcesso(Long idProcesso) {
+		this.idProcesso = idProcesso;
 	}
 
 	public String getNpu() {
@@ -48,6 +59,22 @@ public class ProcessoUsuario implements Serializable {
 
 	public void setTipoJuizo(TipoJuizo tipoJuizo) {
 		this.tipoJuizo = tipoJuizo;
+	}
+
+	public String getPoloAtivo() {
+		return poloAtivo;
+	}
+
+	public void setPoloAtivo(String poloAtivo) {
+		this.poloAtivo = poloAtivo;
+	}
+
+	public String getPoloPassivo() {
+		return poloPassivo;
+	}
+
+	public void setPoloPassivo(String poloPassivo) {
+		this.poloPassivo = poloPassivo;
 	}
 
 }

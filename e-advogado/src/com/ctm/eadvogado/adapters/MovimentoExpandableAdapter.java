@@ -209,7 +209,7 @@ public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
 	 */
 	public void doDownloadDocumento(String npu, Long idTribunal, String tipoJuizo, String idDocumento) {
 		if (downloadDocumentoTask != null) {
-			MessageUtils.alert("Por favor aguarde! O download est· em andamento.", context);
+			MessageUtils.alert("Por favor aguarde! O download est√° em andamento.", context);
 			return;
 		}
 		MessageUtils.alert("O download do documento foi iniciado, por favor aguarde!", context);
@@ -254,11 +254,11 @@ public class MovimentoExpandableAdapter extends BaseExpandableListAdapter {
 							idTribunal, tipoJuizo, idDocumento)
 							.execute();
 				} catch(GoogleJsonResponseException e) {
-					Log.e(TAG, "Erro ao executar a operaÁ„o!", e);
+					Log.e(TAG, "Erro ao executar a opera√ß√£o!", e);
 					mensagem = (e.getDetails() != null && e.getDetails() .getMessage() != null) ? 
 							e.getDetails().getMessage() : context.getString(R.string.msg_erro_operacao_nao_realizada);
 				} catch (IOException e) {
-					Log.e(TAG, "Erro de comunicaÁ„o ao executar a operaÁ„o!", e);
+					Log.e(TAG, "Erro de comunica√ß√£o ao executar a opera√ß√£o!", e);
 					mensagem = context.getString(R.string.msg_erro_comunicacao_op_nao_realizada);
 				} catch(Exception e) {
 					Log.e(TAG, "Erro inesperado!", e);
